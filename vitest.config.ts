@@ -30,6 +30,11 @@ export default defineConfig({
           name: "integration",
           environment: "node",
           include: ["tests/integration/**/*.{test,spec}.{ts,tsx}"],
+          // Testes de integração fazem I/O real (Postgres, MinIO) e hashing
+          // real (bcrypt via better-auth); com muitos arquivos em paralelo
+          // o padrão de 5s do Vitest estoura só por contenção de recursos.
+          testTimeout: 15000,
+          hookTimeout: 15000,
         },
       },
     ],

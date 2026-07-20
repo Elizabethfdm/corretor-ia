@@ -28,7 +28,7 @@ export interface ProcessedImage {
  * A saída é sempre JPEG, o que descarta metadados originais (EXIF/GPS)
  * por padrão do sharp — cumprindo RN-037 sem passo extra.
  */
-export async function processProfileImage(
+export async function processImage(
   input: Buffer,
   options: ProcessImageOptions,
 ): Promise<ProcessedImage> {

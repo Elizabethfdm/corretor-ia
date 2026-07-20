@@ -57,9 +57,12 @@ Regras: RN-015 a RN-025.
 
 ## Fase 4 — Cadastro de Imóveis
 
+**Status: concluída.**
+
 Entregas: fluxo em etapas, rascunho, validações por etapa, gestão de
 características, endereço com regra de privacidade, upload/gestão de
-fotos, publicação e transições de status, testes.
+fotos, publicação e transições de status, duplicação, exclusão/restauração
+lógica, testes.
 
 Regras: RN-026 a RN-045.
 

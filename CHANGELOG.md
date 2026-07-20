@@ -8,6 +8,39 @@ partir da primeira versão publicada.
 
 ## [Não lançado]
 
+### Adicionado — Fase 4 (Cadastro de Imóveis)
+
+- Models `Property`, `PropertyAddress`, `PropertyFeature` e
+  `PropertyMedia` (com `@relation` formal e `onDelete: Cascade` a partir
+  de `BrokerProfile`) e migração real.
+- Cadastro de imóvel em etapas (informações básicas, características,
+  localização, fotos, descrição, revisão e publicação) via Server
+  Actions, com salvamento de rascunho independente por etapa (RN-044).
+- Upload múltiplo de fotos com validação de conteúdo real, compressão e
+  remoção de metadados (reaproveitando o pipeline da Fase 3), primeira
+  foto definida como capa automaticamente, reordenação e exclusão com
+  promoção automática de nova capa (RN-033 a RN-037, RN-045).
+- Publicação bloqueada até que título, valor (ou "consulte o valor"),
+  cidade, bairro, descrição e ao menos uma foto estejam preenchidos
+  (RN-043), com aviso de pendências reaproveitado no cliente e no
+  servidor.
+- Transições de status validadas por um mapa único de estados permitidos
+  (rascunho → disponível → reservado/vendido/alugado/inativo — RN-027),
+  cobrindo também despublicar (RN-032) e republicar.
+- Duplicação de imóvel como novo rascunho, sem métricas nem slug público
+  (RN-029); exclusão lógica reversível com restauração acessível pela
+  lista de imóveis (RN-028).
+- Slug do imóvel regenerado a partir do título enquanto não publicado, e
+  congelado após a primeira publicação, para não quebrar links já
+  compartilhados (RN-031).
+- Isolamento entre corretores (RN-026): todo acesso é resolvido a partir
+  do corretor autenticado, nunca de um identificador vindo do cliente.
+- Autopreenchimento de endereço por CEP via ViaCEP.
+- 42 novos testes unitários, 22 novos testes de integração (contra
+  Postgres e MinIO reais) e 7 novos cenários E2E/acessibilidade cobrindo
+  o fluxo completo de cadastro, publicação, mudança de status,
+  exclusão/restauração e isolamento entre corretores.
+
 ### Adicionado — Fase 3 (Perfil do Corretor)
 
 - Model `BrokerProfile` (1:1 com `user`) e migração real.

@@ -1,10 +1,12 @@
 # Corretor IA
 
-> **Status atual: Fase 3 — Perfil do Corretor concluída.**
-> Autenticação, perfil profissional (com upload de foto/logotipo) e uma
-> página pública mínima de catálogo (`/catalogo/[slug]`) estão
-> funcionando de ponta a ponta. Cadastro de imóveis ainda não foi
-> implementado — isso começa na Fase 4. Ver
+> **Status atual: Fase 4 — Cadastro de Imóveis concluída.**
+> Autenticação, perfil profissional (com upload de foto/logotipo), uma
+> página pública mínima de catálogo (`/catalogo/[slug]`) e o cadastro
+> completo de imóveis em etapas (rascunho, características,
+> localização, fotos, descrição e publicação) estão funcionando de
+> ponta a ponta. Catálogo público com busca/filtros ainda não foi
+> implementado — isso começa na Fase 5. Ver
 > [`docs/planning/phases-plan.md`](docs/planning/phases-plan.md) para o
 > plano completo por fases.
 
@@ -65,9 +67,8 @@ interface navegável._
 - **Estilo:** Tailwind CSS.
 - **Validação:** Zod (compartilhada entre cliente e servidor).
 - **Formulários:** Server Actions + `useActionState`/`useFormStatus`
-  nativos do React 19 (sem React Hook Form) para os formulários atuais;
-  React Hook Form entra na Fase 4 para o cadastro de imóveis em
-  múltiplas etapas.
+  nativos do React 19 (sem React Hook Form), incluindo o cadastro de
+  imóveis em múltiplas etapas (Fase 4).
 - **Testes:** Vitest (unitário e integração) e Playwright (E2E e
   acessibilidade).
 - **Qualidade:** ESLint, Prettier, TypeScript estrito.
@@ -88,7 +89,7 @@ e [`docs/architecture/data-model.md`](docs/architecture/data-model.md).
 | ORM                         | Prisma 7 (driver adapter `@prisma/adapter-pg`)                                   |
 | Autenticação                | Better Auth (e-mail/senha, plugin `admin`)                                       |
 | Validação                   | Zod                                                                              |
-| Formulários                 | Server Actions + React 19 (`useActionState`) _(React Hook Form entra na Fase 4)_ |
+| Formulários                 | Server Actions + React 19 (`useActionState`)                                     |
 | Armazenamento de mídia      | Compatível com S3 (`@aws-sdk/client-s3`; MinIO local) + `sharp`                  |
 | Testes unitários/integração | Vitest (+ Testing Library)                                                       |
 | Testes E2E                  | Playwright                                                                       |
@@ -254,7 +255,7 @@ Ver plano completo de fases em
 | 1    | Fundação do projeto         | Concluída    |
 | 2    | Autenticação                | Concluída    |
 | 3    | Perfil do corretor          | Concluída    |
-| 4    | Cadastro de imóveis         | Não iniciada |
+| 4    | Cadastro de imóveis         | Concluída    |
 | 5    | Catálogo digital            | Não iniciada |
 | 6    | Página individual do imóvel | Não iniciada |
 | 7    | IA para anúncios            | Não iniciada |

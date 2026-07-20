@@ -10,7 +10,12 @@ export default defineConfig({
   retries: process.env["CI"] ? 2 : 0,
   workers: process.env["CI"] ? 1 : undefined,
   reporter: [["html", { open: "never" }], ["list"]],
-  timeout: 30_000,
+  // Firefox e WebKit são mensuravelmente mais lentos que o Chromium ao
+  // automatizar este app neste ambiente local (mesmo com workers: 1) —
+  // 30s bastam para o Chromium mas geram falhas por timeout puro (sem
+  // nenhum erro de asserção/lógica) nesses dois motores. Ver
+  // `docs/evidence/fase-04-cadastro-de-imoveis/README.md`.
+  timeout: 45_000,
   use: {
     baseURL,
     trace: "on-first-retry",
@@ -21,7 +26,9 @@ export default defineConfig({
     { name: "chromium-desktop", use: { ...devices["Desktop Chrome"] } },
     { name: "firefox-desktop", use: { ...devices["Desktop Firefox"] } },
     { name: "webkit-desktop", use: { ...devices["Desktop Safari"] } },
-    // Mobile e tablet (RNF-002) — validados no motor Chromium
+    // Mobile (RNF-002) — motor Chromium. Tablet usa o motor WebKit por
+    // padrão do descritor `devices["iPad (gen 7)"]` do Playwright
+    // (`defaultBrowserType: "webkit"`), não Chromium.
     { name: "mobile", use: { ...devices["Pixel 7"] } },
     { name: "tablet", use: { ...devices["iPad (gen 7)"] } },
   ],

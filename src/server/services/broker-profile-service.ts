@@ -5,7 +5,7 @@ import {
 import type { BrokerProfileInput } from "@/lib/validation/broker-profile";
 import { getPublicationRequirementErrors } from "@/lib/validation/broker-profile";
 import { generateStorageKey, getStorageProvider } from "@/lib/storage";
-import { processProfileImage, UnsupportedImageFormatError } from "@/lib/image/process-image";
+import { processImage, UnsupportedImageFormatError } from "@/lib/image/process-image";
 import { logger } from "@/lib/observability/logger";
 import { Prisma, type BrokerProfile } from "@/generated/prisma/client";
 
@@ -163,7 +163,7 @@ async function uploadBrokerImage(
   const inputBuffer = Buffer.from(arrayBuffer);
 
   const dimensions = kind === "photo" ? PHOTO_DIMENSIONS : LOGO_DIMENSIONS;
-  const processed = await processProfileImage(inputBuffer, dimensions);
+  const processed = await processImage(inputBuffer, dimensions);
 
   const key = generateStorageKey(`broker/${userId}/${kind}`, "jpg");
   const storage = getStorageProvider();

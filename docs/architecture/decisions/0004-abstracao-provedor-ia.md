@@ -7,10 +7,18 @@
 
 ## Contexto
 
-O Corretor IA usa IA para gerar/revisar descrições de imóveis (Fase 4) e
-para gerar anúncios (Fase 7). O Prompt Mestre exige explicitamente que a
+O Corretor IA usa IA para gerar anúncios a partir dos dados do imóvel
+(Fase 7 — RN-061 a RN-070). O Prompt Mestre exige explicitamente que a
 aplicação não fique acoplada a um único fornecedor de IA, para permitir
 troca futura de provedor sem reescrever a lógica de negócio.
+
+Nota de correção (Fase 4): esta seção originalmente também citava
+"gerar/revisar descrições de imóveis" como uso de IA na Fase 4 — isso
+não correspondia ao escopo real de RN-026 a RN-045 (ver
+`docs/planning/phases-plan.md`), que é cadastro manual de imóveis, sem
+nenhuma funcionalidade de IA. O campo `description` implementado na
+Fase 4 é texto livre digitado pelo corretor, sem geração ou revisão
+assistida por IA. Corrigido aqui para refletir o escopo real.
 
 ## Alternativas consideradas
 

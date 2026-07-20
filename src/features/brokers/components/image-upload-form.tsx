@@ -28,7 +28,7 @@ export function ImageUploadForm({ label, action, currentUrl }: ImageUploadFormPr
           className="h-24 w-24 rounded-md border border-zinc-200 object-cover dark:border-zinc-800"
         />
       ) : (
-        <div className="flex h-24 w-24 items-center justify-center rounded-md border border-dashed border-zinc-300 text-xs text-zinc-400 dark:border-zinc-700">
+        <div className="flex h-24 w-24 items-center justify-center rounded-md border border-dashed border-zinc-300 text-xs text-zinc-500 dark:border-zinc-700 dark:text-zinc-400">
           Sem imagem
         </div>
       )}

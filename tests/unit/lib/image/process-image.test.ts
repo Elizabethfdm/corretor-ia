@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { processProfileImage, UnsupportedImageFormatError } from "@/lib/image/process-image";
+import { processImage, UnsupportedImageFormatError } from "@/lib/image/process-image";
 
 // PNG 1x1 válido (vermelho), usado como fixture determinística.
 const VALID_PNG = Buffer.from(
@@ -7,9 +7,9 @@ const VALID_PNG = Buffer.from(
   "base64",
 );
 
-describe("processProfileImage (RN-024, RN-035, RN-037)", () => {
+describe("processImage (RN-024, RN-035, RN-037)", () => {
   it("converte uma imagem válida para JPEG", async () => {
-    const result = await processProfileImage(VALID_PNG, { maxWidth: 512, maxHeight: 512 });
+    const result = await processImage(VALID_PNG, { maxWidth: 512, maxHeight: 512 });
 
     expect(result.contentType).toBe("image/jpeg");
     expect(result.buffer.byteLength).toBeGreaterThan(0);
@@ -21,7 +21,7 @@ describe("processProfileImage (RN-024, RN-035, RN-037)", () => {
     const fakeExecutable = Buffer.from("MZ\x90\x00\x03\x00\x00\x00conteudo-nao-eh-imagem");
 
     await expect(
-      processProfileImage(fakeExecutable, { maxWidth: 512, maxHeight: 512 }),
+      processImage(fakeExecutable, { maxWidth: 512, maxHeight: 512 }),
     ).rejects.toThrow(UnsupportedImageFormatError);
   });
 
@@ -30,13 +30,13 @@ describe("processProfileImage (RN-024, RN-035, RN-037)", () => {
       '<svg xmlns="http://www.w3.org/2000/svg"><script>alert(1)</script></svg>',
     );
 
-    await expect(processProfileImage(svg, { maxWidth: 512, maxHeight: 512 })).rejects.toThrow(
+    await expect(processImage(svg, { maxWidth: 512, maxHeight: 512 })).rejects.toThrow(
       UnsupportedImageFormatError,
     );
   });
 
   it("nunca preserva metadados originais na saída (RN-037)", async () => {
-    const result = await processProfileImage(VALID_PNG, { maxWidth: 512, maxHeight: 512 });
+    const result = await processImage(VALID_PNG, { maxWidth: 512, maxHeight: 512 });
 
     const sharp = (await import("sharp")).default;
     const outputMetadata = await sharp(result.buffer).metadata();

@@ -319,3 +319,42 @@ ajustes:
 - `photoUrl`/`logoUrl` guardam a URL pública retornada pelo
   `StorageProvider` (ver ADR-0003) — nunca a `storageKey` interna
   diretamente.
+
+## Notas de implementação (Fase 4)
+
+`Property`, `PropertyAddress`, `PropertyFeature` e `PropertyMedia` foram
+implementadas essencialmente como modeladas, com as seguintes decisões
+tomadas durante a implementação:
+
+- Ao contrário de `User`/`BrokerProfile` (que evitam `@relation` formal
+  por conviverem com o schema gerado pelo CLI do Better Auth), `Property`
+  é inteiramente nossa — `brokerId` usa `@relation` formal com
+  `BrokerProfile` (`onDelete: Cascade`), assim como `PropertyAddress`,
+  `PropertyFeature` e `PropertyMedia` em relação a `Property`. Isso
+  significa que excluir um `BrokerProfile` (ex.: em testes) apaga em
+  cascata todos os seus imóveis e mídias — não é necessário limpar essas
+  tabelas manualmente nos testes de integração/E2E.
+- Apenas `internalTitle`, `purpose`, `propertyType` e `status` são
+  obrigatórios no banco; todo o restante (preço, endereço, descrição,
+  fotos) é opcional, permitindo salvar rascunhos incompletos. Os
+  critérios mínimos para **publicar** (RN-043: título, preço ou "consulte
+  o valor", cidade, bairro, descrição e ao menos uma foto) são
+  verificados na camada de serviço
+  (`getPropertyPublicationRequirementErrors` em
+  `lib/validation/property.ts`, reaproveitada tanto no servidor quanto no
+  cliente para o aviso de pendências), não no schema.
+- `slug` é opcional no banco (`String?`) mas sempre preenchido pela
+  aplicação (`generateSlugWithSuffix`) — permanece regerável a partir do
+  título enquanto o imóvel nunca foi publicado (`publishedAt === null`)
+  e congela após a primeira publicação, para não quebrar links já
+  compartilhados (decisão de produto, não uma regra numerada do
+  documento mestre).
+- `PropertyMedia.type` já modela `PHOTO` e `VIDEO` no enum, mas apenas
+  upload de fotos foi implementado nesta fase — vídeo fica para uma fase
+  futura.
+- Valores monetários e de área (`price`, `condominiumFee`, `propertyTax`,
+  `totalArea`, `builtArea`) trafegam como `string` validada por regex do
+  formulário até a camada de serviço, onde são convertidos diretamente
+  para `Prisma.Decimal` a partir da string (nunca via `number`/`float`
+  intermediário) — precisão de centavos verificada em teste de
+  integração (RN-030).
