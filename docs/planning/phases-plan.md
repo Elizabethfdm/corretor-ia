@@ -68,8 +68,10 @@ Regras: RN-026 a RN-045.
 
 ## Fase 5 — Catálogo Digital
 
-Entregas: página pública do corretor, listagem, busca, filtros,
-ordenação, responsividade, SEO básico, testes.
+**Status: concluída.**
+
+Entregas: página pública do corretor, listagem paginada, busca, filtros
+compartilháveis na URL, ordenação, responsividade, SEO básico, testes.
 
 Regras: RN-046 a RN-050.
 

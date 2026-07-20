@@ -1,5 +1,6 @@
 import { prisma } from "@/lib/database/prisma";
 import type { FeatureType, Prisma, Property, PropertyStatus } from "@/generated/prisma/client";
+import type { CatalogFilters } from "@/lib/validation/catalog-filters";
 
 export type PropertyWithRelations = Property & {
   address: Awaited<ReturnType<typeof prisma.propertyAddress.findFirst>>;
@@ -113,7 +114,93 @@ export const propertyRepository = {
   async countByBroker(brokerId: string): Promise<number> {
     return prisma.property.count({ where: { brokerId, deletedAt: null } });
   },
+
+  /**
+   * RN-046: catálogo público mostra exclusivamente imóveis com status
+   * "Disponível". RN-047: filtros/ordenação/paginação recebidos já
+   * validados (`CatalogFilters`).
+   */
+  async findPublicByBroker(
+    brokerId: string,
+    filters: CatalogFilters,
+  ): Promise<{ items: PropertyWithRelations[]; total: number; pageSize: number }> {
+    const pageSize = CATALOG_PAGE_SIZE;
+    const where = buildPublicWhere(brokerId, filters);
+    const orderBy = buildPublicOrderBy(filters.sort);
+
+    const [items, total] = await Promise.all([
+      prisma.property.findMany({
+        where,
+        include: WITH_RELATIONS,
+        orderBy,
+        skip: (filters.page - 1) * pageSize,
+        take: pageSize,
+      }),
+      prisma.property.count({ where }),
+    ]);
+
+    return { items, total, pageSize };
+  },
 };
+
+export const CATALOG_PAGE_SIZE = 12;
+
+function buildPublicWhere(brokerId: string, filters: CatalogFilters): Prisma.PropertyWhereInput {
+  const priceFilter =
+    filters.priceMin !== undefined || filters.priceMax !== undefined
+      ? {
+          ...(filters.priceMin !== undefined ? { gte: filters.priceMin } : {}),
+          ...(filters.priceMax !== undefined ? { lte: filters.priceMax } : {}),
+        }
+      : undefined;
+
+  return {
+    brokerId,
+    deletedAt: null,
+    status: "AVAILABLE",
+    ...(filters.purpose ? { purpose: filters.purpose } : {}),
+    ...(filters.type ? { propertyType: filters.type } : {}),
+    ...(filters.city ? { address: { city: { contains: filters.city, mode: "insensitive" } } } : {}),
+    ...(filters.neighborhood
+      ? { address: { neighborhood: { contains: filters.neighborhood, mode: "insensitive" } } }
+      : {}),
+    ...(filters.bedroomsMin !== undefined ? { bedrooms: { gte: filters.bedroomsMin } } : {}),
+    ...(filters.parkingMin !== undefined ? { parkingSpaces: { gte: filters.parkingMin } } : {}),
+    ...(filters.financingAccepted ? { financingAccepted: true } : {}),
+    ...(priceFilter ? { price: priceFilter } : {}),
+    // Cada característica selecionada precisa estar presente (E lógico,
+    // não OU) — uma condição `some` por característica.
+    ...(filters.features && filters.features.length > 0
+      ? { AND: filters.features.map((featureType) => ({ features: { some: { featureType } } })) }
+      : {}),
+    ...(filters.q
+      ? {
+          OR: [
+            { publicTitle: { contains: filters.q, mode: "insensitive" } },
+            { description: { contains: filters.q, mode: "insensitive" } },
+            { address: { city: { contains: filters.q, mode: "insensitive" } } },
+            { address: { neighborhood: { contains: filters.q, mode: "insensitive" } } },
+          ],
+        }
+      : {}),
+  };
+}
+
+function buildPublicOrderBy(sort: CatalogFilters["sort"]): Prisma.PropertyOrderByWithRelationInput[] {
+  switch (sort) {
+    case "price_asc":
+      return [{ price: { sort: "asc", nulls: "last" } }, { publishedAt: "desc" }];
+    case "price_desc":
+      return [{ price: { sort: "desc", nulls: "last" } }, { publishedAt: "desc" }];
+    case "area_desc":
+      return [{ totalArea: { sort: "desc", nulls: "last" } }, { publishedAt: "desc" }];
+    case "featured":
+      return [{ featured: "desc" }, { publishedAt: "desc" }];
+    case "recent":
+    default:
+      return [{ publishedAt: "desc" }];
+  }
+}
 
 function toCreateInput(
   data: Prisma.PropertyAddressUpdateInput,

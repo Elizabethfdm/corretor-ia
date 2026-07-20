@@ -1,13 +1,19 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { getPublicProfileBySlug } from "@/server/services/broker-profile-service";
+import { getPublicCatalog } from "@/server/services/catalog-service";
+import { parseCatalogFilters } from "@/lib/validation/catalog-filters";
 import { buildWhatsAppLink } from "@/lib/whatsapp/build-link";
+import { CatalogFiltersForm } from "@/features/catalog/components/catalog-filters-form";
+import { CatalogGrid } from "@/features/catalog/components/catalog-grid";
+import { CatalogPagination } from "@/features/catalog/components/catalog-pagination";
 
 interface CatalogPageProps {
   params: Promise<{ slug: string }>;
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
 }
 
-export async function generateMetadata({ params }: CatalogPageProps): Promise<Metadata> {
+export async function generateMetadata({ params, searchParams }: CatalogPageProps): Promise<Metadata> {
   const { slug } = await params;
   const profile = await getPublicProfileBySlug(slug);
 
@@ -15,19 +21,40 @@ export async function generateMetadata({ params }: CatalogPageProps): Promise<Me
     return { title: "Catálogo não encontrado — Corretor IA" };
   }
 
+  const filters = parseCatalogFilters(await searchParams);
+  const hasFilters = Boolean(filters.q || filters.city || filters.neighborhood || filters.type);
+
   return {
     title: `${profile.professionalName} — Corretor IA`,
-    description: profile.biography ?? `Catálogo de imóveis de ${profile.professionalName}.`,
+    description: hasFilters
+      ? `Imóveis de ${profile.professionalName}${filters.city ? ` em ${filters.city}` : ""}.`
+      : (profile.biography ?? `Catálogo de imóveis de ${profile.professionalName}.`),
   };
 }
 
-export default async function CatalogPage({ params }: CatalogPageProps) {
+export default async function CatalogPage({ params, searchParams }: CatalogPageProps) {
   const { slug } = await params;
-  const profile = await getPublicProfileBySlug(slug);
+  const filters = parseCatalogFilters(await searchParams);
+  const catalog = await getPublicCatalog(slug, filters);
 
-  if (!profile) {
+  if (!catalog) {
     notFound();
   }
+
+  const { profile } = catalog;
+  const hasActiveFilters = Boolean(
+    filters.q ||
+      filters.purpose ||
+      filters.type ||
+      filters.city ||
+      filters.neighborhood ||
+      filters.priceMin !== undefined ||
+      filters.priceMax !== undefined ||
+      filters.bedroomsMin !== undefined ||
+      filters.parkingMin !== undefined ||
+      filters.financingAccepted ||
+      (filters.features && filters.features.length > 0),
+  );
 
   const whatsappLink = profile.whatsapp
     ? buildWhatsAppLink(
@@ -44,7 +71,7 @@ export default async function CatalogPage({ params }: CatalogPageProps) {
   ].filter((link): link is { label: string; href: string } => Boolean(link.href));
 
   return (
-    <div className="mx-auto flex w-full max-w-2xl flex-1 flex-col gap-6 px-4 py-10 pb-24">
+    <div className="mx-auto flex w-full max-w-5xl flex-1 flex-col gap-6 px-4 py-10 pb-24">
       <header className="flex flex-col items-center gap-3 text-center">
         {profile.photoUrl ? (
           // eslint-disable-next-line @next/next/no-img-element -- imagem já hospedada/otimizada pelo storage próprio
@@ -95,9 +122,22 @@ export default async function CatalogPage({ params }: CatalogPageProps) {
         </nav>
       ) : null}
 
-      <section className="rounded-lg border border-zinc-200 p-6 text-center text-zinc-500 dark:border-zinc-800">
-        Nenhum imóvel publicado ainda.
+      <section className="rounded-lg border border-zinc-200 p-4 dark:border-zinc-800">
+        <CatalogFiltersForm slug={slug} filters={filters} />
       </section>
+
+      <p className="text-sm text-zinc-500" role="status" aria-live="polite">
+        {catalog.total} {catalog.total === 1 ? "imóvel encontrado" : "imóveis encontrados"}
+      </p>
+
+      <CatalogGrid properties={catalog.properties} hasActiveFilters={hasActiveFilters} />
+
+      <CatalogPagination
+        slug={slug}
+        filters={filters}
+        page={catalog.page}
+        totalPages={catalog.totalPages}
+      />
 
       {whatsappLink ? (
         <a

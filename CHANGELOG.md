@@ -8,6 +8,29 @@ partir da primeira versão publicada.
 
 ## [Não lançado]
 
+### Adicionado — Fase 5 (Catálogo Digital)
+
+- Catálogo público (`/catalogo/[slug]`) com listagem paginada (12 por
+  página) dos imóveis disponíveis do corretor — RN-046 restrito a
+  status "Disponível" (decisão registrada em `business-rules.md`).
+- Busca por termo livre (título público, descrição, cidade, bairro) e
+  filtros por finalidade, tipo, cidade, bairro, faixa de preço, quartos
+  mínimos, vagas mínimas, características (todas as selecionadas,
+  E lógico) e aceite de financiamento.
+- Ordenação por mais recentes, menor preço, maior preço, maior área e
+  destaques.
+- Filtros/ordenação/página refletidos na URL via formulário GET simples
+  (sem JavaScript), tornando qualquer resultado filtrado compartilhável
+  (RN-047).
+- Serializer público dedicado (`catalog-service.ts`) com lista de
+  permissão explícita de campos — nunca expõe `internalTitle`,
+  `internalNotes`, `referenceCode` ou chaves de storage (RN-049); título
+  público sintetizado a partir de tipo/finalidade/localização quando o
+  corretor não define um `publicTitle` distinto.
+- SEO básico: `generateMetadata` dinâmica conforme os filtros aplicados.
+- 15 novos testes unitários, 12 novos testes de integração e 4 novos
+  cenários E2E/acessibilidade.
+
 ### Adicionado — Fase 4 (Cadastro de Imóveis)
 
 - Models `Property`, `PropertyAddress`, `PropertyFeature` e

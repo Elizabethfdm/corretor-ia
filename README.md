@@ -1,12 +1,12 @@
 # Corretor IA
 
-> **Status atual: Fase 4 — Cadastro de Imóveis concluída.**
-> Autenticação, perfil profissional (com upload de foto/logotipo), uma
-> página pública mínima de catálogo (`/catalogo/[slug]`) e o cadastro
-> completo de imóveis em etapas (rascunho, características,
-> localização, fotos, descrição e publicação) estão funcionando de
-> ponta a ponta. Catálogo público com busca/filtros ainda não foi
-> implementado — isso começa na Fase 5. Ver
+> **Status atual: Fase 5 — Catálogo Digital concluída.**
+> Autenticação, perfil profissional (com upload de foto/logotipo),
+> cadastro completo de imóveis em etapas e o catálogo público
+> (`/catalogo/[slug]`) com listagem, busca, filtros compartilháveis na
+> URL, ordenação e paginação estão funcionando de ponta a ponta. A
+> página individual do imóvel ainda não foi implementada — isso começa
+> na Fase 6. Ver
 > [`docs/planning/phases-plan.md`](docs/planning/phases-plan.md) para o
 > plano completo por fases.
 
@@ -46,8 +46,9 @@ Escopo completo (dentro e fora do MVP):
 
 ## 4. Capturas de tela
 
-_A ser adicionado a partir da Fase 5 (Catálogo Digital), quando existir
-interface navegável._
+_Pendente — a aplicação já tem interface navegável (autenticação,
+painel, cadastro de imóveis, catálogo público) desde a Fase 5, mas
+capturas de tela ainda não foram adicionadas a este documento._
 
 ## 5. Arquitetura
 
@@ -256,7 +257,7 @@ Ver plano completo de fases em
 | 2    | Autenticação                | Concluída    |
 | 3    | Perfil do corretor          | Concluída    |
 | 4    | Cadastro de imóveis         | Concluída    |
-| 5    | Catálogo digital            | Não iniciada |
+| 5    | Catálogo digital            | Concluída    |
 | 6    | Página individual do imóvel | Não iniciada |
 | 7    | IA para anúncios            | Não iniciada |
 | 8    | Artes                       | Não iniciada |

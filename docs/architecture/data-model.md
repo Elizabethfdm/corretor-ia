@@ -358,3 +358,27 @@ tomadas durante a implementação:
   para `Prisma.Decimal` a partir da string (nunca via `number`/`float`
   intermediário) — precisão de centavos verificada em teste de
   integração (RN-030).
+
+## Notas de implementação (Fase 5)
+
+O catálogo digital não introduz nenhuma entidade nova — consulta o
+`Property` já modelado na Fase 4, filtrado por `status = "AVAILABLE"`
+(RN-046, ver decisão registrada em `business-rules.md`) e
+`deletedAt = null`. Duas decisões de implementação relevantes:
+
+- **Serialização pública nunca reaproveita o serializer do painel**
+  (`serialize-property.ts`, Fase 4): existe um serializer próprio
+  (`serializePublicProperty` em `catalog-service.ts`) que constrói um
+  tipo `PublicProperty` deliberadamente restrito — nunca inclui
+  `internalTitle`, `internalNotes`, `referenceCode`, `storageKey` ou
+  qualquer campo não listado explicitamente (RN-049). A lista de campos
+  públicos é uma lista de permissão (allowlist), não uma lista de
+  bloqueio, para que a adição futura de um campo sensível ao `Property`
+  nunca vaze automaticamente para o catálogo.
+- **Título público sintetizado quando ausente**: `publicTitle` continua
+  opcional na Fase 4 (não é exigido para publicar — RN-043). Como
+  RN-049 proíbe expor `internalTitle` publicamente, um imóvel publicado
+  sem `publicTitle` preenchido precisa de um título público mesmo assim
+  — `buildPublicTitle` sintetiza um a partir de tipo + finalidade +
+  localização (ex.: "Casa para venda em Jardim Europa, São Paulo"),
+  nunca usando o conteúdo de `internalTitle`.
