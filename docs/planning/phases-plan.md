@@ -35,9 +35,12 @@ infraestrutura de suporte às regras futuras (RNF-042 a RNF-045).
 
 ## Fase 2 — Autenticação
 
+**Status: concluída.**
+
 Entregas: cadastro, login, logout, recuperação e redefinição de senha,
 proteção de rotas privadas, autorização básica, auditoria de eventos de
-autenticação relevantes, testes.
+autenticação relevantes, testes. Biblioteca escolhida: Better Auth (ver
+ADR-0002).
 
 Regras: RN-001 a RN-014.
 

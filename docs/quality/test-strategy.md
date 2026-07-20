@@ -204,3 +204,18 @@ Uma fase só é considerada concluída com: testes unitários passando,
 testes de integração passando, testes E2E críticos da fase passando, e
 nenhum teste desabilitado ou substituído por comentário para "destravar"
 o pipeline. Ver [Definition of Done](definition-of-done.md).
+
+## 12. Dívidas técnicas de teste registradas
+
+- **Rate limiting de autenticação (RN-008) — Fase 2.** O rate limiting do
+  Better Auth (`src/lib/auth/auth.ts`) só é habilitado quando
+  `NODE_ENV === "production"`; em desenvolvimento/teste ele permanece no
+  padrão da própria biblioteca (desabilitado), pois testes de integração
+  e E2E concorrentes contra o mesmo servidor esgotavam os limites reais
+  (5 tentativas/60s) e derrubavam a suíte com respostas 429 legítimas —
+  o comportamento foi observado e confirmado funcionando durante o
+  desenvolvimento da Fase 2. Falta um teste automatizado dedicado (com
+  uma instância `betterAuth` isolada, configurada com `rateLimit.enabled:
+true`) que caia no pipeline de CI regular; até lá, a verificação desse
+  comportamento específico é manual/observacional. Prioridade: baixa
+  (mecanismo de terceiro já maduro; não é lógica própria da aplicação).

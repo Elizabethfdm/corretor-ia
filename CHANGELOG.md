@@ -8,6 +8,36 @@ partir da primeira versão publicada.
 
 ## [Não lançado]
 
+### Adicionado — Fase 2 (Autenticação)
+
+- Autenticação com Better Auth (e-mail/senha): cadastro, login, logout,
+  recuperação e redefinição de senha — RN-001 a RN-014.
+- Primeira migração real de banco de dados: `user`, `session`,
+  `account`, `verification`, `rateLimit` (Better Auth) e `audit_log`
+  (próprio).
+- Plugin `admin` do Better Auth para papel (`broker`/`admin`) e bloqueio
+  de conta (`banned`/`banReason`/`banExpires`), com login
+  automaticamente negado para conta bloqueada (RN-006).
+- Rate limiting de rotas de autenticação (RN-008), habilitado em
+  produção.
+- Camada abstrata de e-mail transacional (`EmailProvider`, ADR-0005) com
+  implementação de log para desenvolvimento/teste.
+- Trilha de auditoria (`AuditLog`) para cadastro, login, logout e
+  redefinição de senha.
+- Proteção de rotas privadas (`requireUser`/`requireAdmin` em
+  `server/policies/auth-policy.ts`) e redirecionamento de usuário já
+  autenticado para fora das páginas de login/cadastro.
+- Páginas: cadastro, login, recuperar senha, redefinir senha, painel
+  (placeholder protegido), acesso negado, Termos de Uso e Política de
+  Privacidade (modelos iniciais).
+- Componentes de formulário acessíveis reutilizáveis (`FormField`,
+  `FormMessage`, `SubmitButton`) com foco em erro, `aria-live` e
+  `aria-describedby`.
+- 29 testes unitários, 24 testes de integração (contra PostgreSQL real)
+  e 80 execuções E2E/acessibilidade (5 navegadores/viewports).
+- ADR-0002 atualizado com a biblioteca escolhida; novo ADR-0005 (envio
+  de e-mail transacional).
+
 ### Adicionado — Fase 1 (Fundação do Projeto)
 
 - Projeto Next.js 16 (App Router) com TypeScript em modo estrito e

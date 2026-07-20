@@ -271,3 +271,29 @@ User 1───N AuditLog
   JSON apenas para configurações realmente flexíveis (`ArtworkTemplate.configuration`,
   `GeneratedArtwork.configuration`, `AnalyticsEvent.metadata`), sempre com
   schema de validação associado.
+
+## Notas de implementação (Fase 2)
+
+O `User` conceitual acima foi implementado com o schema gerado pelo
+Better Auth (ADR-0002), com as seguintes correspondências — o `prisma/schema.prisma`
+real é a fonte da verdade; este documento permanece como referência
+conceitual:
+
+| Campo conceitual                             | Implementação real                                                 | Observação                                                                                                                                              |
+| -------------------------------------------- | ------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `User.id`                                    | `user.id` (string gerada pela biblioteca)                          | Não é UUID — é o identificador padrão do Better Auth. Demais entidades de domínio (a partir da Fase 3) continuam usando `@default(uuid())` normalmente. |
+| `User.passwordHash`                          | `account.password` (tabela `account`, `providerId = "credential"`) | Hash `scrypt`, nunca texto puro (RN-005) — verificado em teste de integração.                                                                           |
+| `User.status` (enum `ACTIVE`/`BLOCKED`)      | `user.banned` (boolean) + `user.banReason` + `user.banExpires`     | Campos do plugin `admin`; login é bloqueado nativamente quando `banned = true` (RN-006).                                                                |
+| `User.role`                                  | `user.role` (string: `"broker"` \| `"admin"`)                      | Plugin `admin`, `defaultRole: "broker"`.                                                                                                                |
+| `User.emailVerifiedAt`                       | `user.emailVerified` (boolean)                                     | A biblioteca usa boolean, não timestamp; verificação de e-mail não é exigida no MVP (RF-006 permanece opcional).                                        |
+| `User.termsAcceptedAt` / `privacyAcceptedAt` | Campos customizados (`additionalFields`, `input: false`)           | Carimbados automaticamente em `databaseHooks.user.create.before`, nunca recebidos diretamente do cliente.                                               |
+
+Entidades adicionais criadas pelo Better Auth (sem equivalente no modelo
+conceitual original, específicas da biblioteca): `session`, `account`,
+`verification` (tokens de verificação/redefinição de senha) e
+`rateLimit` (RN-008, armazenamento em banco).
+
+A entidade `AuditLog` foi criada exatamente como modelada, com uma
+diferença deliberada: `userId` não usa `@relation` formal com `user`
+(ver comentário no `schema.prisma`) — trilha de auditoria deve
+sobreviver independentemente do ciclo de vida da conta referenciada.

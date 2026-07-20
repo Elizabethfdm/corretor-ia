@@ -30,5 +30,13 @@ export default defineConfig({
     url: baseURL,
     reuseExistingServer: !process.env["CI"],
     timeout: 180_000,
+    env: {
+      // "next start" força NODE_ENV=production; esta flag distingue o
+      // build de produção usado para os testes E2E de uma produção real,
+      // evitando que o rate limiting de autenticação (RN-008) derrube a
+      // suíte sob execução concorrente. Nunca definida fora deste
+      // arquivo — ver nota em src/lib/auth/auth.ts.
+      E2E_DISABLE_RATE_LIMIT: "true",
+    },
   },
 });

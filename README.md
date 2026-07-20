@@ -1,9 +1,10 @@
 # Corretor IA
 
-> **Status atual: Fase 1 — Fundação do Projeto concluída.**
-> O projeto Next.js está inicializado, com banco de dados, testes e CI
-> configurados. Nenhuma funcionalidade de negócio (autenticação, imóveis
-> etc.) foi implementada ainda — isso começa na Fase 2. Ver
+> **Status atual: Fase 2 — Autenticação concluída.**
+> Cadastro, login, logout e recuperação/redefinição de senha estão
+> funcionando de ponta a ponta (Better Auth), com testes unitários, de
+> integração e E2E passando. Perfil do corretor e imóveis ainda não
+> foram implementados — isso começa na Fase 3. Ver
 > [`docs/planning/phases-plan.md`](docs/planning/phases-plan.md) para o
 > plano completo por fases.
 
@@ -50,15 +51,23 @@ interface navegável._
 
 - **Frontend/Backend:** Next.js (App Router) com TypeScript em modo
   estrito.
-- **Banco de dados:** PostgreSQL, acessado via Prisma ORM.
-- **Autenticação:** solução de sessão segura server-side (ver ADR de
-  autenticação).
-- **Armazenamento de mídia:** serviço compatível com S3.
+- **Banco de dados:** PostgreSQL, acessado via Prisma ORM (driver
+  adapter `@prisma/adapter-pg`).
+- **Autenticação:** Better Auth (e-mail/senha, sessão em cookie seguro,
+  ver ADR-0002).
+- **E-mail transacional:** camada de abstração própria (`EmailProvider`),
+  independente de fornecedor (ver ADR-0005).
+- **Armazenamento de mídia:** serviço compatível com S3 (a integrar na
+  Fase 4).
 - **IA:** camada de abstração própria (`AiContentProvider`), independente
-  de fornecedor.
-- **Estilo:** Tailwind CSS + biblioteca de componentes acessíveis.
+  de fornecedor (a integrar na Fase 7).
+- **Estilo:** Tailwind CSS.
 - **Validação:** Zod (compartilhada entre cliente e servidor).
-- **Testes:** Vitest/Jest (unitário e integração) e Playwright (E2E e
+- **Formulários:** Server Actions + `useActionState`/`useFormStatus`
+  nativos do React 19 (sem React Hook Form) para os formulários simples
+  de autenticação; React Hook Form entra na Fase 4 para o cadastro de
+  imóveis em múltiplas etapas.
+- **Testes:** Vitest (unitário e integração) e Playwright (E2E e
   acessibilidade).
 - **Qualidade:** ESLint, Prettier, TypeScript estrito.
 - **Infraestrutura local:** Docker.
@@ -69,21 +78,22 @@ e [`docs/architecture/data-model.md`](docs/architecture/data-model.md).
 
 ## 6. Tecnologias
 
-| Camada                      | Tecnologia                                                    |
-| --------------------------- | ------------------------------------------------------------- |
-| Framework web               | Next.js (App Router)                                          |
-| Linguagem                   | TypeScript (modo estrito)                                     |
-| UI                          | React + Tailwind CSS                                          |
-| Banco de dados              | PostgreSQL                                                    |
-| ORM                         | Prisma 7 (driver adapter `@prisma/adapter-pg`)                |
-| Validação                   | Zod _(a instalar na Fase 2, junto com o primeiro formulário)_ |
-| Formulários                 | React Hook Form _(a instalar na Fase 2)_                      |
-| Armazenamento de mídia      | Compatível com S3 _(a integrar na Fase 4)_                    |
-| Testes unitários/integração | Vitest (+ Testing Library)                                    |
-| Testes E2E                  | Playwright                                                    |
-| Qualidade de código         | ESLint + Prettier                                             |
-| Ambiente local              | Docker                                                        |
-| Integração contínua         | GitHub Actions                                                |
+| Camada                      | Tecnologia                                                                       |
+| --------------------------- | -------------------------------------------------------------------------------- |
+| Framework web               | Next.js (App Router)                                                             |
+| Linguagem                   | TypeScript (modo estrito)                                                        |
+| UI                          | React + Tailwind CSS                                                             |
+| Banco de dados              | PostgreSQL                                                                       |
+| ORM                         | Prisma 7 (driver adapter `@prisma/adapter-pg`)                                   |
+| Autenticação                | Better Auth (e-mail/senha, plugin `admin`)                                       |
+| Validação                   | Zod                                                                              |
+| Formulários                 | Server Actions + React 19 (`useActionState`) _(React Hook Form entra na Fase 4)_ |
+| Armazenamento de mídia      | Compatível com S3 _(a integrar na Fase 4)_                                       |
+| Testes unitários/integração | Vitest (+ Testing Library)                                                       |
+| Testes E2E                  | Playwright                                                                       |
+| Qualidade de código         | ESLint + Prettier                                                                |
+| Ambiente local              | Docker                                                                           |
+| Integração contínua         | GitHub Actions                                                                   |
 
 ## 7. Pré-requisitos
 
@@ -141,7 +151,8 @@ npm run dev
 
 Aplicação disponível em `http://localhost:3000`. Health check em
 `http://localhost:3000/api/health` (verifica também a conexão com o
-banco de dados).
+banco de dados). Fluxos de autenticação disponíveis em `/cadastro`,
+`/login`, `/recuperar-senha` e `/redefinir-senha`; `/painel` exige login.
 
 ## 12. Testes
 
@@ -232,7 +243,7 @@ Ver plano completo de fases em
 | ---- | --------------------------- | ------------ |
 | 0    | Descoberta e planejamento   | Concluída    |
 | 1    | Fundação do projeto         | Concluída    |
-| 2    | Autenticação                | Não iniciada |
+| 2    | Autenticação                | Concluída    |
 | 3    | Perfil do corretor          | Não iniciada |
 | 4    | Cadastro de imóveis         | Não iniciada |
 | 5    | Catálogo digital            | Não iniciada |
