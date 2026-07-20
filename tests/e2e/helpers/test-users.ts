@@ -39,16 +39,25 @@ export async function createTestUser(
 }
 
 /**
- * Remove um usuário de teste via SQL direto (pg), em vez do cliente
- * Prisma gerado: o gerador "prisma-client" produz um módulo ESM (usa
- * import.meta), incompatível com o carregador de módulos do runner de
- * testes do Playwright. Usar "pg" diretamente evita esse conflito sem
- * exigir mudança na configuração de módulos do projeto inteiro.
+ * Remove um usuário de teste (e o respectivo broker_profile, se
+ * existir — não há FK/cascade entre as tabelas, ver
+ * docs/architecture/data-model.md) via SQL direto (pg), em vez do
+ * cliente Prisma gerado: o gerador "prisma-client" produz um módulo ESM
+ * (usa import.meta), incompatível com o carregador de módulos do runner
+ * de testes do Playwright. Usar "pg" diretamente evita esse conflito
+ * sem exigir mudança na configuração de módulos do projeto inteiro.
  */
 export async function deleteTestUserByEmail(email: string): Promise<void> {
   const client = new Client({ connectionString: process.env["DATABASE_URL"] });
   await client.connect();
   try {
+    const result = await client.query<{ id: string }>('SELECT id FROM "user" WHERE email = $1', [
+      email,
+    ]);
+    const userId = result.rows[0]?.id;
+    if (userId) {
+      await client.query('DELETE FROM "broker_profile" WHERE "userId" = $1', [userId]);
+    }
     await client.query('DELETE FROM "user" WHERE email = $1', [email]);
   } finally {
     await client.end();

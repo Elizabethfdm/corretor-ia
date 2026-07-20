@@ -49,11 +49,27 @@ Server Actions equivalentes, usadas pela própria UI
 (`src/features/auth/actions.ts`): `registerAction`, `loginAction`,
 `logoutAction`, `requestPasswordResetAction`, `resetPasswordAction`.
 
+## Perfil do corretor (Fase 3 — implementada)
+
+Sem endpoints REST próprios — implementado inteiramente via Server
+Actions (`src/features/brokers/actions.ts`), chamadas diretamente pelos
+componentes de formulário:
+
+| Server Action                            | Descrição                                                    |
+| ---------------------------------------- | ------------------------------------------------------------ |
+| `saveProfileAction`                      | Cria/atualiza o perfil do corretor autenticado (RF-011)      |
+| `checkSlugAvailabilityAction`            | Verifica disponibilidade de slug em tempo real (RF-012)      |
+| `toggleCatalogAction`                    | Ativa/desativa o catálogo público (RF-016, RN-016 a RN-018)  |
+| `uploadPhotoAction` / `uploadLogoAction` | Upload de foto/logotipo, com validação e compressão (RF-014) |
+
+Leitura pública do catálogo: `GET /catalogo/{slug}` (página Next.js, não
+uma API JSON) — retorna `404` quando o slug não existe ou o catálogo
+está desativado (RN-022).
+
 ## Endpoints previstos por fase (ainda não implementados)
 
 | Fase                   | Endpoints (previsão)                                                                                                                                                                                                    |
 | ---------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 3 — Perfil             | `GET/PUT /api/broker/profile`, `GET /api/broker/slug-availability`                                                                                                                                                      |
 | 4 — Imóveis            | `GET/POST /api/properties`, `GET/PUT/DELETE /api/properties/{id}`, `POST /api/properties/{id}/publish`, `POST /api/properties/{id}/unpublish`, `POST /api/properties/{id}/duplicate`, `POST /api/properties/{id}/media` |
 | 5/6 — Catálogo público | `GET /api/public/catalog/{slug}`, `GET /api/public/catalog/{slug}/properties/{propertySlug}`                                                                                                                            |
 | 7 — IA                 | `POST /api/ai/advertisements`                                                                                                                                                                                           |

@@ -21,5 +21,42 @@ services:
       timeout: 5s
       retries: 10
 
+  minio:
+    image: minio/minio:latest
+    container_name: corretor-ia-minio
+    restart: unless-stopped
+    command: server /data --console-address ":9001"
+    environment:
+      MINIO_ROOT_USER: ${STORAGE_ACCESS_KEY_ID:-corretor_ia}
+      MINIO_ROOT_PASSWORD: ${STORAGE_SECRET_ACCESS_KEY:-corretor_ia_dev_only}
+    ports:
+      - "${STORAGE_PORT:-9000}:9000"
+      - "${STORAGE_CONSOLE_PORT:-9001}:9001"
+    volumes:
+      - corretor-ia-minio-data:/data
+    healthcheck:
+      test: ["CMD", "mc", "ready", "local"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  # Job de inicialização: cria o bucket local (idempotente) e encerra.
+  # Em produção, o bucket é provisionado fora da aplicação (IaC/console
+  # do provedor real), não por este serviço.
+  minio-init:
+    image: minio/mc:latest
+    container_name: corretor-ia-minio-init
+    depends_on:
+      minio:
+        condition: service_healthy
+    restart: "no"
+    entrypoint: >
+      /bin/sh -c "
+      mc alias set local http://minio:9000 ${STORAGE_ACCESS_KEY_ID:-corretor_ia} ${STORAGE_SECRET_ACCESS_KEY:-corretor_ia_dev_only} &&
+      mc mb --ignore-existing local/${STORAGE_BUCKET_NAME:-corretor-ia-media} &&
+      mc anonymous set download local/${STORAGE_BUCKET_NAME:-corretor-ia-media}
+      "
+
 volumes:
   corretor-ia-postgres-data:
+  corretor-ia-minio-data:

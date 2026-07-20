@@ -1,8 +1,10 @@
 # ADR-0003 — Estratégia de armazenamento de imagens
 
-- **Status:** Aceita (nível de estratégia); provedor específico a
-  confirmar na Fase 1/4 conforme custo e disponibilidade
-- **Data:** 2026-07-19
+- **Status:** Aceita — implementada na Fase 3 (perfil do corretor); fluxo
+  de upload direto-do-cliente revisitado quando galerias de imóveis
+  chegarem (Fase 4)
+- **Data:** 2026-07-19 (nível de estratégia) — atualizada em 2026-07-20
+  (Fase 3, implementação)
 - **Decisores:** Arquitetura / DevOps
 
 ## Contexto
@@ -37,20 +39,65 @@ Fluxo de upload:
    publicados; mídia de rascunho usa acesso controlado pelo servidor
    (RN-038).
 
-O provedor concreto (ex.: um serviço de object storage compatível com S3)
-será escolhido na Fase 1 com base em custo, região disponível e
-facilidade de integração — critério alinhado a RNF-049 (baixo custo
-inicial).
+## Decisão efetivamente implementada (Fase 3)
+
+Para a foto de perfil e o logotipo do corretor (arquivo único, pequeno,
+enviado com pouca frequência), o fluxo real implementado é mais simples
+do que o originalmente desenhado — **sem** URL assinada:
+
+1. O arquivo é enviado como `FormData` diretamente para uma Server
+   Action (`uploadPhotoAction`/`uploadLogoAction`), passando pelo
+   servidor Next.js.
+2. O servidor valida o tamanho (máx. 5 MB) e o **conteúdo real** do
+   arquivo via `sharp` — nunca confia no `Content-Type` declarado pelo
+   navegador (RN-035). Formatos aceitos: JPEG, PNG, WebP. SVG é
+   rejeitado explicitamente (vetor de XSS via `<script>` embutido).
+3. A imagem é redimensionada (`fit: inside`, sem ampliar) e recomprimida
+   para JPEG com `sharp` (RN-024). A conversão para JPEG descarta EXIF/
+   metadados originais por padrão da biblioteca — RN-037 sem passo
+   extra.
+4. O servidor faz upload do resultado processado via
+   `@aws-sdk/client-s3` (`PutObjectCommand`) para um serviço compatível
+   com S3, com `storageKey` aleatório (`crypto.randomUUID()` — RN-036).
+5. Ao substituir uma foto/logotipo existente, o arquivo antigo é
+   removido do storage (best effort — uma falha na limpeza não bloqueia
+   a operação principal).
+
+Justificativa para não usar URL assinada nesta fase: para um único
+arquivo pequeno por usuário, o ganho de performance de um upload
+direto-do-cliente não compensa a complexidade adicional (dois round-trips,
+confirmação assíncrona, validação pós-upload). O fluxo original com URL
+assinada continua sendo o plano para a **Fase 4** (galerias de imóveis
+com múltiplas fotos, potencialmente grandes, enviadas em lote), quando o
+ganho de não sobrecarregar o servidor de aplicação se torna relevante.
+
+**Provedor local (desenvolvimento/teste): MinIO**, via
+`docker-compose.yml`, 100% compatível com a API S3 usada em produção —
+o mesmo código funciona com qualquer provedor real compatível com S3
+(AWS S3, Cloudflare R2, DigitalOcean Spaces etc.), trocando apenas
+`STORAGE_ENDPOINT`/credenciais. Escolha alinhada a RNF-049 (custo zero
+em desenvolvimento) e ao mesmo padrão já usado para e-mail (ADR-0005):
+abstração própria (`StorageProvider`) com provedor real de produção
+como decisão a confirmar antes do deploy.
 
 ## Consequências
 
 - É necessário um passo de pós-processamento (miniatura, remoção de
-  metadados EXIF sensíveis — RN-037) que pode rodar de forma síncrona ou
-  em fila leve, a detalhar na Fase 4.
+  metadados EXIF sensíveis — RN-037), implementado de forma síncrona
+  dentro da própria Server Action nesta fase (arquivo único, pequeno).
+  Processamento em fila será avaliado na Fase 4 se o volume/tamanho de
+  arquivos justificar.
 - A revogação de acesso a mídia de um imóvel excluído/despublicado deve
-  ser tratada na política de acesso do storage, não apenas na aplicação.
+  ser tratada na política de acesso do storage, não apenas na aplicação
+  — a detalhar na Fase 4 (mídia de imóvel ainda não existe).
+- Bucket do MinIO local configurado com leitura pública anônima
+  (`mc anonymous set download`) — adequado para fotos de perfil/logo,
+  que são sempre públicas quando o catálogo está ativo. Mídia que
+  precisar de controle de acesso mais fino (Fase 4) exigirá revisão
+  dessa política.
 
 ## Referências
 
-_A preencher na Fase 1 com a documentação oficial do provedor
-efetivamente escolhido._
+- https://min.io/docs/minio/container/index.html
+- https://docs.aws.amazon.com/AWSJavaScriptSDK/v3/latest/client/s3/
+- https://sharp.pixelplumbing.com/

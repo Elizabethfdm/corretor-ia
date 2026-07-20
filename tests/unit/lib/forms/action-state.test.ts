@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { fieldErrorsFromZod } from "@/features/auth/action-state";
+import { fieldErrorsFromZod } from "@/lib/forms/action-state";
 import { registerSchema } from "@/lib/validation/auth";
 
 describe("fieldErrorsFromZod", () => {

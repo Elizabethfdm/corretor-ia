@@ -10,7 +10,7 @@ import {
   requestPasswordResetSchema,
   resetPasswordSchema,
 } from "@/lib/validation/auth";
-import { fieldErrorsFromZod, type ActionState } from "@/features/auth/action-state";
+import { fieldErrorsFromZod, type ActionState } from "@/lib/forms/action-state";
 import { mapResetPasswordError, mapSignInError, mapSignUpError } from "@/features/auth/errors";
 
 export async function registerAction(

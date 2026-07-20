@@ -46,9 +46,12 @@ Regras: RN-001 a RN-014.
 
 ## Fase 3 — Perfil do Corretor
 
-Entregas: formulário de perfil profissional, upload de foto/logotipo,
-identidade visual (cores), slug do catálogo com validação, visualização
-pública mínima do perfil, testes.
+**Status: concluída.**
+
+Entregas: formulário de perfil profissional, upload de foto/logotipo
+(com processamento via `sharp` e armazenamento S3/MinIO — ver ADR-0003),
+identidade visual (cores), slug do catálogo com validação em tempo real,
+visualização pública mínima do perfil (`/catalogo/[slug]`), testes.
 
 Regras: RN-015 a RN-025.
 

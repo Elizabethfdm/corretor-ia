@@ -3,7 +3,7 @@
 import { useActionState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { resetPasswordAction } from "@/features/auth/actions";
-import { idleActionState } from "@/features/auth/action-state";
+import { idleActionState } from "@/lib/forms/action-state";
 import { FormField } from "@/components/ui/form-field";
 import { FormMessage } from "@/components/ui/form-message";
 import { Input } from "@/components/ui/input";

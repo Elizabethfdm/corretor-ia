@@ -297,3 +297,25 @@ A entidade `AuditLog` foi criada exatamente como modelada, com uma
 diferença deliberada: `userId` não usa `@relation` formal com `user`
 (ver comentário no `schema.prisma`) — trilha de auditoria deve
 sobreviver independentemente do ciclo de vida da conta referenciada.
+
+## Notas de implementação (Fase 3)
+
+`BrokerProfile` foi implementada essencialmente como modelada, com dois
+ajustes:
+
+- `userId` também **não** usa `@relation` formal com `user`, pelo mesmo
+  motivo do `AuditLog`: evita qualquer conflito com o model `user`
+  gerenciado pelo CLI do Better Auth. A unicidade (RN-025 — um perfil
+  por conta) é garantida por `@unique` no campo, e a posse é sempre
+  resolvida a partir do `userId` da sessão autenticada, nunca de um
+  identificador vindo do cliente (RN-023).
+- Apenas `professionalName`, `fullName` e `slug` são obrigatórios
+  (`NOT NULL`) — o restante dos campos é opcional no banco, permitindo
+  salvar um perfil parcial/rascunho. CRECI, WhatsApp e cidade só se
+  tornam obrigatórios no momento de **publicar** o catálogo
+  (`catalogEnabled = true`), verificado em
+  `server/services/broker-profile-service.ts` (RN-016 a RN-018), não no
+  schema do banco.
+- `photoUrl`/`logoUrl` guardam a URL pública retornada pelo
+  `StorageProvider` (ver ADR-0003) — nunca a `storageKey` interna
+  diretamente.

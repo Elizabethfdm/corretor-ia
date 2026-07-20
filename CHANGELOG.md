@@ -8,6 +8,32 @@ partir da primeira versão publicada.
 
 ## [Não lançado]
 
+### Adicionado — Fase 3 (Perfil do Corretor)
+
+- Model `BrokerProfile` (1:1 com `user`) e migração real.
+- Camada de armazenamento de mídia (`StorageProvider`) compatível com
+  S3, com adapter via `@aws-sdk/client-s3` e MinIO local no
+  `docker-compose.yml` (ADR-0003 atualizado com a implementação real).
+- Processamento de imagem (`sharp`): validação por conteúdo real
+  (rejeita SVG e arquivos disfarçados), compressão/redimensionamento e
+  remoção automática de metadados EXIF (RN-024, RN-035, RN-037).
+- Formulário de perfil profissional completo (Server Actions + Zod),
+  incluindo campos de identidade profissional, contato, localização,
+  redes sociais e identidade visual (cores).
+- Verificação de disponibilidade de slug em tempo real, com lista de
+  palavras reservadas (RN-019, RN-020).
+- Upload de foto de perfil e logotipo, com substituição segura do
+  arquivo anterior.
+- Ativação/desativação do catálogo, com validação dos campos mínimos de
+  publicação (CRECI, WhatsApp, cidade — RN-016 a RN-018).
+- Página pública `/catalogo/[slug]`, inacessível quando o catálogo está
+  desativado (RN-022 — retorna 404).
+- Onboarding no painel: CTA para completar o perfil quando ainda não
+  existe.
+- 25 testes unitários, 20 testes de integração (contra Postgres e MinIO
+  reais) e testes E2E/acessibilidade cobrindo edição de perfil, upload,
+  publicação de catálogo e isolamento entre corretores.
+
 ### Adicionado — Fase 2 (Autenticação)
 
 - Autenticação com Better Auth (e-mail/senha): cadastro, login, logout,

@@ -1,10 +1,10 @@
 # Corretor IA
 
-> **Status atual: Fase 2 — Autenticação concluída.**
-> Cadastro, login, logout e recuperação/redefinição de senha estão
-> funcionando de ponta a ponta (Better Auth), com testes unitários, de
-> integração e E2E passando. Perfil do corretor e imóveis ainda não
-> foram implementados — isso começa na Fase 3. Ver
+> **Status atual: Fase 3 — Perfil do Corretor concluída.**
+> Autenticação, perfil profissional (com upload de foto/logotipo) e uma
+> página pública mínima de catálogo (`/catalogo/[slug]`) estão
+> funcionando de ponta a ponta. Cadastro de imóveis ainda não foi
+> implementado — isso começa na Fase 4. Ver
 > [`docs/planning/phases-plan.md`](docs/planning/phases-plan.md) para o
 > plano completo por fases.
 
@@ -57,16 +57,17 @@ interface navegável._
   ver ADR-0002).
 - **E-mail transacional:** camada de abstração própria (`EmailProvider`),
   independente de fornecedor (ver ADR-0005).
-- **Armazenamento de mídia:** serviço compatível com S3 (a integrar na
-  Fase 4).
+- **Armazenamento de mídia:** serviço compatível com S3 (`@aws-sdk/client-s3`;
+  MinIO em desenvolvimento local), com processamento de imagem via
+  `sharp` — ver ADR-0003.
 - **IA:** camada de abstração própria (`AiContentProvider`), independente
   de fornecedor (a integrar na Fase 7).
 - **Estilo:** Tailwind CSS.
 - **Validação:** Zod (compartilhada entre cliente e servidor).
 - **Formulários:** Server Actions + `useActionState`/`useFormStatus`
-  nativos do React 19 (sem React Hook Form) para os formulários simples
-  de autenticação; React Hook Form entra na Fase 4 para o cadastro de
-  imóveis em múltiplas etapas.
+  nativos do React 19 (sem React Hook Form) para os formulários atuais;
+  React Hook Form entra na Fase 4 para o cadastro de imóveis em
+  múltiplas etapas.
 - **Testes:** Vitest (unitário e integração) e Playwright (E2E e
   acessibilidade).
 - **Qualidade:** ESLint, Prettier, TypeScript estrito.
@@ -88,7 +89,7 @@ e [`docs/architecture/data-model.md`](docs/architecture/data-model.md).
 | Autenticação                | Better Auth (e-mail/senha, plugin `admin`)                                       |
 | Validação                   | Zod                                                                              |
 | Formulários                 | Server Actions + React 19 (`useActionState`) _(React Hook Form entra na Fase 4)_ |
-| Armazenamento de mídia      | Compatível com S3 _(a integrar na Fase 4)_                                       |
+| Armazenamento de mídia      | Compatível com S3 (`@aws-sdk/client-s3`; MinIO local) + `sharp`                  |
 | Testes unitários/integração | Vitest (+ Testing Library)                                                       |
 | Testes E2E                  | Playwright                                                                       |
 | Qualidade de código         | ESLint + Prettier                                                                |
@@ -99,7 +100,8 @@ e [`docs/architecture/data-model.md`](docs/architecture/data-model.md).
 
 - Node.js 22.x e npm 10.x (ver `.nvmrc`/`engines` — a validar no seu
   ambiente com `node -v`).
-- Docker Desktop (ou Docker Engine + Compose) para o PostgreSQL local.
+- Docker Desktop (ou Docker Engine + Compose) para PostgreSQL e MinIO
+  locais.
 - Git.
 
 ## 8. Instalação
@@ -122,26 +124,31 @@ reais — ver [`SECURITY.md`](SECURITY.md). No Windows com Docker Desktop,
 use `127.0.0.1` (não `localhost`) em `DATABASE_URL`, pois a resolução de
 `localhost` pode preferir IPv6 e travar a conexão.
 
-## 10. Banco de dados
+## 10. Banco de dados e armazenamento de mídia
 
-O modelo de dados inicial está documentado em
+O modelo de dados está documentado em
 [`docs/architecture/data-model.md`](docs/architecture/data-model.md).
-Nenhum modelo de domínio existe ainda no `prisma/schema.prisma` — os
-primeiros modelos (`User`, `BrokerProfile`) chegam na Fase 2.
+Modelos implementados até agora: `user`/`session`/`account`/`verification`/`rateLimit`
+(Better Auth), `AuditLog` e `BrokerProfile`.
 
 ```bash
-# Sobe o PostgreSQL local
+# Sobe o PostgreSQL e o MinIO (S3-compatível) locais
 docker compose up -d
 
-# Aplica migrações pendentes (nenhuma ainda na Fase 1)
+# Aplica migrações pendentes
 npm run db:migrate
 
 # Abre o Prisma Studio para inspecionar o banco
 npm run db:studio
 
-# Executa o seed determinístico (placeholder até a Fase 2)
+# Executa o seed determinístico (placeholder até haver dados de domínio)
 npm run db:seed
 ```
+
+O console web do MinIO fica disponível em `http://localhost:9001`
+(credenciais em `STORAGE_ACCESS_KEY_ID`/`STORAGE_SECRET_ACCESS_KEY` no
+`.env`). O bucket é criado automaticamente pelo serviço `minio-init` do
+`docker-compose.yml`.
 
 ## 11. Execução
 
@@ -152,7 +159,9 @@ npm run dev
 Aplicação disponível em `http://localhost:3000`. Health check em
 `http://localhost:3000/api/health` (verifica também a conexão com o
 banco de dados). Fluxos de autenticação disponíveis em `/cadastro`,
-`/login`, `/recuperar-senha` e `/redefinir-senha`; `/painel` exige login.
+`/login`, `/recuperar-senha` e `/redefinir-senha`; `/painel` e
+`/painel/perfil` exigem login. Catálogo público em `/catalogo/{slug}`
+(só acessível quando o corretor publica o catálogo).
 
 ## 12. Testes
 
@@ -244,7 +253,7 @@ Ver plano completo de fases em
 | 0    | Descoberta e planejamento   | Concluída    |
 | 1    | Fundação do projeto         | Concluída    |
 | 2    | Autenticação                | Concluída    |
-| 3    | Perfil do corretor          | Não iniciada |
+| 3    | Perfil do corretor          | Concluída    |
 | 4    | Cadastro de imóveis         | Não iniciada |
 | 5    | Catálogo digital            | Não iniciada |
 | 6    | Página individual do imóvel | Não iniciada |

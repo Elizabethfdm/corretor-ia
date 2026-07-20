@@ -111,3 +111,38 @@ model RateLimit {
   @@unique([key])
   @@map("rateLimit")
 }
+
+/// Perfil profissional do corretor (RN-015 a RN-025). userId não usa
+/// @relation formal com "user" pelo mesmo motivo do AuditLog: evita
+/// conflito com o model "user", que é gerado/gerenciado pelo CLI do
+/// Better Auth (ver ADR-0002) — a posse é sempre validada na camada de
+/// serviço a partir da sessão autenticada, nunca por FK.
+model BrokerProfile {
+  id               String   @id @default(uuid())
+  userId           String   @unique
+  professionalName String
+  fullName         String
+  photoUrl         String?
+  logoUrl          String?
+  creciNumber      String?
+  creciState       String?
+  phone            String?
+  whatsapp         String?
+  commercialEmail  String?
+  biography        String?
+  city             String?
+  state            String?
+  businessAddress  String?
+  instagramUrl     String?
+  facebookUrl      String?
+  linkedinUrl      String?
+  websiteUrl       String?
+  slug             String   @unique
+  primaryColor     String?
+  secondaryColor   String?
+  catalogEnabled   Boolean  @default(false)
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  @@map("broker_profile")
+}
