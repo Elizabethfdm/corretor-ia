@@ -1,0 +1,39 @@
+import { defineConfig, globalIgnores } from "eslint/config";
+import nextVitals from "eslint-config-next/core-web-vitals";
+import nextTs from "eslint-config-next/typescript";
+import prettierConfig from "eslint-config-prettier";
+
+const eslintConfig = defineConfig([
+  ...nextVitals,
+  ...nextTs,
+  prettierConfig,
+  {
+    rules: {
+      "no-console": ["warn", { allow: ["warn", "error"] }],
+    },
+  },
+  {
+    // Único módulo autorizado a escrever diretamente no console: é o
+    // próprio logger estruturado usado pelo resto da aplicação, e o
+    // script de seed (ferramenta de CLI, não código de aplicação).
+    files: ["src/lib/observability/logger.ts", "prisma/seed.ts"],
+    rules: {
+      "no-console": "off",
+    },
+  },
+  // Override default ignores of eslint-config-next.
+  globalIgnores([
+    // Default ignores of eslint-config-next:
+    ".next/**",
+    "out/**",
+    "build/**",
+    "next-env.d.ts",
+    // Específicos do Corretor IA:
+    "src/generated/**",
+    "playwright-report/**",
+    "test-results/**",
+    "coverage/**",
+  ]),
+]);
+
+export default eslintConfig;

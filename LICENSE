@@ -1,0 +1,24 @@
+PROPRIETARY SOFTWARE LICENSE — CORRETOR IA
+Copyright (c) 2026 Corretor IA. Todos os direitos reservados.
+
+STATUS: modelo provisório definido automaticamente na Fase 0 (Descoberta e
+Planejamento) como opção mais segura por padrão. Este é um produto SaaS
+comercial; a licença "todos os direitos reservados" evita a concessão
+involuntária de direitos de uso, cópia ou redistribuição do código a
+terceiros até que o proprietário do produto decida formalmente o modelo de
+licenciamento (ex.: proprietário fechado, código aberto parcial, licença
+dual). Ver decisão pendente registrada em
+docs/architecture/decisions/0000-licenciamento.md.
+
+Termos enquanto este arquivo não for substituído por uma decisão formal:
+
+1. Este software e toda a documentação associada ("Software") são
+   propriedade exclusiva dos titulares do projeto Corretor IA.
+2. Nenhuma pessoa física ou jurídica está autorizada a usar, copiar,
+   modificar, mesclar, publicar, distribuir, sublicenciar e/ou vender
+   cópias do Software sem autorização prévia e por escrito dos titulares.
+3. O Software é fornecido "no estado em que se encontra", sem garantias de
+   qualquer tipo, expressas ou implícitas.
+4. Este arquivo não constitui uma licença de código aberto. Não se aplicam
+   permissões da MIT, Apache 2.0 ou licenças similares até decisão em
+   contrário devidamente registrada em ADR.

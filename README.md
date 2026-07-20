@@ -1,0 +1,254 @@
+# Corretor IA
+
+> **Status atual: Fase 1 — Fundação do Projeto concluída.**
+> O projeto Next.js está inicializado, com banco de dados, testes e CI
+> configurados. Nenhuma funcionalidade de negócio (autenticação, imóveis
+> etc.) foi implementada ainda — isso começa na Fase 2. Ver
+> [`docs/planning/phases-plan.md`](docs/planning/phases-plan.md) para o
+> plano completo por fases.
+
+## 1. Visão geral
+
+**Corretor IA** é uma aplicação web SaaS, responsiva e mobile-first,
+destinada a corretores de imóveis autônomos. Permite cadastrar o imóvel uma
+única vez, publicá-lo em um catálogo digital profissional, gerar anúncios
+com inteligência artificial, criar artes para redes sociais e compartilhar
+tudo pelo WhatsApp.
+
+Documento completo de visão: [`docs/product/product-vision.md`](docs/product/product-vision.md).
+
+## 2. Problema resolvido
+
+Corretores autônomos costumam gastar tempo excessivo cadastrando o mesmo
+imóvel em múltiplos lugares, escrevendo anúncios do zero e criando peças
+gráficas manualmente. O Corretor IA centraliza esse fluxo: um único
+cadastro alimenta o catálogo público, os anúncios gerados por IA e as artes
+para redes sociais.
+
+## 3. Funcionalidades da primeira versão (MVP)
+
+- Cadastro e autenticação de corretores.
+- Perfil profissional público (catálogo digital com URL própria).
+- Cadastro de imóveis em etapas (rascunho até publicação).
+- Catálogo público com busca, filtros e ordenação.
+- Página individual do imóvel com galeria e contato via WhatsApp.
+- Compartilhamento de imóveis, catálogo e resultados filtrados pelo
+  WhatsApp.
+- Geração de anúncios com IA (múltiplos canais e tons).
+- Criação de artes para redes sociais a partir de modelos predefinidos.
+- Relatório básico de acessos, cliques e compartilhamentos.
+
+Escopo completo (dentro e fora do MVP):
+[`docs/product/mvp-scope.md`](docs/product/mvp-scope.md).
+
+## 4. Capturas de tela
+
+_A ser adicionado a partir da Fase 5 (Catálogo Digital), quando existir
+interface navegável._
+
+## 5. Arquitetura
+
+- **Frontend/Backend:** Next.js (App Router) com TypeScript em modo
+  estrito.
+- **Banco de dados:** PostgreSQL, acessado via Prisma ORM.
+- **Autenticação:** solução de sessão segura server-side (ver ADR de
+  autenticação).
+- **Armazenamento de mídia:** serviço compatível com S3.
+- **IA:** camada de abstração própria (`AiContentProvider`), independente
+  de fornecedor.
+- **Estilo:** Tailwind CSS + biblioteca de componentes acessíveis.
+- **Validação:** Zod (compartilhada entre cliente e servidor).
+- **Testes:** Vitest/Jest (unitário e integração) e Playwright (E2E e
+  acessibilidade).
+- **Qualidade:** ESLint, Prettier, TypeScript estrito.
+- **Infraestrutura local:** Docker.
+- **CI/CD:** GitHub Actions.
+
+Detalhamento completo: [`docs/architecture/architecture.md`](docs/architecture/architecture.md)
+e [`docs/architecture/data-model.md`](docs/architecture/data-model.md).
+
+## 6. Tecnologias
+
+| Camada                      | Tecnologia                                                    |
+| --------------------------- | ------------------------------------------------------------- |
+| Framework web               | Next.js (App Router)                                          |
+| Linguagem                   | TypeScript (modo estrito)                                     |
+| UI                          | React + Tailwind CSS                                          |
+| Banco de dados              | PostgreSQL                                                    |
+| ORM                         | Prisma 7 (driver adapter `@prisma/adapter-pg`)                |
+| Validação                   | Zod _(a instalar na Fase 2, junto com o primeiro formulário)_ |
+| Formulários                 | React Hook Form _(a instalar na Fase 2)_                      |
+| Armazenamento de mídia      | Compatível com S3 _(a integrar na Fase 4)_                    |
+| Testes unitários/integração | Vitest (+ Testing Library)                                    |
+| Testes E2E                  | Playwright                                                    |
+| Qualidade de código         | ESLint + Prettier                                             |
+| Ambiente local              | Docker                                                        |
+| Integração contínua         | GitHub Actions                                                |
+
+## 7. Pré-requisitos
+
+- Node.js 22.x e npm 10.x (ver `.nvmrc`/`engines` — a validar no seu
+  ambiente com `node -v`).
+- Docker Desktop (ou Docker Engine + Compose) para o PostgreSQL local.
+- Git.
+
+## 8. Instalação
+
+```bash
+npm install
+```
+
+O script `prepare` executa `prisma generate` automaticamente após o
+`install`.
+
+## 9. Configuração
+
+```bash
+cp .env.example .env
+```
+
+Preencha as variáveis conforme o seu ambiente. Nunca versione valores
+reais — ver [`SECURITY.md`](SECURITY.md). No Windows com Docker Desktop,
+use `127.0.0.1` (não `localhost`) em `DATABASE_URL`, pois a resolução de
+`localhost` pode preferir IPv6 e travar a conexão.
+
+## 10. Banco de dados
+
+O modelo de dados inicial está documentado em
+[`docs/architecture/data-model.md`](docs/architecture/data-model.md).
+Nenhum modelo de domínio existe ainda no `prisma/schema.prisma` — os
+primeiros modelos (`User`, `BrokerProfile`) chegam na Fase 2.
+
+```bash
+# Sobe o PostgreSQL local
+docker compose up -d
+
+# Aplica migrações pendentes (nenhuma ainda na Fase 1)
+npm run db:migrate
+
+# Abre o Prisma Studio para inspecionar o banco
+npm run db:studio
+
+# Executa o seed determinístico (placeholder até a Fase 2)
+npm run db:seed
+```
+
+## 11. Execução
+
+```bash
+npm run dev
+```
+
+Aplicação disponível em `http://localhost:3000`. Health check em
+`http://localhost:3000/api/health` (verifica também a conexão com o
+banco de dados).
+
+## 12. Testes
+
+A estratégia de testes (pirâmide de testes, tipos de teste, cobertura
+esperada por fase) está documentada em
+[`docs/quality/test-strategy.md`](docs/quality/test-strategy.md).
+
+```bash
+npm run test          # unitários + integração (Vitest) — exige Postgres local no ar
+npm run test:coverage # idem, com relatório de cobertura
+npm run test:e2e      # E2E + acessibilidade (Playwright) — builda e sobe a app automaticamente
+npm run lint           # ESLint
+npm run typecheck      # TypeScript em modo estrito
+npm run format:check   # Verifica formatação (Prettier)
+```
+
+## 13. Pipeline de integração contínua
+
+O pipeline de CI (`.github/workflows/ci.yml`) roda em todo push/PR para
+`main`: instalação determinística, auditoria de dependências, geração do
+Prisma Client, formatação, lint, verificação de tipos, migrações,
+testes unitários/integração com cobertura, build de produção e testes
+E2E/acessibilidade — publicando os relatórios como artefatos. Badges
+serão adicionados ao README após a primeira execução bem-sucedida no
+GitHub.
+
+## 14. Segurança
+
+Ver [`SECURITY.md`](SECURITY.md) e
+[`docs/security/threat-model.md`](docs/security/threat-model.md).
+
+## 15. Estrutura do repositório
+
+```text
+corretor-ia/
+  README.md
+  CLAUDE.md
+  LICENSE
+  SECURITY.md
+  CONTRIBUTING.md
+  CHANGELOG.md
+  .gitignore
+  .env.example
+  docker-compose.yml
+  playwright.config.ts
+  vitest.config.ts
+  prisma.config.ts
+  src/
+    app/                  # rotas Next.js (App Router) e route handlers de API
+    components/            # ui, forms, layout, property, catalog, reports
+    features/                # auth, brokers, properties, catalog, advertisements, artwork, analytics
+    lib/                      # auth, database, storage, ai, analytics, validation, security, observability
+    server/                    # services, repositories, policies
+    types/
+  prisma/
+    schema.prisma
+    seed.ts
+  tests/
+    unit/                       # Vitest
+    integration/                 # Vitest (contra Postgres real)
+    e2e/                           # Playwright
+    accessibility/                  # Playwright + axe-core
+    fixtures/ factories/              # dados de teste determinísticos (a partir da Fase 2)
+  docs/
+    product/            # visão, personas, jornadas, mapa de funcionalidades, escopo do MVP
+    business-rules/      # regras de negócio numeradas (RN-xxx)
+    requirements/        # requisitos funcionais (RF-xxx) e não funcionais (RNF-xxx)
+    architecture/         # arquitetura, modelo de dados e decisões técnicas (ADRs)
+    quality/               # estratégia de testes, DoR, DoD, matriz de rastreabilidade
+    security/               # modelo de ameaças
+    backlog/                 # épicos e histórias de usuário
+    planning/                 # plano de fases e riscos
+    api/                       # documentação de API (preenchida a partir da Fase 2)
+    evidence/                   # evidências de execução de fases (capturas, logs, relatórios)
+  .claude/
+    rules/                       # regras permanentes consultadas pelo Claude Code
+  .github/
+    workflows/
+      ci.yml                       # pipeline de qualidade (lint, testes, build, E2E)
+```
+
+## 16. Roadmap
+
+Ver plano completo de fases em
+[`docs/planning/phases-plan.md`](docs/planning/phases-plan.md). Resumo:
+
+| Fase | Nome                        | Status       |
+| ---- | --------------------------- | ------------ |
+| 0    | Descoberta e planejamento   | Concluída    |
+| 1    | Fundação do projeto         | Concluída    |
+| 2    | Autenticação                | Não iniciada |
+| 3    | Perfil do corretor          | Não iniciada |
+| 4    | Cadastro de imóveis         | Não iniciada |
+| 5    | Catálogo digital            | Não iniciada |
+| 6    | Página individual do imóvel | Não iniciada |
+| 7    | IA para anúncios            | Não iniciada |
+| 8    | Artes                       | Não iniciada |
+| 9    | Relatórios                  | Não iniciada |
+| 10   | Hardening                   | Não iniciada |
+
+## 17. Contribuição
+
+Ver [`CONTRIBUTING.md`](CONTRIBUTING.md) para o fluxo de trabalho, padrão de
+commits e critérios de qualidade obrigatórios.
+
+## 18. Licença
+
+Ver [`LICENSE`](LICENSE). Modelo provisório de "todos os direitos
+reservados" definido na Fase 0 — decisão sujeita a confirmação do
+proprietário do produto.

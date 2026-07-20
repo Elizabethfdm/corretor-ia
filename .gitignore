@@ -1,0 +1,74 @@
+# Dependências
+node_modules/
+.pnp
+.pnp.js
+.yarn/
+
+# Next.js
+.next/
+out/
+build/
+dist/
+
+# Testes e cobertura
+coverage/
+.nyc_output/
+playwright-report/
+test-results/
+blob-report/
+
+# Variáveis de ambiente (nunca versionar segredos reais)
+.env
+.env.local
+.env.*.local
+.env.development
+.env.test
+.env.production
+
+# Banco de dados local
+*.sqlite
+*.sqlite3
+prisma/dev.db
+prisma/dev.db-journal
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+logs/
+
+# Editor / SO
+.vscode/*
+!.vscode/extensions.json
+.idea/
+
+# Configuração local do Claude Code (específica da máquina/sessão do
+# desenvolvedor; nunca compartilhada via repositório)
+.claude/settings.local.json
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# TypeScript
+*.tsbuildinfo
+next-env.d.ts
+
+# Cache
+.cache/
+.turbo/
+.eslintcache
+
+# Uploads locais de desenvolvimento (nunca versionar mídia de usuários)
+/uploads/
+/tmp/
+/storage/local/
+
+# Evidências geradas automaticamente em CI (mantidas como artefato do pipeline, não no git)
+docs/evidence/generated/
+
+# Docker
+*.pid
+
+/src/generated/prisma
