@@ -197,8 +197,14 @@ renumeradas para manter numeração única no projeto.
   compartilhamento nunca inclui o endereço quando este estiver marcado
   como oculto.
 - **RN-057 — Registro de clique sem conteúdo privado.** O clique de
-  compartilhamento é registrado como evento agregado (RN-064), sem
-  armazenar o conteúdo da conversa do WhatsApp.
+  compartilhamento é registrado como evento agregado (RN-089 —
+  `share_click`; a referência original apontava para RN-064 por engano,
+  regra sobre linguagem não discriminatória em anúncios de IA, sem
+  relação com este ponto — corrigido na Fase 6), sem armazenar o
+  conteúdo da conversa do WhatsApp. *Nota de implementação (Fase 6): o
+  registro em si depende de `AnalyticsEvent`, criado somente na Fase 9 —
+  os botões de compartilhamento desta fase funcionam, mas o evento ainda
+  não é gravado. Ver `docs/evidence/fase-06-pagina-do-imovel/`.*
 - **RN-058 — Sem confirmação falsa de envio.** A aplicação nunca afirma
   que uma mensagem foi enviada, pois o envio efetivo ocorre dentro do
   WhatsApp, fora do controle da aplicação.

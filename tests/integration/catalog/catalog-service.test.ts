@@ -10,7 +10,7 @@ import {
   saveDescription,
   saveLocation,
 } from "@/server/services/property-service";
-import { getPublicCatalog } from "@/server/services/catalog-service";
+import { getPublicCatalog, getPublicProperty } from "@/server/services/catalog-service";
 import { parseCatalogFilters } from "@/lib/validation/catalog-filters";
 import type { BasicInfoInput, DescriptionInput, LocationInput } from "@/lib/validation/property";
 
@@ -305,5 +305,115 @@ describe("getPublicCatalog (RN-046, RN-048, RN-049)", () => {
 
     const secondPage = await getPublicCatalog(slug, parseCatalogFilters({ page: "2" }));
     expect(secondPage!.properties).toHaveLength(2);
+  });
+});
+
+describe("getPublicProperty (RN-032, RN-039, RN-040, RN-046, RN-049, RN-053)", () => {
+  it("retorna null para corretor inexistente, catálogo desativado ou imóvel inexistente", async () => {
+    const { brokerId, slug } = await createPublishedBroker("property-page-missing");
+    const property = await createAvailableProperty(brokerId, {
+      internalTitle: "A",
+      publicTitle: "Imóvel existente",
+    });
+
+    expect(await getPublicProperty("slug-que-nunca-existiu", property.slug!)).toBeNull();
+    expect(await getPublicProperty(slug, "slug-de-imovel-que-nunca-existiu")).toBeNull();
+  });
+
+  it("retorna null para imóvel despublicado (RN-032, RN-054)", async () => {
+    const { brokerId, slug } = await createPublishedBroker("property-page-unpublished");
+    const property = await createAvailableProperty(brokerId, {
+      internalTitle: "A",
+      publicTitle: "Imóvel a despublicar",
+    });
+
+    await changePropertyStatus(property.id, brokerId, "INACTIVE");
+
+    expect(await getPublicProperty(slug, property.slug!)).toBeNull();
+  });
+
+  it("retorna null para rascunho (nunca publicado)", async () => {
+    const { brokerId, slug } = await createPublishedBroker("property-page-draft");
+    const draft = await createDraftProperty(brokerId);
+
+    expect(await getPublicProperty(slug, draft.slug!)).toBeNull();
+  });
+
+  it("nunca expõe campos internos, mas inclui o código de referência (RN-049, RN-051)", async () => {
+    const { brokerId, slug } = await createPublishedBroker("property-page-internal-fields");
+    const property = await createAvailableProperty(brokerId, {
+      internalTitle: "Anotação interna secreta do corretor",
+      publicTitle: "Imóvel público",
+      referenceCode: "REF-XYZ-001",
+    });
+
+    const result = await getPublicProperty(slug, property.slug!);
+    expect(result!.property.referenceCode).toBe("REF-XYZ-001");
+    expect(result!.property).not.toHaveProperty("internalTitle");
+    expect(result!.property).not.toHaveProperty("internalNotes");
+    expect(JSON.stringify(result!.property)).not.toContain("Anotação interna secreta");
+  });
+
+  it("mostra endereço completo apenas quando a visibilidade é FULL_ADDRESS (RN-039, RN-040)", async () => {
+    const { brokerId, slug } = await createPublishedBroker("property-page-address");
+
+    const hidden = await createAvailableProperty(
+      brokerId,
+      { internalTitle: "A", publicTitle: "Endereço oculto" },
+      { street: "Rua das Flores", number: "123", visibilityType: "HIDDEN_EXACT" },
+    );
+    const full = await createAvailableProperty(
+      brokerId,
+      { internalTitle: "B", publicTitle: "Endereço completo" },
+      { street: "Rua das Flores", number: "456", visibilityType: "FULL_ADDRESS" },
+    );
+
+    const hiddenResult = await getPublicProperty(slug, hidden.slug!);
+    expect(hiddenResult!.property.address?.street).toBeNull();
+    expect(hiddenResult!.property.address?.city).not.toBeNull();
+
+    const fullResult = await getPublicProperty(slug, full.slug!);
+    expect(fullResult!.property.address?.street).toBe("Rua das Flores");
+    expect(fullResult!.property.address?.number).toBe("456");
+  });
+
+  it("lista imóveis semelhantes restritos ao mesmo corretor e disponíveis (RN-053)", async () => {
+    const brokerA = await createPublishedBroker("property-page-similar-a");
+    const brokerB = await createPublishedBroker("property-page-similar-b");
+
+    const main = await createAvailableProperty(brokerA.brokerId, {
+      internalTitle: "A",
+      publicTitle: "Casa principal",
+      purpose: "SALE",
+      propertyType: "HOUSE",
+    });
+    const sameTypeSameBroker = await createAvailableProperty(brokerA.brokerId, {
+      internalTitle: "B",
+      publicTitle: "Casa semelhante",
+      purpose: "SALE",
+      propertyType: "HOUSE",
+    });
+    await createAvailableProperty(brokerB.brokerId, {
+      internalTitle: "C",
+      publicTitle: "Casa de outro corretor",
+      purpose: "SALE",
+      propertyType: "HOUSE",
+    });
+    const unpublished = await createAvailableProperty(brokerA.brokerId, {
+      internalTitle: "D",
+      publicTitle: "Casa despublicada",
+      purpose: "SALE",
+      propertyType: "HOUSE",
+    });
+    await changePropertyStatus(unpublished.id, brokerA.brokerId, "INACTIVE");
+
+    const result = await getPublicProperty(brokerA.slug, main.slug!);
+    const similarTitles = result!.similar.map((p) => p.title);
+
+    expect(similarTitles).toContain("Casa semelhante");
+    expect(similarTitles).not.toContain("Casa de outro corretor");
+    expect(similarTitles).not.toContain("Casa despublicada");
+    expect(similarTitles).not.toContain("Casa principal");
+    expect(result!.similar.some((p) => p.id === sameTypeSameBroker.id)).toBe(true);
   });
 });

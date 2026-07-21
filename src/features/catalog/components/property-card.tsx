@@ -1,16 +1,13 @@
+import Link from "next/link";
 import { formatCurrencyBRL } from "@/lib/money/format-currency";
 import type { PublicProperty } from "@/server/services/catalog-service";
 
 interface PropertyCardProps {
   property: PublicProperty;
+  brokerSlug: string;
 }
 
-/**
- * Cartão de imóvel do catálogo público. Ainda não é um link clicável
- * para uma página individual — essa página chega na Fase 6. Por
- * enquanto o cartão é só informativo (ver docs/evidence/fase-05-...).
- */
-export function PropertyCard({ property }: PropertyCardProps) {
+export function PropertyCard({ property, brokerSlug }: PropertyCardProps) {
   const specs = [
     property.bedrooms ? `${property.bedrooms} quartos` : null,
     property.bathrooms ? `${property.bathrooms} banheiros` : null,
@@ -19,7 +16,10 @@ export function PropertyCard({ property }: PropertyCardProps) {
   ].filter(Boolean);
 
   return (
-    <article className="flex flex-col overflow-hidden rounded-lg border border-zinc-200 dark:border-zinc-800">
+    <Link
+      href={`/catalogo/${brokerSlug}/${property.slug}`}
+      className="flex flex-col overflow-hidden rounded-lg border border-zinc-200 hover:border-zinc-400 dark:border-zinc-800 dark:hover:border-zinc-600"
+    >
       {property.coverPhotoUrl ? (
         // eslint-disable-next-line @next/next/no-img-element -- imagem já hospedada/otimizada pelo storage próprio
         <img
@@ -61,6 +61,6 @@ export function PropertyCard({ property }: PropertyCardProps) {
           </p>
         ) : null}
       </div>
-    </article>
+    </Link>
   );
 }

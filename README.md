@@ -1,14 +1,13 @@
 # Corretor IA
 
-> **Status atual: Fase 5 — Catálogo Digital concluída.**
-> Autenticação, perfil profissional (com upload de foto/logotipo),
-> cadastro completo de imóveis em etapas e o catálogo público
-> (`/catalogo/[slug]`) com listagem, busca, filtros compartilháveis na
-> URL, ordenação e paginação estão funcionando de ponta a ponta. A
-> página individual do imóvel ainda não foi implementada — isso começa
-> na Fase 6. Ver
-> [`docs/planning/phases-plan.md`](docs/planning/phases-plan.md) para o
-> plano completo por fases.
+> **Status atual: Fase 6 — Página Individual do Imóvel concluída.**
+> Autenticação, perfil profissional, cadastro completo de imóveis, o
+> catálogo público com busca/filtros/ordenação e a página individual do
+> imóvel (galeria, contato via WhatsApp, imóveis semelhantes,
+> compartilhamento) estão funcionando de ponta a ponta. Geração de
+> anúncios com IA ainda não foi implementada — isso começa na Fase 7.
+> Ver [`docs/planning/phases-plan.md`](docs/planning/phases-plan.md)
+> para o plano completo por fases.
 
 ## 1. Visão geral
 
@@ -258,7 +257,7 @@ Ver plano completo de fases em
 | 3    | Perfil do corretor          | Concluída    |
 | 4    | Cadastro de imóveis         | Concluída    |
 | 5    | Catálogo digital            | Concluída    |
-| 6    | Página individual do imóvel | Não iniciada |
+| 6    | Página individual do imóvel | Concluída    |
 | 7    | IA para anúncios            | Não iniciada |
 | 8    | Artes                       | Não iniciada |
 | 9    | Relatórios                  | Não iniciada |

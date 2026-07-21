@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { buildWhatsAppLink } from "@/lib/whatsapp/build-link";
+import { buildWhatsAppLink, buildWhatsAppShareLink } from "@/lib/whatsapp/build-link";
 
 describe("buildWhatsAppLink (RN-051)", () => {
   it("monta o link com o código do país quando ausente", () => {
@@ -21,5 +21,18 @@ describe("buildWhatsAppLink (RN-051)", () => {
     const link = buildWhatsAppLink("11999999999", "Olá! Código: A1-B2 & mais");
     const url = new URL(link);
     expect(url.searchParams.get("text")).toBe("Olá! Código: A1-B2 & mais");
+  });
+});
+
+describe("buildWhatsAppShareLink (RF-050)", () => {
+  it("monta o link sem número de destinatário fixo", () => {
+    const link = buildWhatsAppShareLink("Confira este imóvel");
+    expect(link).toBe("https://wa.me/?text=Confira%20este%20im%C3%B3vel");
+  });
+
+  it("preserva acentos e quebras de linha via codificação de URL", () => {
+    const link = buildWhatsAppShareLink("Título — R$ 500.000\nhttps://example.com");
+    const url = new URL(link);
+    expect(url.searchParams.get("text")).toBe("Título — R$ 500.000\nhttps://example.com");
   });
 });

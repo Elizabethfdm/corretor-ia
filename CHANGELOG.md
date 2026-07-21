@@ -8,6 +8,36 @@ partir da primeira versão publicada.
 
 ## [Não lançado]
 
+### Adicionado — Fase 6 (Página Individual do Imóvel)
+
+- Página pública do imóvel (`/catalogo/[slug]/[propertySlug]`) com
+  galeria de fotos, capa, título, valor, finalidade, tipo,
+  características, condições (mobiliado, aceita animais/financiamento/
+  permuta), descrição, diferenciais, proximidades, condições comerciais
+  e código de referência.
+- Endereço completo exibido apenas quando o corretor marcou
+  visibilidade `FULL_ADDRESS` (RN-039, RN-040) — antes só persistido,
+  agora com um consumidor público de verdade.
+- Cartões do catálogo (Fase 5) passam a ser links reais para a página
+  do imóvel.
+- Botão de contato via WhatsApp com mensagem padrão (nome do corretor,
+  título, código de referência, URL do imóvel), fixo no rodapé em
+  telas mobile (RN-051, RN-052).
+- Seção de imóveis semelhantes, restrita ao mesmo corretor e a imóveis
+  disponíveis (RN-053).
+- Compartilhamento de imóvel, catálogo completo ou resultado filtrado
+  via WhatsApp, copiar link, copiar mensagem e compartilhamento nativo
+  do dispositivo quando suportado (RF-050 a RF-052) — mensagem nunca
+  omite campos preenchidos nem afirma envio (RN-055, RN-058).
+- 26 novos testes unitários/integração e 6 novos cenários E2E/
+  acessibilidade.
+
+Corrigida também uma referência cruzada incorreta em
+`business-rules.md` (RN-057 apontava para RN-064 por engano — regra
+sem relação, sobre linguagem em anúncios de IA). O registro do evento
+de compartilhamento (RN-057) depende de `AnalyticsEvent`, criado
+somente na Fase 9 — os botões funcionam, o evento ainda não é gravado.
+
 ### Adicionado — Fase 5 (Catálogo Digital)
 
 - Catálogo público (`/catalogo/[slug]`) com listagem paginada (12 por

@@ -77,9 +77,12 @@ Regras: RN-046 a RN-050.
 
 ## Fase 6 — Página Individual do Imóvel
 
+**Status: concluída.**
+
 Entregas: galeria, informações públicas, endereço seguro, contato via
 WhatsApp, imóveis semelhantes, compartilhamento (imóvel, catálogo,
-resultado filtrado), testes.
+resultado filtrado), testes. Registro do evento de compartilhamento
+(RN-057) adiado para a Fase 9, que cria a infraestrutura de analytics.
 
 Regras: RN-051 a RN-060.
 

@@ -382,3 +382,34 @@ O catálogo digital não introduz nenhuma entidade nova — consulta o
   — `buildPublicTitle` sintetiza um a partir de tipo + finalidade +
   localização (ex.: "Casa para venda em Jardim Europa, São Paulo"),
   nunca usando o conteúdo de `internalTitle`.
+
+## Notas de implementação (Fase 6)
+
+A página individual do imóvel também não introduz nenhuma entidade
+nova — reaproveita `Property` e o mesmo `catalog-service.ts` da Fase 5,
+estendido com `getPublicProperty` e um segundo serializer
+(`serializePublicPropertyDetail`, superconjunto de `PublicProperty` com
+os campos que só fazem sentido na página individual: descrição
+completa, destaques, proximidades, condições comerciais,
+características, galeria completa e endereço).
+
+- **Endereço público condicionado a `visibilityType`** (RN-039, RN-040,
+  campo já existente desde a Fase 4 mas sem nenhum consumidor público
+  até agora): `serializePublicAddress` só preenche
+  `street`/`number`/`complement`/`referencePoint` quando
+  `visibilityType === "FULL_ADDRESS"`; `city`/`neighborhood` são sempre
+  públicos independente da visibilidade (já eram exibidos nos cartões
+  do catálogo desde a Fase 5).
+- **Imóveis semelhantes (RN-053) não usam nenhum campo de
+  "similaridade" no schema** — `findSimilarPublic` prioriza mesmo
+  `purpose`+`propertyType` do mesmo corretor e completa com os mais
+  recentes do mesmo corretor caso não haja `limit` semelhantes
+  suficientes com o mesmo tipo. Sempre exclui o próprio imóvel e nunca
+  cruza corretores (`brokerId` como filtro obrigatório, nunca vindo do
+  cliente).
+- **Nenhuma tabela de compartilhamento/analytics foi criada** — o
+  registro de clique de compartilhamento (RN-057) depende de
+  `AnalyticsEvent`, que só é criado na Fase 9. Os botões de
+  compartilhamento desta fase funcionam (WhatsApp, copiar link, copiar
+  mensagem, compartilhamento nativo) mas não geram nenhum registro
+  ainda.

@@ -4,9 +4,10 @@ import type { PublicProperty } from "@/server/services/catalog-service";
 interface CatalogGridProps {
   properties: PublicProperty[];
   hasActiveFilters: boolean;
+  brokerSlug: string;
 }
 
-export function CatalogGrid({ properties, hasActiveFilters }: CatalogGridProps) {
+export function CatalogGrid({ properties, hasActiveFilters, brokerSlug }: CatalogGridProps) {
   if (properties.length === 0) {
     return (
       <p className="rounded-lg border border-dashed border-zinc-300 px-4 py-10 text-center text-sm text-zinc-500 dark:border-zinc-700">
@@ -20,7 +21,7 @@ export function CatalogGrid({ properties, hasActiveFilters }: CatalogGridProps) 
   return (
     <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
       {properties.map((property) => (
-        <PropertyCard key={property.id} property={property} />
+        <PropertyCard key={property.id} property={property} brokerSlug={brokerSlug} />
       ))}
     </div>
   );

@@ -141,6 +141,55 @@ export const propertyRepository = {
 
     return { items, total, pageSize };
   },
+
+  /** RN-046, RN-048: página individual só resolve imóveis disponíveis. */
+  async findPublicBySlug(brokerId: string, slug: string): Promise<PropertyWithRelations | null> {
+    return prisma.property.findFirst({
+      where: { brokerId, slug, deletedAt: null, status: "AVAILABLE" },
+      include: WITH_RELATIONS,
+    });
+  },
+
+  /**
+   * RN-053: imóveis semelhantes nunca cruzam corretores nem incluem o
+   * próprio imóvel ou imóveis indisponíveis. Prioriza mesmo tipo e
+   * finalidade; completa com os mais recentes do mesmo corretor caso
+   * não haja `limit` semelhantes suficientes.
+   */
+  async findSimilarPublic(
+    brokerId: string,
+    excludePropertyId: string,
+    purpose: Property["purpose"],
+    propertyType: Property["propertyType"],
+    limit: number,
+  ): Promise<PropertyWithRelations[]> {
+    const baseWhere: Prisma.PropertyWhereInput = {
+      brokerId,
+      deletedAt: null,
+      status: "AVAILABLE",
+      id: { not: excludePropertyId },
+    };
+
+    const sameType = await prisma.property.findMany({
+      where: { ...baseWhere, purpose, propertyType },
+      include: WITH_RELATIONS,
+      orderBy: { publishedAt: "desc" },
+      take: limit,
+    });
+
+    if (sameType.length >= limit) {
+      return sameType;
+    }
+
+    const fallback = await prisma.property.findMany({
+      where: { ...baseWhere, id: { notIn: [excludePropertyId, ...sameType.map((p) => p.id)] } },
+      include: WITH_RELATIONS,
+      orderBy: { publishedAt: "desc" },
+      take: limit - sameType.length,
+    });
+
+    return [...sameType, ...fallback];
+  },
 };
 
 export const CATALOG_PAGE_SIZE = 12;

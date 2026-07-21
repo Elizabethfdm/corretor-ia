@@ -147,7 +147,7 @@ test.describe("Catálogo digital (RN-046 a RN-050)", () => {
     await page.getByLabel("Ordenar por").selectOption("price_asc");
     await page.getByRole("button", { name: "Filtrar" }).click();
     await expect(page).toHaveURL(/sort=price_asc/);
-    const cardTitles = page.locator("article h3");
+    const cardTitles = page.locator("h3");
     await expect(cardTitles.first()).toHaveText("Apartamento para alugar na Vila Mariana");
 
     await deleteTestUserByEmail(email);
