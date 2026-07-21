@@ -146,6 +146,7 @@ model BrokerProfile {
 
   properties              Property[]
   generatedAdvertisements GeneratedAdvertisement[]
+  generatedArtworks       GeneratedArtwork[]
 
   @@map("broker_profile")
 }
@@ -257,6 +258,7 @@ model Property {
   features                PropertyFeature[]
   media                   PropertyMedia[]
   generatedAdvertisements GeneratedAdvertisement[]
+  generatedArtworks       GeneratedArtwork[]
 
   @@unique([brokerId, slug])
   @@unique([brokerId, referenceCode])
@@ -313,6 +315,8 @@ model PropertyMedia {
   height       Int?
   createdAt    DateTime  @default(now())
   deletedAt    DateTime?
+
+  generatedArtworks GeneratedArtwork[]
 
   @@index([propertyId, displayOrder])
   @@map("property_media")
@@ -379,4 +383,52 @@ model GeneratedAdvertisement {
   @@index([brokerId, createdAt])
   @@index([propertyId, createdAt])
   @@map("generated_advertisement")
+}
+
+enum ArtworkFormat {
+  SQUARE_FEED
+  VERTICAL_FEED
+  STORY
+  WHATSAPP_STATUS
+  REEL_COVER
+}
+
+enum ArtworkTemplateType {
+  NEW_PROPERTY
+  HIGHLIGHT
+  OPPORTUNITY
+  SALE
+  RENT
+  PRICE_DROP
+  RESERVED
+  SOLD
+  OPEN_HOUSE
+}
+
+/// Arte gerada a partir de modelos predefinidos (RN-075 a RN-081). Os
+/// modelos em si não são uma entidade do banco (RN-081 — sem editor
+/// livre, modelos fixos definidos no código, ver ADR-0006); apenas o
+/// resultado de cada geração é persistido aqui.
+model GeneratedArtwork {
+  id           String              @id @default(uuid())
+  brokerId     String
+  broker       BrokerProfile       @relation(fields: [brokerId], references: [id], onDelete: Cascade)
+  propertyId   String
+  property     Property            @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  photoMediaId String?
+  photoMedia   PropertyMedia?      @relation(fields: [photoMediaId], references: [id], onDelete: SetNull)
+  format       ArtworkFormat
+  templateType ArtworkTemplateType
+  title        String
+  subtitle     String
+  callToAction String
+  outputKey    String
+  outputUrl    String
+  width        Int
+  height       Int
+  createdAt    DateTime            @default(now())
+
+  @@index([brokerId, createdAt])
+  @@index([propertyId, createdAt])
+  @@map("generated_artwork")
 }

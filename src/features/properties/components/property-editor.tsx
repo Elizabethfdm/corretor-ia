@@ -9,12 +9,15 @@ import { PhotoManager } from "@/features/properties/components/photo-manager";
 import { ReviewPanel } from "@/features/properties/components/review-panel";
 import { AdvertisementGeneratorForm } from "@/features/advertisements/components/advertisement-generator-form";
 import { AdvertisementHistory } from "@/features/advertisements/components/advertisement-history";
+import { ArtworkGeneratorForm } from "@/features/artwork/components/artwork-generator-form";
+import { ArtworkHistory } from "@/features/artwork/components/artwork-history";
 import type { SerializedProperty } from "@/features/properties/serialize-property";
-import type { GeneratedAdvertisement } from "@/generated/prisma/client";
+import type { GeneratedAdvertisement, GeneratedArtwork } from "@/generated/prisma/client";
 
 interface PropertyEditorProps {
   property: SerializedProperty;
   advertisements: GeneratedAdvertisement[];
+  artworks: GeneratedArtwork[];
 }
 
 const TABS = [
@@ -24,12 +27,13 @@ const TABS = [
   { id: "fotos", label: "Fotos" },
   { id: "descricao", label: "Descrição" },
   { id: "anuncios", label: "Anúncios com IA" },
+  { id: "artes", label: "Artes" },
   { id: "revisao", label: "Revisão e publicação" },
 ] as const;
 
 type TabId = (typeof TABS)[number]["id"];
 
-export function PropertyEditor({ property, advertisements }: PropertyEditorProps) {
+export function PropertyEditor({ property, advertisements, artworks }: PropertyEditorProps) {
   const [activeTab, setActiveTab] = useState<TabId>("basico");
 
   return (
@@ -64,6 +68,15 @@ export function PropertyEditor({ property, advertisements }: PropertyEditorProps
             <div className="border-t border-zinc-200 pt-6 dark:border-zinc-800">
               <h2 className="mb-3 text-lg font-semibold text-zinc-900 dark:text-zinc-50">Histórico</h2>
               <AdvertisementHistory advertisements={advertisements} propertyId={property.id} />
+            </div>
+          </div>
+        ) : null}
+        {activeTab === "artes" ? (
+          <div className="flex flex-col gap-6">
+            <ArtworkGeneratorForm property={property} />
+            <div className="border-t border-zinc-200 pt-6 dark:border-zinc-800">
+              <h2 className="mb-3 text-lg font-semibold text-zinc-900 dark:text-zinc-50">Histórico</h2>
+              <ArtworkHistory artworks={artworks} />
             </div>
           </div>
         ) : null}

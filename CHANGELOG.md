@@ -8,6 +8,38 @@ partir da primeira versão publicada.
 
 ## [Não lançado]
 
+### Adicionado — Fase 8 (Artes)
+
+- Geração de artes para redes sociais: corretor escolhe formato (feed
+  quadrado, feed vertical, Story, Status do WhatsApp, capa de Reel) e
+  tipo de anúncio (novo imóvel, destaque, oportunidade, venda, aluguel,
+  redução de preço, reservado, vendido, visita aberta), escolhe a foto
+  do imóvel e edita título, subtítulo e chamada para ação antes de
+  gerar.
+- Composição via `sharp` (ADR-0006), sem nenhuma dependência nova: foto
+  recortada sem distorção (`fit: cover`, RN-078) e textos renderizados
+  via Pango (`sharp({ text: ... })`), que ajusta automaticamente o
+  tamanho da fonte para nunca cortar texto (RN-077) — dispensa um
+  algoritmo próprio de quebra/redução de fonte.
+- Modelos são constantes definidas no código, não uma tabela
+  configurável (RN-081 — sem editor gráfico livre); só o resultado de
+  cada geração (`GeneratedArtwork`) é persistido.
+- Identidade visual do corretor (cor principal, logotipo) aplicada
+  quando configurada; modelo padrão da plataforma por tipo de anúncio
+  quando ausente (RN-076).
+- Pré-visualização sempre exibida antes do download; download via rota
+  autenticada (`/api/artwork/[artworkId]/download`) com posse verificada
+  no servidor (RN-026, RF-065).
+- Histórico de artes por imóvel, isolado por corretor.
+- 35 novos testes unitários/integração e 2 novos cenários E2E/
+  acessibilidade.
+
+Corrigido durante o desenvolvimento: o primeiro seletor de foto (radio
+button visualmente oculto, `sr-only`) não tinha nome acessível quando a
+foto não tinha texto alternativo próprio — detectado pelo teste de
+acessibilidade automatizado (axe-core), corrigido com `aria-label`
+explícito por foto.
+
 ### Adicionado — Fase 7 (IA para Anúncios)
 
 - Geração de anúncios de imóveis com IA: corretor escolhe imóvel, canal

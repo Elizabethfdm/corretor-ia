@@ -100,8 +100,12 @@ Regras: RN-061 a RN-074.
 
 ## Fase 8 — Artes
 
-Entregas: modelos predefinidos, pré-visualização, personalização de
-texto, exportação/download, testes.
+**Status: concluída.**
+
+Entregas: modelos predefinidos (formato × tipo de anúncio, definidos no
+código — RN-081), escolha da foto e edição de textos, pré-visualização
+obrigatória, download em qualidade adequada, identidade visual do
+corretor aplicada quando configurada, testes.
 
 Regras: RN-075 a RN-081.
 

@@ -4,6 +4,7 @@ import Link from "next/link";
 import { requireBrokerProfile } from "@/server/policies/broker-policy";
 import { getOwnProperty, PropertyNotFoundError } from "@/server/services/property-service";
 import { listAdvertisementsForProperty } from "@/server/services/advertisement-service";
+import { listArtworkForProperty } from "@/server/services/artwork-service";
 import { serializeProperty } from "@/features/properties/serialize-property";
 import { PropertyEditor } from "@/features/properties/components/property-editor";
 
@@ -31,6 +32,7 @@ export default async function PropertyEditPage({ params }: PropertyEditPageProps
 
   const serialized = serializeProperty(property);
   const advertisements = await listAdvertisementsForProperty(id, broker.id);
+  const artworks = await listArtworkForProperty(id, broker.id);
 
   return (
     <div className="mx-auto flex w-full max-w-3xl flex-1 flex-col gap-6 px-4 py-10">
@@ -43,7 +45,7 @@ export default async function PropertyEditPage({ params }: PropertyEditPageProps
         </h1>
       </header>
 
-      <PropertyEditor property={serialized} advertisements={advertisements} />
+      <PropertyEditor property={serialized} advertisements={advertisements} artworks={artworks} />
     </div>
   );
 }

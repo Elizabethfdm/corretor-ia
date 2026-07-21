@@ -450,3 +450,30 @@ campo distinto do corpo do anúncio).
   deliberada: não há sistema de planos em nenhuma fase do produto, então
   o limite é um valor único configurável (`AI_MONTHLY_GENERATION_LIMIT`),
   não "por plano".
+
+## Notas de implementação (Fase 8)
+
+`GeneratedArtwork` substitui a dupla `ArtworkTemplate` +
+`GeneratedArtwork` do modelo conceitual original (Fase 0) por uma única
+tabela — **não existe uma tabela `ArtworkTemplate`**. RN-081 exige
+modelos fixos definidos pela plataforma (nunca editáveis pelo corretor),
+então os modelos (dimensões por formato, layout, cor padrão por tipo)
+são constantes tipadas em `src/lib/artwork/` (ver ADR-0006), não uma
+entidade do banco — mesmo padrão já usado para os tamanhos de anúncio da
+Fase 7. Só o resultado de cada geração é persistido.
+
+- `photoMediaId` usa `@relation` opcional (`onDelete: SetNull`) com
+  `PropertyMedia` — ao contrário de `broker`/`property` (`onDelete:
+  Cascade`, mesmo padrão de `GeneratedAdvertisement`), a foto de origem
+  pode ser excluída no futuro sem invalidar o histórico de artes já
+  geradas: a imagem final já está persistida em `outputUrl`,
+  independente da foto original ainda existir.
+- `outputKey` (chave no storage) é guardado além de `outputUrl` —
+  mesmo padrão de `PropertyMedia.storageKey`/`publicUrl` — para permitir
+  uma eventual rotina de limpeza/expiração por chave no futuro, embora
+  nenhuma exclusão de arte seja implementada nesta fase.
+- Não há campo `status`/`FAILED` (diferente de `GeneratedAdvertisement`):
+  a composição da arte é local (sem chamada a um provedor externo que
+  possa falhar de forma assíncrona), então uma falha de geração nunca
+  chega a criar um registro incompleto — mesmo efeito prático do padrão
+  "só sucesso é persistido" da Fase 7, sem precisar do enum.

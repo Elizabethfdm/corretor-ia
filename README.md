@@ -1,13 +1,14 @@
 # Corretor IA
 
-> **Status atual: Fase 7 — IA para Anúncios concluída.**
+> **Status atual: Fase 8 — Artes concluída.**
 > Autenticação, perfil profissional, cadastro completo de imóveis, o
-> catálogo público, a página individual do imóvel e a geração de
+> catálogo público, a página individual do imóvel, a geração de
 > anúncios com IA (Anthropic Claude, com provedor fake para dev/testes)
-> estão funcionando de ponta a ponta. Criação de artes para redes
-> sociais ainda não foi implementada — isso começa na Fase 8. Ver
-> [`docs/planning/phases-plan.md`](docs/planning/phases-plan.md) para o
-> plano completo por fases.
+> e a criação de artes para redes sociais a partir de modelos
+> predefinidos estão funcionando de ponta a ponta. Relatórios de
+> acessos/cliques ainda não foram implementados — isso começa na Fase
+> 9. Ver [`docs/planning/phases-plan.md`](docs/planning/phases-plan.md)
+> para o plano completo por fases.
 
 ## 1. Visão geral
 
@@ -65,6 +66,9 @@ capturas de tela ainda não foram adicionadas a este documento._
 - **IA:** camada de abstração própria (`AiContentProvider`), independente
   de fornecedor — provedor real via Anthropic Claude (`@anthropic-ai/sdk`),
   provedor fake determinístico em dev/testes (ver ADR-0004).
+- **Artes para redes sociais:** composição via `sharp` (mesma biblioteca
+  do armazenamento de imagens, ADR-0003) — foto recortada sem distorção
+  e textos renderizados via Pango, sem dependência nova (ver ADR-0006).
 - **Estilo:** Tailwind CSS.
 - **Validação:** Zod (compartilhada entre cliente e servidor).
 - **Formulários:** Server Actions + `useActionState`/`useFormStatus`
@@ -93,6 +97,7 @@ e [`docs/architecture/data-model.md`](docs/architecture/data-model.md).
 | Formulários                 | Server Actions + React 19 (`useActionState`)                                     |
 | Armazenamento de mídia      | Compatível com S3 (`@aws-sdk/client-s3`; MinIO local) + `sharp`                  |
 | IA (geração de anúncios)    | Anthropic Claude (`@anthropic-ai/sdk`); provedor fake em dev/testes              |
+| Artes para redes sociais    | `sharp` (composição de foto + texto via Pango, sem dependência nova)             |
 | Testes unitários/integração | Vitest (+ Testing Library)                                                       |
 | Testes E2E                  | Playwright                                                                       |
 | Qualidade de código         | ESLint + Prettier                                                                |
@@ -261,7 +266,7 @@ Ver plano completo de fases em
 | 5    | Catálogo digital            | Concluída    |
 | 6    | Página individual do imóvel | Concluída    |
 | 7    | IA para anúncios            | Concluída    |
-| 8    | Artes                       | Não iniciada |
+| 8    | Artes                       | Concluída    |
 | 9    | Relatórios                  | Não iniciada |
 | 10   | Hardening                   | Não iniciada |
 
