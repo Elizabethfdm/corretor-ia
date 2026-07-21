@@ -2,7 +2,8 @@ import { CATALOG_PAGE_SIZE, propertyRepository } from "@/server/repositories/pro
 import { getPublicProfileBySlug } from "@/server/services/broker-profile-service";
 import type { CatalogFilters } from "@/lib/validation/catalog-filters";
 import { FEATURE_LABELS, PROPERTY_TYPE_LABELS, PURPOSE_LABELS } from "@/lib/property/labels";
-import { AddressVisibility, PropertyPurpose } from "@/generated/prisma/enums";
+import { buildPublicTitle } from "@/lib/property/build-public-title";
+import { AddressVisibility } from "@/generated/prisma/enums";
 import type { PropertyWithRelations } from "@/server/repositories/property-repository";
 import type { BrokerProfile } from "@/generated/prisma/client";
 
@@ -76,27 +77,6 @@ export interface PublicPropertyPageResult {
   profile: BrokerProfile;
   property: PublicPropertyDetail;
   similar: PublicProperty[];
-}
-
-/**
- * RN-049: título público nunca usa `internalTitle` (pode conter
- * anotações de uso interno do corretor, não destinadas ao visitante).
- * Quando o corretor não preencheu um título público distinto, sintetiza
- * um a partir de tipo, finalidade e localização — nunca deixa o campo
- * de título vazio nem vaza o título interno.
- */
-function buildPublicTitle(property: PropertyWithRelations): string {
-  if (property.publicTitle) {
-    return property.publicTitle;
-  }
-
-  const typeLabel = PROPERTY_TYPE_LABELS[property.propertyType];
-  const purposeSuffix = property.purpose === PropertyPurpose.RENT ? "aluguel" : "venda";
-  const location = property.address?.city
-    ? ` em ${property.address.neighborhood ? `${property.address.neighborhood}, ` : ""}${property.address.city}`
-    : "";
-
-  return `${typeLabel} para ${purposeSuffix}${location}`;
 }
 
 /** RN-049: nunca retorna internalTitle, internalNotes, referenceCode, storageKey etc. */

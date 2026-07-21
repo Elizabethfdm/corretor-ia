@@ -1,9 +1,10 @@
 # ADR-0004 — Abstração do provedor de inteligência artificial
 
-- **Status:** Aceita (nível de estratégia); provedor concreto a confirmar
-  na Fase 7
-- **Data:** 2026-07-19
-- **Decisores:** Arquitetura
+- **Status:** Aceita — abstração e provedor concreto implementados na
+  Fase 7
+- **Data:** 2026-07-19 (nível de estratégia) — atualizada em 2026-07-21
+  (Fase 7, provedor concreto)
+- **Decisores:** Arquitetura / Produto
 
 ## Contexto
 
@@ -63,12 +64,47 @@ Regras de implementação:
 
 - Adicionar um novo fornecedor de IA no futuro exige apenas um novo
   adaptador, sem alterar `server/services` nem a interface.
-- A escolha do fornecedor específico (ex.: qual provedor de modelos de
-  linguagem) será feita na Fase 7, avaliando custo, qualidade de saída em
-  português do Brasil, e limites de uso — critério documentado nesse
-  momento com a documentação oficial vigente do fornecedor escolhido.
+
+## Decisão efetivamente implementada (Fase 7)
+
+Provedor real escolhido: **Anthropic Claude API**, via `@anthropic-ai/sdk`
+(pacote oficial, mantido ativamente, versão `^0.112.4` no momento da
+integração — verificado com `npm view` e documentação oficial vigente
+antes de escrever qualquer código, conforme exige `CLAUDE.md`). Critério:
+boa qualidade de saída em português do Brasil, documentação oficial
+clara e estável, e alinhamento com o contexto do projeto.
+
+- `AnthropicAiProvider` (`lib/ai/providers/anthropic-ai-provider.ts`)
+  implementa `AiContentProvider` chamando `client.messages.create({
+  model, max_tokens, system, messages, temperature })` — `system`
+  carrega as instruções anti-invenção (RN-062 a RN-065) e o `user`
+  message carrega somente os dados do imóvel já validados/serializados
+  pelo `server/services` (nunca o SDK recebe o objeto `Property` bruto).
+- Modelo padrão configurável via `AI_MODEL` (padrão: `claude-sonnet-5`
+  — bom equilíbrio custo/qualidade para texto de marketing curto);
+  `AI_API_KEY` lida apenas no servidor via variável de ambiente
+  (RN-074), nunca commitada (`.env.example` traz só o nome da variável).
+- Timeout explícito por chamada (RN-072) via opção `timeout` do SDK,
+  menor que o padrão de 10 minutos da biblioteca — adequado a uma
+  geração de texto curto, não a uma tarefa de raciocínio longo.
+- Erros de rede/API são capturados via `Anthropic.APIError` (e
+  subclasses como `RateLimitError`, `APIConnectionTimeoutError`) e
+  traduzidos para um erro de domínio próprio (`AiProviderError`),
+  nunca vazando detalhes internos do SDK para a UI (RN-071).
+- A resposta esperada é solicitada em um formato de texto estruturado
+  (JSON) via instrução no `system` prompt, validado com Zod ao ser
+  recebida — se a IA responder algo que não valida contra o schema
+  esperado, tratado como falha do provedor (RN-071), nunca aceito às
+  cegas.
+- `FakeAiProvider` (`lib/ai/providers/fake-ai-provider.ts`) permanece o
+  padrão em desenvolvimento/testes (`AI_PROVIDER` não definida ou
+  `"fake"`) — determinístico, sem rede nem custo. Chamadas reais à
+  Anthropic **não são exercidas pela suíte de testes automatizada**
+  deste ambiente (exigiria uma `AI_API_KEY` real) — ver
+  `docs/evidence/fase-07-ia-para-anuncios/`.
 
 ## Referências
 
-_A preencher na Fase 7 com a documentação oficial do fornecedor
-efetivamente escolhido._
+- https://platform.claude.com/docs/en/cli-sdks-libraries/sdks/typescript
+- https://platform.claude.com/docs/en/api/messages
+- https://github.com/anthropics/anthropic-sdk-typescript

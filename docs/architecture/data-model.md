@@ -413,3 +413,40 @@ características, galeria completa e endereço).
   compartilhamento desta fase funcionam (WhatsApp, copiar link, copiar
   mensagem, compartilhamento nativo) mas não geram nenhum registro
   ainda.
+
+## Notas de implementação (Fase 7)
+
+`GeneratedAdvertisement` foi implementada com mais campos do que o
+modelo conceitual original (Fase 0) previa — `size`, `targetAudience` e
+`highlightAspects` foram adicionados para registrar integralmente os
+parâmetros de geração (RF-054), não só o resultado, e `callToAction`
+ganhou uma coluna própria (o modelo conceitual original só tinha
+`title`/`content`/`hashtags`, mas RF-055 exige "chamada para ação" como
+campo distinto do corpo do anúncio).
+
+- Ao contrário de `AuditLog` (que deliberadamente não usa `@relation`
+  formal para sobreviver ao ciclo de vida da conta referenciada),
+  `GeneratedAdvertisement` usa `@relation` formal com `BrokerProfile` e
+  `Property` (`onDelete: Cascade` em ambos) — mesmo padrão de
+  `Property`/`PropertyAddress` etc.: é um dado dependente do imóvel e do
+  corretor, não uma trilha de auditoria independente.
+- **Só gerações bem-sucedidas são persistidas.** O enum
+  `AdvertisementStatus` inclui `FAILED` (conforme o modelo conceitual
+  original), mas nesta fase nenhum registro com esse status chega a ser
+  criado — uma falha do provedor de IA (RN-071) não consome a quota do
+  corretor (RN-070) nem deixa um registro incompleto no histórico
+  (RF-058). O valor `FAILED` permanece no schema para uma eventual fase
+  futura com geração assíncrona/enfileirada, onde um registro poderia
+  ser criado antes da chamada ao provedor terminar.
+- **Título enviado à IA nunca é `internalTitle` bruto** — reaproveita a
+  mesma função `buildPublicTitle` já usada pelo catálogo público (Fase
+  5), agora extraída para `lib/property/build-public-title.ts`
+  (antes vivia só dentro de `catalog-service.ts`) para ser compartilhada
+  entre o catálogo e a geração de anúncios sem duplicar a lógica de
+  síntese de título (RN-049, RN-065).
+- **Limite mensal (RN-070)** é contado via `@@index([brokerId, createdAt])`
+  — uma consulta `count` filtrando por `createdAt >= início do mês
+  corrente`, não um contador persistido separado. Simplificação
+  deliberada: não há sistema de planos em nenhuma fase do produto, então
+  o limite é um valor único configurável (`AI_MONTHLY_GENERATION_LIMIT`),
+  não "por plano".

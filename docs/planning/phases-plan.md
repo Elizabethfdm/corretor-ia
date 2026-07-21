@@ -88,10 +88,13 @@ Regras: RN-051 a RN-060.
 
 ## Fase 7 — IA para Anúncios
 
-Entregas: interface `AiContentProvider`, primeiro adaptador de provedor,
-prompts seguros (sem invenção de dados), geração, edição, histórico,
-limites de uso, testes com provedor simulado (fake), tratamento de
-falhas e timeout.
+**Status: concluída.**
+
+Entregas: interface `AiContentProvider`, adaptador real (Anthropic
+Claude) e adaptador fake determinístico, prompts seguros (sem invenção
+de dados), geração, edição, histórico, limite mensal de uso (valor
+único configurável — sem sistema de planos ainda), testes com provedor
+simulado (fake), tratamento de falhas e timeout.
 
 Regras: RN-061 a RN-074.
 

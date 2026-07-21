@@ -144,7 +144,8 @@ model BrokerProfile {
   createdAt        DateTime @default(now())
   updatedAt        DateTime @updatedAt
 
-  properties Property[]
+  properties              Property[]
+  generatedAdvertisements GeneratedAdvertisement[]
 
   @@map("broker_profile")
 }
@@ -252,9 +253,10 @@ model Property {
   updatedAt            DateTime        @updatedAt
   deletedAt            DateTime?
 
-  address  PropertyAddress?
-  features PropertyFeature[]
-  media    PropertyMedia[]
+  address                 PropertyAddress?
+  features                PropertyFeature[]
+  media                   PropertyMedia[]
+  generatedAdvertisements GeneratedAdvertisement[]
 
   @@unique([brokerId, slug])
   @@unique([brokerId, referenceCode])
@@ -314,4 +316,67 @@ model PropertyMedia {
 
   @@index([propertyId, displayOrder])
   @@map("property_media")
+}
+
+enum AdvertisementChannel {
+  INSTAGRAM
+  FACEBOOK
+  WHATSAPP
+  STORY
+  GENERIC
+}
+
+enum AdvertisementTone {
+  PROFESSIONAL
+  ELEGANT
+  WELCOMING
+  OBJECTIVE
+  PERSUASIVE
+  HIGH_END
+  INVESTMENT
+}
+
+enum AdvertisementStatus {
+  GENERATED
+  EDITED
+  FAILED
+}
+
+enum AdvertisementSize {
+  SHORT
+  MEDIUM
+  LONG
+}
+
+/// Anúncio gerado por IA (RN-061 a RN-074). brokerId e propertyId usam
+/// @relation formal — mesmo padrão de Property (este model é
+/// inteiramente nosso, sem conflito com o Better Auth).
+model GeneratedAdvertisement {
+  id               String               @id @default(uuid())
+  brokerId         String
+  broker           BrokerProfile        @relation(fields: [brokerId], references: [id], onDelete: Cascade)
+  propertyId       String
+  property         Property             @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  channel          AdvertisementChannel
+  tone             AdvertisementTone
+  size             AdvertisementSize
+  objective        String
+  targetAudience   String?
+  highlightAspects String[]             @default([])
+  title            String
+  content          String
+  callToAction     String
+  hashtags         String[]             @default([])
+  /// Nome do provedor de IA usado (ex.: "anthropic", "fake") — RN-069.
+  provider         String
+  /// Identificador do modelo usado (ex.: "claude-sonnet-5") — RN-069.
+  model            String
+  status           AdvertisementStatus  @default(GENERATED)
+  createdAt        DateTime             @default(now())
+  updatedAt        DateTime             @updatedAt
+
+  /// RN-070: contagem de gerações por corretor num período.
+  @@index([brokerId, createdAt])
+  @@index([propertyId, createdAt])
+  @@map("generated_advertisement")
 }

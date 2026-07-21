@@ -1,13 +1,13 @@
 # Corretor IA
 
-> **Status atual: Fase 6 — Página Individual do Imóvel concluída.**
+> **Status atual: Fase 7 — IA para Anúncios concluída.**
 > Autenticação, perfil profissional, cadastro completo de imóveis, o
-> catálogo público com busca/filtros/ordenação e a página individual do
-> imóvel (galeria, contato via WhatsApp, imóveis semelhantes,
-> compartilhamento) estão funcionando de ponta a ponta. Geração de
-> anúncios com IA ainda não foi implementada — isso começa na Fase 7.
-> Ver [`docs/planning/phases-plan.md`](docs/planning/phases-plan.md)
-> para o plano completo por fases.
+> catálogo público, a página individual do imóvel e a geração de
+> anúncios com IA (Anthropic Claude, com provedor fake para dev/testes)
+> estão funcionando de ponta a ponta. Criação de artes para redes
+> sociais ainda não foi implementada — isso começa na Fase 8. Ver
+> [`docs/planning/phases-plan.md`](docs/planning/phases-plan.md) para o
+> plano completo por fases.
 
 ## 1. Visão geral
 
@@ -63,7 +63,8 @@ capturas de tela ainda não foram adicionadas a este documento._
   MinIO em desenvolvimento local), com processamento de imagem via
   `sharp` — ver ADR-0003.
 - **IA:** camada de abstração própria (`AiContentProvider`), independente
-  de fornecedor (a integrar na Fase 7).
+  de fornecedor — provedor real via Anthropic Claude (`@anthropic-ai/sdk`),
+  provedor fake determinístico em dev/testes (ver ADR-0004).
 - **Estilo:** Tailwind CSS.
 - **Validação:** Zod (compartilhada entre cliente e servidor).
 - **Formulários:** Server Actions + `useActionState`/`useFormStatus`
@@ -91,6 +92,7 @@ e [`docs/architecture/data-model.md`](docs/architecture/data-model.md).
 | Validação                   | Zod                                                                              |
 | Formulários                 | Server Actions + React 19 (`useActionState`)                                     |
 | Armazenamento de mídia      | Compatível com S3 (`@aws-sdk/client-s3`; MinIO local) + `sharp`                  |
+| IA (geração de anúncios)    | Anthropic Claude (`@anthropic-ai/sdk`); provedor fake em dev/testes              |
 | Testes unitários/integração | Vitest (+ Testing Library)                                                       |
 | Testes E2E                  | Playwright                                                                       |
 | Qualidade de código         | ESLint + Prettier                                                                |
@@ -258,7 +260,7 @@ Ver plano completo de fases em
 | 4    | Cadastro de imóveis         | Concluída    |
 | 5    | Catálogo digital            | Concluída    |
 | 6    | Página individual do imóvel | Concluída    |
-| 7    | IA para anúncios            | Não iniciada |
+| 7    | IA para anúncios            | Concluída    |
 | 8    | Artes                       | Não iniciada |
 | 9    | Relatórios                  | Não iniciada |
 | 10   | Hardening                   | Não iniciada |

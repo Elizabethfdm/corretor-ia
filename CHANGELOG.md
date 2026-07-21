@@ -8,6 +8,37 @@ partir da primeira versão publicada.
 
 ## [Não lançado]
 
+### Adicionado — Fase 7 (IA para Anúncios)
+
+- Geração de anúncios de imóveis com IA: corretor escolhe imóvel, canal
+  (Instagram, Facebook, WhatsApp, Story, genérico), tom, tamanho,
+  objetivo, público-alvo e aspectos a destacar; sistema gera título,
+  texto, chamada para ação e hashtags.
+- Abstração `AiContentProvider` (`lib/ai`), independente de fornecedor
+  (ADR-0004): `FakeAiProvider` determinístico (padrão em dev/testes,
+  sem rede nem custo) e `AnthropicAiProvider` real via
+  `@anthropic-ai/sdk` (Claude), selecionados por `AI_PROVIDER`.
+- Prompt construído exclusivamente a partir de dados do imóvel do
+  corretor autenticado, com instruções explícitas contra invenção de
+  dados, promessas indevidas e linguagem discriminatória (RN-061 a
+  RN-065) — título nunca usa `internalTitle` bruto (mesma síntese já
+  usada no catálogo público, Fase 5).
+- Conteúdo sempre sinalizado como "Gerado por IA", editável antes de
+  copiar, nunca publicado automaticamente (RN-066 a RN-068).
+- Histórico de anúncios por imóvel; limite mensal de gerações por
+  corretor, configurável (`AI_MONTHLY_GENERATION_LIMIT` — simplificação
+  documentada, produto ainda não tem sistema de planos); timeout e
+  tratamento de falha do provedor com mensagem clara (RN-070 a RN-072).
+- 31 novos testes unitários/integração e 2 novos cenários E2E/
+  acessibilidade.
+
+Corrigida também uma inconsistência descoberta ao implementar: a
+síntese de título público (`buildPublicTitle`, criada na Fase 5) foi
+extraída de `catalog-service.ts` para `lib/property/build-public-title.ts`
+e reaproveitada aqui — a geração de anúncio usava anteriormente
+`publicTitle || internalTitle`, o que teria enviado o título interno do
+corretor para a IA quando `publicTitle` estivesse vazio (RN-065).
+
 ### Adicionado — Fase 6 (Página Individual do Imóvel)
 
 - Página pública do imóvel (`/catalogo/[slug]/[propertySlug]`) com
