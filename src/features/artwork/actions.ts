@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { requireBrokerProfile } from "@/server/policies/broker-policy";
 import { recordAuditLog } from "@/server/services/audit-log-service";
+import { recordArtGenerated } from "@/server/services/analytics-service";
 import {
   ArtworkPhotoNotFoundError,
   ArtworkRenderError,
@@ -50,6 +51,7 @@ export async function generateArtworkAction(
         templateType: parsed.data.templateType,
       },
     });
+    await recordArtGenerated(broker.id, propertyId);
     revalidatePath(`/painel/imoveis/${propertyId}/artes`);
     return { status: "success", message: "Arte gerada." };
   } catch (error) {

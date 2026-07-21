@@ -2,9 +2,12 @@
 
 import { useState } from "react";
 import { buildWhatsAppShareLink } from "@/lib/whatsapp/build-link";
+import { recordCopyLinkAction, recordShareClickAction } from "@/features/analytics/actions";
 
 interface ShareButtonsProps {
   text: string;
+  brokerId: string;
+  propertyId: string | null;
 }
 
 type CopyFeedback = "idle" | "link" | "message";
@@ -26,32 +29,37 @@ type CopyFeedback = "idle" | "link" | "message";
  * RN-058: nunca afirma que a mensagem foi enviada — o envio efetivo
  * acontece dentro do WhatsApp, fora do controle desta aplicação.
  *
- * RN-057: o clique só é registrado quando a infraestrutura de analytics
- * existir (Fase 9) — não implementado ainda, ver ADR/evidência.
+ * RN-057: clique registrado como evento agregado (`share_click`/
+ * `copy_link`, Fase 9) — nunca bloqueia a ação do visitante se a
+ * gravação falhar.
  */
-export function ShareButtons({ text }: ShareButtonsProps) {
+export function ShareButtons({ text, brokerId, propertyId }: ShareButtonsProps) {
   const [feedback, setFeedback] = useState<CopyFeedback>("idle");
 
   function handleWhatsAppShare() {
     const href = buildWhatsAppShareLink(`${text}\n${window.location.href}`);
     window.open(href, "_blank", "noopener,noreferrer");
+    void recordShareClickAction(brokerId, propertyId);
   }
 
   async function handleCopyLink() {
     await navigator.clipboard.writeText(window.location.href);
     setFeedback("link");
     window.setTimeout(() => setFeedback("idle"), 3000);
+    void recordCopyLinkAction(brokerId, propertyId);
   }
 
   async function handleCopyMessage() {
     await navigator.clipboard.writeText(`${text}\n${window.location.href}`);
     setFeedback("message");
     window.setTimeout(() => setFeedback("idle"), 3000);
+    void recordShareClickAction(brokerId, propertyId);
   }
 
   async function handleNativeShare() {
     if ("share" in navigator) {
       await navigator.share({ title: text, url: window.location.href });
+      void recordShareClickAction(brokerId, propertyId);
       return;
     }
     await handleCopyLink();

@@ -8,6 +8,37 @@ partir da primeira versão publicada.
 
 ## [Não lançado]
 
+### Adicionado — Fase 9 (Relatórios)
+
+- Registro dos 7 eventos de analytics do MVP: `catalog_view`,
+  `property_view`, `whatsapp_click`, `share_click`, `copy_link`,
+  `ad_generated`, `art_generated` (RN-089).
+- Relatório em `/painel/relatorios`: cartões de indicadores por tipo de
+  evento, imóvel mais acessado no período (RF-069) e filtro por período
+  (hoje/7 dias/30 dias/personalizado, RF-068), com estado vazio claro
+  quando não há dados (RN-088).
+- Isolamento por corretor em toda consulta de relatório (RN-082,
+  RF-070).
+- Mitigação de duplicidade (RN-084) via hash de sessão calculado por
+  requisição (IP + User-Agent + dia-calendário, não reversível —
+  RN-087), sem cookie de visitante nem `middleware.ts` novo (ADR-0007).
+- Classificador de dispositivo por regras próprias (Mobile/Tablet/
+  Desktop/Desconhecido), sem dependência nova.
+- Eventos de clique (`whatsapp_click`, `share_click`, `copy_link`)
+  registrados via Server Actions públicas, chamadas a partir do
+  catálogo e da página do imóvel; `PropertyContactCard` e o botão de
+  WhatsApp do catálogo passaram a ser client components para isso.
+- `ad_generated`/`art_generated` registrados nas Server Actions de
+  geração de anúncio (Fase 7) e arte (Fase 8) já existentes.
+- 29 novos testes unitários/integração e 3 novos cenários E2E/
+  acessibilidade.
+
+Corrigido durante o desenvolvimento: um teste de outra fase
+(`tests/unit/lib/validation/artwork.test.ts`) tinha um warning de lint
+não percebido antes (variável desestruturada e descartada via
+`_subtitle`, não coberta pelo padrão de ignorar variáveis não usadas do
+projeto) — corrigido para não depender desse padrão.
+
 ### Adicionado — Fase 8 (Artes)
 
 - Geração de artes para redes sociais: corretor escolhe formato (feed

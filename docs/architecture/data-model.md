@@ -477,3 +477,28 @@ Fase 7. Só o resultado de cada geração é persistido.
   possa falhar de forma assíncrona), então uma falha de geração nunca
   chega a criar um registro incompleto — mesmo efeito prático do padrão
   "só sucesso é persistido" da Fase 7, sem precisar do enum.
+
+## Notas de implementação (Fase 9)
+
+`AnalyticsEvent` foi implementada essencialmente como modelada, com uma
+omissão deliberada: **sem o campo `metadata`** previsto no modelo
+conceitual original (Fase 0). Nenhum dos requisitos RF-067 a RF-071
+exige informação além de corretor, imóvel (opcional), tipo de evento,
+sessão, referrer, categoria de dispositivo e data/hora — adicionar um
+campo JSON sem um uso concreto violaria a própria diretriz do projeto
+contra estrutura especulativa. Se uma fase futura precisar de contexto
+adicional por evento, o campo pode ser adicionado então, com o schema
+de validação associado que a diretriz de JSON exige.
+
+- `sessionHash` é calculado sem cookie de visitante — hash de IP +
+  User-Agent + dia-calendário (ver ADR-0007), nunca o IP em si.
+- `brokerId`/`propertyId` usam `@relation` formal com `onDelete:
+  Cascade` (mesmo padrão de `GeneratedAdvertisement`/`GeneratedArtwork`)
+  — ao contrário de `AuditLog`, que deliberadamente sobrevive ao ciclo
+  de vida da conta. Como não existe relatório administrativo
+  cross-corretor no MVP, perder o histórico de analytics junto com a
+  conta/imóvel excluído é aceitável.
+- Índices compostos `(brokerId, eventType, occurredAt)` e `(brokerId,
+  propertyId, eventType, occurredAt)` — o segundo cobre tanto a consulta
+  de dedup (RN-084) quanto a agregação por imóvel (RF-069) sem exigir
+  um índice adicional.

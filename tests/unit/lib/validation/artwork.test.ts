@@ -40,7 +40,9 @@ describe("generateArtworkSchema (RF-062, RF-063)", () => {
   });
 
   it("assume subtítulo vazio quando ausente (foto sem quartos/área/preço exibível)", () => {
-    const { subtitle: _subtitle, ...withoutSubtitle } = validInput;
+    const withoutSubtitle: Record<string, unknown> = { ...validInput };
+    delete withoutSubtitle["subtitle"];
+
     const result = generateArtworkSchema.safeParse(withoutSubtitle);
     expect(result.success).toBe(true);
     if (result.success) expect(result.data.subtitle).toBe("");

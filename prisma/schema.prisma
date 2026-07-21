@@ -147,6 +147,7 @@ model BrokerProfile {
   properties              Property[]
   generatedAdvertisements GeneratedAdvertisement[]
   generatedArtworks       GeneratedArtwork[]
+  analyticsEvents         AnalyticsEvent[]
 
   @@map("broker_profile")
 }
@@ -259,6 +260,7 @@ model Property {
   media                   PropertyMedia[]
   generatedAdvertisements GeneratedAdvertisement[]
   generatedArtworks       GeneratedArtwork[]
+  analyticsEvents         AnalyticsEvent[]
 
   @@unique([brokerId, slug])
   @@unique([brokerId, referenceCode])
@@ -431,4 +433,43 @@ model GeneratedArtwork {
   @@index([brokerId, createdAt])
   @@index([propertyId, createdAt])
   @@map("generated_artwork")
+}
+
+enum AnalyticsEventType {
+  CATALOG_VIEW
+  PROPERTY_VIEW
+  WHATSAPP_CLICK
+  SHARE_CLICK
+  COPY_LINK
+  AD_GENERATED
+  ART_GENERATED
+}
+
+enum UserAgentCategory {
+  MOBILE
+  TABLET
+  DESKTOP
+  UNKNOWN
+}
+
+/// Evento de analytics (RN-082 a RN-090) — sempre agregado em
+/// relatórios, nunca exibido como lista individualizada (RN-090).
+/// `sessionHash` é um hash não reversível (RN-087), nunca um
+/// identificador pessoal direto — ver ADR-0007 para como é calculado
+/// sem depender de cookie.
+model AnalyticsEvent {
+  id                String             @id @default(uuid())
+  brokerId          String
+  broker            BrokerProfile      @relation(fields: [brokerId], references: [id], onDelete: Cascade)
+  propertyId        String?
+  property          Property?          @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  eventType         AnalyticsEventType
+  sessionHash       String?
+  referrer          String?
+  userAgentCategory UserAgentCategory  @default(UNKNOWN)
+  occurredAt        DateTime           @default(now())
+
+  @@index([brokerId, eventType, occurredAt])
+  @@index([brokerId, propertyId, eventType, occurredAt])
+  @@map("analytics_event")
 }

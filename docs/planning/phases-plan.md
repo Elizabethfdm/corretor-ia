@@ -111,10 +111,14 @@ Regras: RN-075 a RN-081.
 
 ## Fase 9 — Relatórios
 
+**Status: concluída.**
+
 Entregas: registro dos eventos de analytics (`catalog_view`,
 `property_view`, `whatsapp_click`, `share_click`, `copy_link`,
 `ad_generated`, `art_generated`), agregações, cartões de indicadores,
-filtros por período, garantias de privacidade, testes.
+filtros por período (hoje/7 dias/30 dias/personalizado), imóvel mais
+acessado, garantias de privacidade (dedup sem cookie, hash não
+reversível), testes.
 
 Regras: RN-082 a RN-090.
 

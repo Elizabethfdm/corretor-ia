@@ -1,14 +1,15 @@
 # Corretor IA
 
-> **Status atual: Fase 8 — Artes concluída.**
+> **Status atual: Fase 9 — Relatórios concluída.**
 > Autenticação, perfil profissional, cadastro completo de imóveis, o
 > catálogo público, a página individual do imóvel, a geração de
-> anúncios com IA (Anthropic Claude, com provedor fake para dev/testes)
-> e a criação de artes para redes sociais a partir de modelos
-> predefinidos estão funcionando de ponta a ponta. Relatórios de
-> acessos/cliques ainda não foram implementados — isso começa na Fase
-> 9. Ver [`docs/planning/phases-plan.md`](docs/planning/phases-plan.md)
-> para o plano completo por fases.
+> anúncios com IA (Anthropic Claude, com provedor fake para dev/testes),
+> a criação de artes para redes sociais e o relatório de acessos,
+> cliques e conteúdo gerado (com filtro por período) estão funcionando
+> de ponta a ponta. Hardening final (segurança, acessibilidade,
+> performance) ainda não foi feito — isso começa na Fase 10. Ver
+> [`docs/planning/phases-plan.md`](docs/planning/phases-plan.md) para o
+> plano completo por fases.
 
 ## 1. Visão geral
 
@@ -69,6 +70,9 @@ capturas de tela ainda não foram adicionadas a este documento._
 - **Artes para redes sociais:** composição via `sharp` (mesma biblioteca
   do armazenamento de imagens, ADR-0003) — foto recortada sem distorção
   e textos renderizados via Pango, sem dependência nova (ver ADR-0006).
+- **Analytics/relatórios:** eventos agregados por corretor, sem cookie
+  de visitante — sessão calculada por hash (IP + User-Agent + dia),
+  sem dependência nova (ver ADR-0007).
 - **Estilo:** Tailwind CSS.
 - **Validação:** Zod (compartilhada entre cliente e servidor).
 - **Formulários:** Server Actions + `useActionState`/`useFormStatus`
@@ -98,6 +102,7 @@ e [`docs/architecture/data-model.md`](docs/architecture/data-model.md).
 | Armazenamento de mídia      | Compatível com S3 (`@aws-sdk/client-s3`; MinIO local) + `sharp`                  |
 | IA (geração de anúncios)    | Anthropic Claude (`@anthropic-ai/sdk`); provedor fake em dev/testes              |
 | Artes para redes sociais    | `sharp` (composição de foto + texto via Pango, sem dependência nova)             |
+| Analytics/relatórios        | Eventos agregados por corretor; dedup por hash, sem cookie (sem dependência nova) |
 | Testes unitários/integração | Vitest (+ Testing Library)                                                       |
 | Testes E2E                  | Playwright                                                                       |
 | Qualidade de código         | ESLint + Prettier                                                                |
@@ -267,7 +272,7 @@ Ver plano completo de fases em
 | 6    | Página individual do imóvel | Concluída    |
 | 7    | IA para anúncios            | Concluída    |
 | 8    | Artes                       | Concluída    |
-| 9    | Relatórios                  | Não iniciada |
+| 9    | Relatórios                  | Concluída    |
 | 10   | Hardening                   | Não iniciada |
 
 ## 17. Contribuição

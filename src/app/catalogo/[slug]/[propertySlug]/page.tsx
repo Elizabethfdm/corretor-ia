@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getPublicProperty } from "@/server/services/catalog-service";
+import { recordPropertyView } from "@/server/services/analytics-service";
 import { formatCurrencyBRL } from "@/lib/money/format-currency";
 import { buildPropertyShareText } from "@/lib/sharing/build-share-text";
 import { PropertyGallery } from "@/features/catalog/components/property-gallery";
@@ -38,6 +39,7 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
   }
 
   const { profile, property, similar } = result;
+  await recordPropertyView(profile.id, property.id);
   const propertyUrl = `${APP_URL}/catalogo/${slug}/${propertySlug}`;
 
   const specs = [
@@ -169,6 +171,8 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
           city: property.city,
           neighborhood: property.neighborhood,
         })}
+        brokerId={profile.id}
+        propertyId={property.id}
       />
 
       <PropertyContactCard profile={profile} property={property} propertyUrl={propertyUrl} />

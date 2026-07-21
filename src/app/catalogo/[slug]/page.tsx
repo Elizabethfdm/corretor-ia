@@ -2,12 +2,14 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { getPublicProfileBySlug } from "@/server/services/broker-profile-service";
 import { getPublicCatalog } from "@/server/services/catalog-service";
+import { recordCatalogView } from "@/server/services/analytics-service";
 import { parseCatalogFilters } from "@/lib/validation/catalog-filters";
 import { buildWhatsAppLink } from "@/lib/whatsapp/build-link";
 import { CatalogFiltersForm } from "@/features/catalog/components/catalog-filters-form";
 import { CatalogGrid } from "@/features/catalog/components/catalog-grid";
 import { CatalogPagination } from "@/features/catalog/components/catalog-pagination";
 import { ShareButtons } from "@/features/catalog/components/share-buttons";
+import { CatalogWhatsAppButton } from "@/features/catalog/components/catalog-whatsapp-button";
 import { buildCatalogShareText } from "@/lib/sharing/build-share-text";
 
 interface CatalogPageProps {
@@ -44,6 +46,7 @@ export default async function CatalogPage({ params, searchParams }: CatalogPageP
   }
 
   const { profile } = catalog;
+  await recordCatalogView(profile.id);
   const hasActiveFilters = Boolean(
     filters.q ||
       filters.purpose ||
@@ -133,7 +136,11 @@ export default async function CatalogPage({ params, searchParams }: CatalogPageP
           {catalog.total} {catalog.total === 1 ? "imóvel encontrado" : "imóveis encontrados"}
         </p>
         {/* RN-059: mesma URL atual serve tanto para o catálogo completo quanto para um resultado filtrado. */}
-        <ShareButtons text={buildCatalogShareText(profile.professionalName)} />
+        <ShareButtons
+          text={buildCatalogShareText(profile.professionalName)}
+          brokerId={profile.id}
+          propertyId={null}
+        />
       </div>
 
       <CatalogGrid
@@ -149,16 +156,7 @@ export default async function CatalogPage({ params, searchParams }: CatalogPageP
         totalPages={catalog.totalPages}
       />
 
-      {whatsappLink ? (
-        <a
-          href={whatsappLink}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="fixed inset-x-4 bottom-4 mx-auto flex max-w-md items-center justify-center rounded-md bg-green-700 px-4 py-3 text-center font-medium text-white shadow-lg hover:bg-green-800 sm:static sm:mx-0"
-        >
-          Falar no WhatsApp
-        </a>
-      ) : null}
+      {whatsappLink ? <CatalogWhatsAppButton href={whatsappLink} brokerId={profile.id} /> : null}
     </div>
   );
 }

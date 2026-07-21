@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { requireBrokerProfile } from "@/server/policies/broker-policy";
 import { recordAuditLog } from "@/server/services/audit-log-service";
+import { recordAdGenerated } from "@/server/services/analytics-service";
 import {
   AdvertisementLimitReachedError,
   AdvertisementNotFoundError,
@@ -48,6 +49,7 @@ export async function generateAdvertisementAction(
       entityId: advertisement.id,
       safeMetadata: { propertyId, channel: parsed.data.channel, tone: parsed.data.tone },
     });
+    await recordAdGenerated(broker.id, propertyId);
     revalidatePath(`/painel/imoveis/${propertyId}/anuncios`);
     return { status: "success", message: "Anúncio gerado." };
   } catch (error) {

@@ -201,10 +201,10 @@ renumeradas para manter numeração única no projeto.
   `share_click`; a referência original apontava para RN-064 por engano,
   regra sobre linguagem não discriminatória em anúncios de IA, sem
   relação com este ponto — corrigido na Fase 6), sem armazenar o
-  conteúdo da conversa do WhatsApp. *Nota de implementação (Fase 6): o
-  registro em si depende de `AnalyticsEvent`, criado somente na Fase 9 —
-  os botões de compartilhamento desta fase funcionam, mas o evento ainda
-  não é gravado. Ver `docs/evidence/fase-06-pagina-do-imovel/`.*
+  conteúdo da conversa do WhatsApp. Implementado na Fase 9 (ver
+  `docs/evidence/fase-09-relatorios/`) — os botões de compartilhamento
+  existiam desde a Fase 6, mas o registro do evento dependia de
+  `AnalyticsEvent`, criado apenas nesta fase.
 - **RN-058 — Sem confirmação falsa de envio.** A aplicação nunca afirma
   que uma mensagem foi enviada, pois o envio efetivo ocorre dentro do
   WhatsApp, fora do controle da aplicação.

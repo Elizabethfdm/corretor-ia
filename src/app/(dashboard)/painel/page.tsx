@@ -36,6 +36,9 @@ export default async function PainelPage() {
           <Link href="/painel/perfil" className="text-sm underline">
             Editar perfil
           </Link>
+          <Link href="/painel/relatorios" className="text-sm underline">
+            Ver relatórios
+          </Link>
         </section>
       ) : (
         <section className="flex flex-col gap-3 rounded-lg border border-amber-300 bg-amber-50 p-4 dark:border-amber-800 dark:bg-amber-950">
