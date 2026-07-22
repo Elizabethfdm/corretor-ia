@@ -8,6 +8,33 @@ partir da primeira versão publicada.
 
 ## [Não lançado]
 
+### Adicionado — Refatoração de UX/UI, Fase 1 (Fundação do design system)
+
+- ADR-0009: `class-variance-authority` + `clsx` + `tailwind-merge`
+  (padrão shadcn/ui) para composição de classes/variantes, e primitivos
+  **Radix UI** (`@radix-ui/react-dialog`, `@radix-ui/react-tabs`,
+  `@radix-ui/react-dropdown-menu`) para os componentes que exigem
+  gestão de foco/teclado complexa (RNF-019). Ícones via `lucide-react`.
+- Paleta de marca (`primary`/`success`/`danger`/`warning`/`neutral`) e
+  tipografia Geist ativada de fato em `src/app/globals.css` — antes
+  carregada via `next/font/google` mas sobrescrita por uma regra
+  `font-family: Arial, Helvetica, sans-serif` que a tornava inerte.
+- Novo helper `cn()` (`src/lib/utils/cn.ts`) e 10 novos componentes em
+  `src/components/ui/`: `button`, `card`, `badge`, `dialog`, `tabs`,
+  `dropdown-menu`, `table`, `pagination`, `skeleton`, `spinner`.
+  Nenhuma página os consome ainda — fundação para as próximas fases da
+  refatoração de UX/UI (shell/navegação, dashboard, cadastro de
+  imóveis, catálogo, página do imóvel, relatórios/admin).
+- Componentes já existentes (`input`, `select`, `submit-button`,
+  `form-message`, `form-field`) migrados para `cn()` internamente,
+  mantendo a aparência visual e a API de props idênticas às de antes
+  (paleta `neutral`/`success`/`danger` alinhada byte a byte às cores
+  Tailwind já em uso — nenhuma página muda de aparência nesta fase).
+- Primeiros testes de renderização de componente React do projeto
+  (`@testing-library/react`, já instalado mas nunca usado para isso):
+  `cn()`, `Button` (variantes), `Dialog` (abre/fecha com Esc, devolve
+  foco ao gatilho — RNF-019), `Tabs` (navegação por teclado).
+
 ### Adicionado — Fase 10 (Hardening)
 
 - Painel administrativo mínimo (`/painel-admin`, RF-072 a RF-075): lista
