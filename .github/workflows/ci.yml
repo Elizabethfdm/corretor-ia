@@ -10,6 +10,9 @@ env:
   NODE_VERSION: "22.x"
   DATABASE_URL: "postgresql://corretor_ia:corretor_ia_ci_only@localhost:5432/corretor_ia?schema=public"
   APP_URL: "http://localhost:3000"
+  # Segredo só de CI (nunca usado fora deste pipeline) — Better Auth
+  # (ADR-0002) exige AUTH_SECRET com pelo menos 32 caracteres.
+  AUTH_SECRET: "ci-only-secret-never-used-in-production-3f7a9c2b"
   STORAGE_BUCKET_NAME: "corretor-ia-media"
   STORAGE_REGION: "us-east-1"
   STORAGE_ACCESS_KEY_ID: "corretor_ia"
