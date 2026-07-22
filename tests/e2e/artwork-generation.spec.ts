@@ -37,6 +37,7 @@ test.describe("Geração de artes para redes sociais (RN-075 a RN-081)", () => {
   test("corretor gera uma arte, vê a pré-visualização, e baixa o arquivo", async ({
     page,
     request,
+    browserName,
   }) => {
     test.setTimeout(90_000);
 
@@ -60,10 +61,31 @@ test.describe("Geração de artes para redes sociais (RN-075 a RN-081)", () => {
     await expect(page.getByText("Nenhuma arte gerada ainda para este imóvel.")).not.toBeVisible();
     await expect(page.getByRole("img", { name: /Pré-visualização da arte/ })).toBeVisible();
 
-    const downloadPromise = page.waitForEvent("download");
-    await page.getByRole("link", { name: "Baixar arte" }).click();
-    const download = await downloadPromise;
-    expect(download.suggestedFilename()).toMatch(/^arte-.*\.jpg$/);
+    const downloadLink = page.getByRole("link", { name: "Baixar arte" });
+
+    if (browserName === "webkit") {
+      // RF-065: o WebKit do Linux (usado no CI) não dispara de forma
+      // confiável o evento nativo "download" do navegador para uma
+      // navegação com `Content-Disposition: attachment` — limitação
+      // conhecida do Playwright com WebKit em Linux, que não reproduz
+      // no Safari real (macOS/iOS, onde ninguém roda em Linux). Chromium
+      // e Firefox (e o Chromium do projeto "mobile") já cobrem a
+      // verificação completa via evento de download; aqui o mesmo
+      // contrato é verificado diretamente pela resposta HTTP, usando a
+      // sessão do próprio navegador (cookies compartilhados via
+      // `page.request`), sem depender do mecanismo que falha.
+      const href = await downloadLink.getAttribute("href");
+      const response = await page.request.get(href!);
+      expect(response.ok()).toBe(true);
+      expect(response.headers()["content-disposition"]).toMatch(
+        /^attachment; filename="arte-.*\.jpg"/,
+      );
+    } else {
+      const downloadPromise = page.waitForEvent("download");
+      await downloadLink.click();
+      const download = await downloadPromise;
+      expect(download.suggestedFilename()).toMatch(/^arte-.*\.jpg$/);
+    }
 
     await deleteTestUserByEmail(email);
   });

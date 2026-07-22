@@ -63,6 +63,18 @@ diretiva, isolou uma única falha intermitente de timing num teste de
 acessibilidade próprio; a terceira confirmou a intermitência; a quarta,
 após corrigir o teste, fechou 255/255 de forma limpa.
 
+**Nota importante**: esses 255/255 foram alcançados neste ambiente local
+(Windows). A primeira execução real no pipeline de CI (GitHub Actions,
+`ubuntu-latest`) só aconteceu depois do push da fase, e revelou mais
+três problemas que a validação local não conseguia reproduzir por
+natureza — dois de ambiente (`npm audit` pego por um aviso de
+vulnerabilidade publicado horas depois; `AUTH_SECRET` nunca definido no
+workflow, lacuna pré-existente desde a Fase 1/2) e um de motor de
+navegador (WebKit em Linux, usado pelo runner do CI, com uma limitação
+conhecida no evento nativo de download). Ver itens 7 a 9 em "Bugs
+encontrados e corrigidos" abaixo — todos corrigidos e confirmados antes
+de considerar o pipeline real fechado.
+
 ## Revisão de segurança dirigida (`docs/quality/test-strategy.md`, seção 6)
 
 | Item                                          | Resultado                                                                                                                                                                          |
@@ -236,6 +248,34 @@ format` (reescrita automática, sem mudança de comportamento) e
    novo release do Next.js. Revalidado `npm audit --audit-level=high`
    (voltou a sair limpo, exit 0) e typecheck/lint/format/testes/build
    depois da mudança.
+8. **`AUTH_SECRET` nunca esteve definido no workflow do CI** — outra
+   lacuna pré-existente (desde a Fase 1/2), nunca percebida porque o
+   pipeline real, aparentemente, nunca tinha chegado a rodar por
+   completo antes. Toda etapa que importa `src/lib/auth/auth.ts`
+   (testes de integração de autenticação, migrações, build) falhava com
+   "Variável de ambiente obrigatória ausente: AUTH_SECRET". Corrigido
+   adicionando um segredo fixo só de CI ao `ci.yml` (nunca usado fora do
+   pipeline), mesmo padrão já usado para as demais variáveis desse
+   workflow.
+9. **Download da arte não confiável no WebKit do Linux (usado pelo
+   runner do CI), mas sempre verde nas execuções locais (Windows).**
+   Depois dos dois ajustes acima, o CI chegou pela primeira vez até a
+   suíte E2E completa — e ali `tests/e2e/artwork-generation.spec.ts`
+   falhou nos dois projetos com motor WebKit (`webkit-desktop` e
+   `tablet`) com `page.waitForEvent: ... waiting for event "download"`
+   até o timeout, mesmo depois das 2 novas tentativas automáticas do CI
+   (`retries: 2`). Investigado: é uma limitação conhecida do WebKit em
+   Linux (o build usado pelo Playwright em CI) com o evento nativo de
+   download do navegador para uma navegação com `Content-Disposition:
+attachment` — não reproduz no Safari real, que só roda em macOS/iOS,
+   nunca em Linux. Corrigido sem enfraquecer a cobertura: para o motor
+   WebKit especificamente, o mesmo contrato (RF-065) passou a ser
+   verificado diretamente pela resposta HTTP (`page.request`, reaproveitando
+   a sessão do navegador), em vez de depender do evento de download que
+   falha nesse ambiente — Chromium e Firefox (e o Chromium do projeto
+   "mobile") continuam verificando o fluxo completo via evento nativo.
+   Reconfirmado localmente nos três projetos relevantes
+   (`chromium-desktop`, `webkit-desktop`, `tablet`) antes de reenviar.
 
 ## Limitações conhecidas (não implementadas nesta fase)
 
