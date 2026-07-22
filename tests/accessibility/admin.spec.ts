@@ -17,7 +17,11 @@ test.describe("Acessibilidade — painel administrativo", () => {
     test.setTimeout(60_000);
 
     const adminEmail = uniqueEmail("a11y-admin");
-    await createTestUser(request, { name: "Admin Teste", email: adminEmail, password: "senha1234" });
+    await createTestUser(request, {
+      name: "Admin Teste",
+      email: adminEmail,
+      password: "senha1234",
+    });
     await promoteToAdmin(adminEmail);
 
     await loginAs(page, adminEmail, "senha1234");
@@ -39,7 +43,9 @@ test.describe("Acessibilidade — painel administrativo", () => {
     await brokerPage.goto("/painel/perfil");
     await brokerPage.getByLabel("Nome profissional").fill("Corretor Teste");
     await brokerPage.getByLabel("Nome completo").fill("Corretor Teste Completo");
-    await brokerPage.getByLabel("Endereço do catálogo (slug)").fill(`a11y-admin-broker-${Date.now()}`);
+    await brokerPage
+      .getByLabel("Endereço do catálogo (slug)")
+      .fill(`a11y-admin-broker-${Date.now()}`);
     await brokerPage.getByRole("button", { name: "Salvar perfil" }).click();
     await expect(brokerPage.getByText("Perfil salvo com sucesso.")).toBeVisible();
     await brokerContext.close();

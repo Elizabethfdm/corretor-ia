@@ -446,7 +446,7 @@ campo distinto do corpo do anúncio).
   síntese de título (RN-049, RN-065).
 - **Limite mensal (RN-070)** é contado via `@@index([brokerId, createdAt])`
   — uma consulta `count` filtrando por `createdAt >= início do mês
-  corrente`, não um contador persistido separado. Simplificação
+corrente`, não um contador persistido separado. Simplificação
   deliberada: não há sistema de planos em nenhuma fase do produto, então
   o limite é um valor único configurável (`AI_MONTHLY_GENERATION_LIMIT`),
   não "por plano".
@@ -464,7 +464,7 @@ Fase 7. Só o resultado de cada geração é persistido.
 
 - `photoMediaId` usa `@relation` opcional (`onDelete: SetNull`) com
   `PropertyMedia` — ao contrário de `broker`/`property` (`onDelete:
-  Cascade`, mesmo padrão de `GeneratedAdvertisement`), a foto de origem
+Cascade`, mesmo padrão de `GeneratedAdvertisement`), a foto de origem
   pode ser excluída no futuro sem invalidar o histórico de artes já
   geradas: a imagem final já está persistida em `outputUrl`,
   independente da foto original ainda existir.
@@ -493,13 +493,13 @@ de validação associado que a diretriz de JSON exige.
 - `sessionHash` é calculado sem cookie de visitante — hash de IP +
   User-Agent + dia-calendário (ver ADR-0007), nunca o IP em si.
 - `brokerId`/`propertyId` usam `@relation` formal com `onDelete:
-  Cascade` (mesmo padrão de `GeneratedAdvertisement`/`GeneratedArtwork`)
+Cascade` (mesmo padrão de `GeneratedAdvertisement`/`GeneratedArtwork`)
   — ao contrário de `AuditLog`, que deliberadamente sobrevive ao ciclo
   de vida da conta. Como não existe relatório administrativo
   cross-corretor no MVP, perder o histórico de analytics junto com a
   conta/imóvel excluído é aceitável.
 - Índices compostos `(brokerId, eventType, occurredAt)` e `(brokerId,
-  propertyId, eventType, occurredAt)` — o segundo cobre tanto a consulta
+propertyId, eventType, occurredAt)` — o segundo cobre tanto a consulta
   de dedup (RN-084) quanto a agregação por imóvel (RF-069) sem exigir
   um índice adicional.
 

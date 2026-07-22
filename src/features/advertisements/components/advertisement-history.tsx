@@ -19,7 +19,11 @@ export function AdvertisementHistory({ advertisements, propertyId }: Advertiseme
   return (
     <div className="flex flex-col gap-4">
       {advertisements.map((advertisement) => (
-        <AdvertisementCard key={advertisement.id} advertisement={advertisement} propertyId={propertyId} />
+        <AdvertisementCard
+          key={advertisement.id}
+          advertisement={advertisement}
+          propertyId={propertyId}
+        />
       ))}
     </div>
   );

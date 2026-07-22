@@ -56,7 +56,8 @@ export function resolveReportDateRange(
     }
   }
 
-  const daysBack = filters.period === "custom" ? PERIOD_DAYS_BACK["7d"] : PERIOD_DAYS_BACK[filters.period];
+  const daysBack =
+    filters.period === "custom" ? PERIOD_DAYS_BACK["7d"] : PERIOD_DAYS_BACK[filters.period];
   const from = new Date(now.getFullYear(), now.getMonth(), now.getDate() - daysBack, 0, 0, 0, 0);
   return { from, to: endOfToday };
 }

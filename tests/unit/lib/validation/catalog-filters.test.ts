@@ -1,8 +1,5 @@
 import { describe, expect, it } from "vitest";
-import {
-  buildCatalogQueryString,
-  parseCatalogFilters,
-} from "@/lib/validation/catalog-filters";
+import { buildCatalogQueryString, parseCatalogFilters } from "@/lib/validation/catalog-filters";
 
 describe("parseCatalogFilters", () => {
   it("aceita searchParams vazio, com valores padrão", () => {

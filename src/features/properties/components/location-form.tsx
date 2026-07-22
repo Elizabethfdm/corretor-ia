@@ -87,10 +87,17 @@ export function LocationForm({ property }: LocationFormProps) {
             aria-describedby="zipCode-status"
           />
         </FormField>
-        <div className="flex items-end pb-2 text-sm" id="zipCode-status" role="status" aria-live="polite">
+        <div
+          className="flex items-end pb-2 text-sm"
+          id="zipCode-status"
+          role="status"
+          aria-live="polite"
+        >
           {cepStatus === "loading" && <span className="text-zinc-500">Buscando endereço...</span>}
           {cepStatus === "filled" && (
-            <span className="text-green-700 dark:text-green-400">Endereço preenchido pelo CEP.</span>
+            <span className="text-green-700 dark:text-green-400">
+              Endereço preenchido pelo CEP.
+            </span>
           )}
           {cepStatus === "not-found" && (
             <span className="text-amber-700 dark:text-amber-400">
@@ -112,7 +119,12 @@ export function LocationForm({ property }: LocationFormProps) {
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <FormField id="number" label="Número (opcional)" errors={errors["number"]}>
-          <Input name="number" type="text" maxLength={20} defaultValue={property.address?.number ?? ""} />
+          <Input
+            name="number"
+            type="text"
+            maxLength={20}
+            defaultValue={property.address?.number ?? ""}
+          />
         </FormField>
         <FormField id="complement" label="Complemento (opcional)" errors={errors["complement"]}>
           <Input
@@ -154,7 +166,11 @@ export function LocationForm({ property }: LocationFormProps) {
         </FormField>
       </div>
 
-      <FormField id="referencePoint" label="Ponto de referência (opcional)" errors={errors["referencePoint"]}>
+      <FormField
+        id="referencePoint"
+        label="Ponto de referência (opcional)"
+        errors={errors["referencePoint"]}
+      >
         <Input
           name="referencePoint"
           type="text"
@@ -163,7 +179,11 @@ export function LocationForm({ property }: LocationFormProps) {
         />
       </FormField>
 
-      <FormField id="visibilityType" label="Privacidade do endereço" errors={errors["visibilityType"]}>
+      <FormField
+        id="visibilityType"
+        label="Privacidade do endereço"
+        errors={errors["visibilityType"]}
+      >
         <Select
           name="visibilityType"
           defaultValue={property.address?.visibilityType ?? AddressVisibility.HIDDEN_EXACT}

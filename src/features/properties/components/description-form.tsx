@@ -99,9 +99,18 @@ export function DescriptionForm({ property }: DescriptionFormProps) {
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <FormField id="seoTitle" label="SEO title (opcional)" errors={errors["seoTitle"]}>
-          <Input name="seoTitle" type="text" maxLength={70} defaultValue={property.seoTitle ?? ""} />
+          <Input
+            name="seoTitle"
+            type="text"
+            maxLength={70}
+            defaultValue={property.seoTitle ?? ""}
+          />
         </FormField>
-        <FormField id="seoDescription" label="SEO description (opcional)" errors={errors["seoDescription"]}>
+        <FormField
+          id="seoDescription"
+          label="SEO description (opcional)"
+          errors={errors["seoDescription"]}
+        >
           <Input
             name="seoDescription"
             type="text"

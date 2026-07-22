@@ -12,7 +12,10 @@ import {
 } from "@/server/services/advertisement-service";
 import { PropertyNotFoundError } from "@/server/services/property-service";
 import { AiProviderError } from "@/lib/ai";
-import { editAdvertisementSchema, generateAdvertisementSchema } from "@/lib/validation/advertisement";
+import {
+  editAdvertisementSchema,
+  generateAdvertisementSchema,
+} from "@/lib/validation/advertisement";
 import { fieldErrorsFromZod, type ActionState } from "@/lib/forms/action-state";
 
 export async function generateAdvertisementAction(

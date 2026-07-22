@@ -15,11 +15,11 @@ editor gráfico livre).
 
 ## Alternativas consideradas
 
-| Alternativa                                                    | Prós                                                                                 | Contras                                                                                                       |
-| --------------------------------------------------------------- | -------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------- |
-| `sharp` (já é dependência do projeto, ADR-0003)                | Nenhuma dependência nova; mesma ferramenta já usada para todo processamento de imagem | Precisa verificar se cobre composição de texto e camadas sem lib adicional                                     |
-| `@napi-rs/canvas` (Canvas API via binário Rust, sem compilação nativa) | `measureText()` real para medir texto com precisão                                    | Dependência nova a justificar/manter; redundante com o que `sharp` já oferece (ver Decisão)                    |
-| Headless browser (Playwright/Puppeteer) renderizando HTML/CSS  | Máxima flexibilidade de layout (CSS completo)                                          | Dependência pesada só para gerar uma imagem estática; Playwright já é usado no projeto, mas apenas para testes E2E |
+| Alternativa                                                            | Prós                                                                                  | Contras                                                                                                            |
+| ---------------------------------------------------------------------- | ------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------ |
+| `sharp` (já é dependência do projeto, ADR-0003)                        | Nenhuma dependência nova; mesma ferramenta já usada para todo processamento de imagem | Precisa verificar se cobre composição de texto e camadas sem lib adicional                                         |
+| `@napi-rs/canvas` (Canvas API via binário Rust, sem compilação nativa) | `measureText()` real para medir texto com precisão                                    | Dependência nova a justificar/manter; redundante com o que `sharp` já oferece (ver Decisão)                        |
+| Headless browser (Playwright/Puppeteer) renderizando HTML/CSS          | Máxima flexibilidade de layout (CSS completo)                                         | Dependência pesada só para gerar uma imagem estática; Playwright já é usado no projeto, mas apenas para testes E2E |
 
 ## Decisão
 

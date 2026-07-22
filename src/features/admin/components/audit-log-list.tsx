@@ -23,9 +23,7 @@ export function AuditLogList({ entries }: AuditLogListProps) {
         >
           <div className="flex flex-wrap items-center justify-between gap-2">
             <span className="font-medium text-zinc-900 dark:text-zinc-50">{entry.action}</span>
-            <span className="text-xs text-zinc-500">
-              {entry.createdAt.toLocaleString("pt-BR")}
-            </span>
+            <span className="text-xs text-zinc-500">{entry.createdAt.toLocaleString("pt-BR")}</span>
           </div>
           <p className="text-xs text-zinc-500">
             {entry.entityType} · {entry.entityId}

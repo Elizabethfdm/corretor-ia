@@ -49,9 +49,9 @@ describe("generateArtworkSchema (RF-062, RF-063)", () => {
   });
 
   it("rejeita título além do limite de caracteres (RN-077 — garante que sempre caiba no modelo)", () => {
-    expect(
-      generateArtworkSchema.safeParse({ ...validInput, title: "a".repeat(71) }).success,
-    ).toBe(false);
+    expect(generateArtworkSchema.safeParse({ ...validInput, title: "a".repeat(71) }).success).toBe(
+      false,
+    );
     expect(generateArtworkSchema.safeParse({ ...validInput, title: "a".repeat(70) }).success).toBe(
       true,
     );

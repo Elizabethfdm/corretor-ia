@@ -17,7 +17,10 @@ interface CatalogPageProps {
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 }
 
-export async function generateMetadata({ params, searchParams }: CatalogPageProps): Promise<Metadata> {
+export async function generateMetadata({
+  params,
+  searchParams,
+}: CatalogPageProps): Promise<Metadata> {
   const { slug } = await params;
   const profile = await getPublicProfileBySlug(slug);
 
@@ -49,16 +52,16 @@ export default async function CatalogPage({ params, searchParams }: CatalogPageP
   await recordCatalogView(profile.id);
   const hasActiveFilters = Boolean(
     filters.q ||
-      filters.purpose ||
-      filters.type ||
-      filters.city ||
-      filters.neighborhood ||
-      filters.priceMin !== undefined ||
-      filters.priceMax !== undefined ||
-      filters.bedroomsMin !== undefined ||
-      filters.parkingMin !== undefined ||
-      filters.financingAccepted ||
-      (filters.features && filters.features.length > 0),
+    filters.purpose ||
+    filters.type ||
+    filters.city ||
+    filters.neighborhood ||
+    filters.priceMin !== undefined ||
+    filters.priceMax !== undefined ||
+    filters.bedroomsMin !== undefined ||
+    filters.parkingMin !== undefined ||
+    filters.financingAccepted ||
+    (filters.features && filters.features.length > 0),
   );
 
   const whatsappLink = profile.whatsapp

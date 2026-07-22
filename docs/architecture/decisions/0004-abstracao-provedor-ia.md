@@ -76,7 +76,7 @@ clara e estável, e alinhamento com o contexto do projeto.
 
 - `AnthropicAiProvider` (`lib/ai/providers/anthropic-ai-provider.ts`)
   implementa `AiContentProvider` chamando `client.messages.create({
-  model, max_tokens, system, messages, temperature })` — `system`
+model, max_tokens, system, messages, temperature })` — `system`
   carrega as instruções anti-invenção (RN-062 a RN-065) e o `user`
   message carrega somente os dados do imóvel já validados/serializados
   pelo `server/services` (nunca o SDK recebe o objeto `Property` bruto).

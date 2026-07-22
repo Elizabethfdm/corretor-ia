@@ -95,7 +95,9 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
         </p>
 
         <p className="text-xl font-semibold text-zinc-900 dark:text-zinc-50">
-          {property.showPrice ? formatCurrencyBRL(property.price) || "Valor não informado" : "Consulte o valor"}
+          {property.showPrice
+            ? formatCurrencyBRL(property.price) || "Valor não informado"
+            : "Consulte o valor"}
         </p>
 
         {property.condominiumFee ? (
@@ -117,7 +119,9 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
           <p className="text-sm text-zinc-700 dark:text-zinc-300">{conditions.join(" · ")}</p>
         ) : null}
 
-        {addressLine ? <p className="text-sm text-zinc-600 dark:text-zinc-400">{addressLine}</p> : null}
+        {addressLine ? (
+          <p className="text-sm text-zinc-600 dark:text-zinc-400">{addressLine}</p>
+        ) : null}
 
         {property.features.length > 0 ? (
           <ul className="flex flex-wrap gap-2 pt-2">
@@ -136,27 +140,35 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
       {property.description ? (
         <section className="flex flex-col gap-1">
           <h2 className="text-lg font-semibold text-zinc-900 dark:text-zinc-50">Descrição</h2>
-          <p className="whitespace-pre-line text-zinc-700 dark:text-zinc-300">{property.description}</p>
+          <p className="whitespace-pre-line text-zinc-700 dark:text-zinc-300">
+            {property.description}
+          </p>
         </section>
       ) : null}
 
       {property.highlights ? (
         <section className="flex flex-col gap-1">
           <h2 className="text-lg font-semibold text-zinc-900 dark:text-zinc-50">Diferenciais</h2>
-          <p className="whitespace-pre-line text-zinc-700 dark:text-zinc-300">{property.highlights}</p>
+          <p className="whitespace-pre-line text-zinc-700 dark:text-zinc-300">
+            {property.highlights}
+          </p>
         </section>
       ) : null}
 
       {property.nearbyPlaces ? (
         <section className="flex flex-col gap-1">
           <h2 className="text-lg font-semibold text-zinc-900 dark:text-zinc-50">Proximidades</h2>
-          <p className="whitespace-pre-line text-zinc-700 dark:text-zinc-300">{property.nearbyPlaces}</p>
+          <p className="whitespace-pre-line text-zinc-700 dark:text-zinc-300">
+            {property.nearbyPlaces}
+          </p>
         </section>
       ) : null}
 
       {property.commercialConditions ? (
         <section className="flex flex-col gap-1">
-          <h2 className="text-lg font-semibold text-zinc-900 dark:text-zinc-50">Condições comerciais</h2>
+          <h2 className="text-lg font-semibold text-zinc-900 dark:text-zinc-50">
+            Condições comerciais
+          </h2>
           <p className="whitespace-pre-line text-zinc-700 dark:text-zinc-300">
             {property.commercialConditions}
           </p>

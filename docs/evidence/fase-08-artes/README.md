@@ -30,13 +30,13 @@ descartado por ser desnecessário.
 
 ## Comandos executados e resultado
 
-| Comando                          | Resultado                                                                                        |
-| --------------------------------- | ------------------------------------------------------------------------------------------------- |
-| `npm run typecheck`               | Sem erros (TypeScript modo estrito)                                                              |
-| `npm run lint`                    | 0 erros, 0 warnings                                                                               |
-| `npm run build`                   | Build de produção concluído com sucesso                                                          |
-| `npm run test` (Vitest)           | 277 testes aprovados (37 arquivos) — unitário + integração contra Postgres e MinIO reais          |
-| `npx playwright test` (5 navegadores/viewports) | **225/225 aprovados** — ver seção "Execução E2E" abaixo                           |
+| Comando                                         | Resultado                                                                                |
+| ----------------------------------------------- | ---------------------------------------------------------------------------------------- |
+| `npm run typecheck`                             | Sem erros (TypeScript modo estrito)                                                      |
+| `npm run lint`                                  | 0 erros, 0 warnings                                                                      |
+| `npm run build`                                 | Build de produção concluído com sucesso                                                  |
+| `npm run test` (Vitest)                         | 277 testes aprovados (37 arquivos) — unitário + integração contra Postgres e MinIO reais |
+| `npx playwright test` (5 navegadores/viewports) | **225/225 aprovados** — ver seção "Execução E2E" abaixo                                  |
 
 ## Execução E2E
 

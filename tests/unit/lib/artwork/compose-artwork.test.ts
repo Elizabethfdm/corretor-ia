@@ -98,8 +98,8 @@ describe("composeArtwork (RN-075 a RN-081)", () => {
   it("lança ArtworkRenderError quando a foto de origem não é uma imagem válida", async () => {
     const notAnImage = Buffer.from("conteudo-nao-eh-imagem");
 
-    await expect(
-      composeArtwork({ ...BASE_INPUT, photoBuffer: notAnImage }),
-    ).rejects.toThrow(ArtworkRenderError);
+    await expect(composeArtwork({ ...BASE_INPUT, photoBuffer: notAnImage })).rejects.toThrow(
+      ArtworkRenderError,
+    );
   });
 });

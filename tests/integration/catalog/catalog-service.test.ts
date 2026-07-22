@@ -37,7 +37,9 @@ async function createPublishedBroker(label: string) {
   );
   await setCatalogEnabled(result.user.id, true);
 
-  const profile = await prisma.brokerProfile.findUniqueOrThrow({ where: { userId: result.user.id } });
+  const profile = await prisma.brokerProfile.findUniqueOrThrow({
+    where: { userId: result.user.id },
+  });
   return { brokerId: profile.id, slug };
 }
 
@@ -177,7 +179,11 @@ describe("getPublicCatalog (RN-046, RN-048, RN-049)", () => {
 
     await createAvailableProperty(
       brokerId,
-      { internalTitle: "Anotação interna do corretor — não mostrar", propertyType: "APARTMENT", purpose: "RENT" },
+      {
+        internalTitle: "Anotação interna do corretor — não mostrar",
+        propertyType: "APARTMENT",
+        purpose: "RENT",
+      },
       { city: "Curitiba", neighborhood: "Batel" },
     );
 
@@ -198,7 +204,10 @@ describe("getPublicCatalog (RN-046, RN-048, RN-049)", () => {
       {},
       { description: "Uma casa maravilhosa." },
     );
-    await createAvailableProperty(brokerId, { internalTitle: "B", publicTitle: "Apartamento simples" });
+    await createAvailableProperty(brokerId, {
+      internalTitle: "B",
+      publicTitle: "Apartamento simples",
+    });
 
     const catalog = await getPublicCatalog(slug, parseCatalogFilters({ q: "piscina" }));
     expect(catalog!.properties).toHaveLength(1);
@@ -215,7 +224,12 @@ describe("getPublicCatalog (RN-046, RN-048, RN-049)", () => {
     );
     await createAvailableProperty(
       brokerId,
-      { internalTitle: "B", publicTitle: "Apartamento Olinda", purpose: "RENT", propertyType: "APARTMENT" },
+      {
+        internalTitle: "B",
+        publicTitle: "Apartamento Olinda",
+        purpose: "RENT",
+        propertyType: "APARTMENT",
+      },
       { city: "Olinda", neighborhood: "Carmo" },
     );
 
@@ -277,9 +291,21 @@ describe("getPublicCatalog (RN-046, RN-048, RN-049)", () => {
   it("ordena por menor preço e por maior preço", async () => {
     const { brokerId, slug } = await createPublishedBroker("catalog-sort");
 
-    await createAvailableProperty(brokerId, { internalTitle: "A", publicTitle: "Médio", price: "500000" });
-    await createAvailableProperty(brokerId, { internalTitle: "B", publicTitle: "Barato", price: "100000" });
-    await createAvailableProperty(brokerId, { internalTitle: "C", publicTitle: "Caro", price: "900000" });
+    await createAvailableProperty(brokerId, {
+      internalTitle: "A",
+      publicTitle: "Médio",
+      price: "500000",
+    });
+    await createAvailableProperty(brokerId, {
+      internalTitle: "B",
+      publicTitle: "Barato",
+      price: "100000",
+    });
+    await createAvailableProperty(brokerId, {
+      internalTitle: "C",
+      publicTitle: "Caro",
+      price: "900000",
+    });
 
     const asc = await getPublicCatalog(slug, parseCatalogFilters({ sort: "price_asc" }));
     expect(asc!.properties.map((p) => p.title)).toEqual(["Barato", "Médio", "Caro"]);

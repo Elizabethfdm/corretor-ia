@@ -51,15 +51,11 @@ export const catalogFiltersSchema = z.object({
   financingAccepted: z
     .preprocess((value) => (value === "true" ? true : undefined), z.boolean().optional())
     .catch(undefined),
-  features: z
-    .preprocess(toArray, z.array(z.enum(FeatureType)).optional())
-    .catch(undefined),
+  features: z.preprocess(toArray, z.array(z.enum(FeatureType)).optional()).catch(undefined),
   sort: z
     .preprocess(emptyToUndefined, z.enum(CATALOG_SORT_OPTIONS).default("recent"))
     .catch("recent"),
-  page: z
-    .preprocess(emptyToUndefined, z.coerce.number().int().positive().default(1))
-    .catch(1),
+  page: z.preprocess(emptyToUndefined, z.coerce.number().int().positive().default(1)).catch(1),
 });
 
 export type CatalogFilters = z.infer<typeof catalogFiltersSchema>;

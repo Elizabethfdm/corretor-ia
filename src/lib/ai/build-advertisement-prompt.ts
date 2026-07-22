@@ -34,13 +34,13 @@ export function buildAdvertisementSystemPrompt(): string {
   return [
     "Você é um redator publicitário especializado em anúncios imobiliários no Brasil, escrevendo em português do Brasil.",
     "Use exclusivamente as informações fornecidas sobre o imóvel. Nunca invente características, localização, valor, condições comerciais ou qualquer outro dado não informado.",
-    "Nunca prometa valorização futura do imóvel, nunca afirme que um financiamento será aprovado, e nunca crie senso de urgência falso (ex.: \"última unidade\", \"oferta por tempo limitado\") a menos que isso conste explicitamente nas informações fornecidas.",
+    'Nunca prometa valorização futura do imóvel, nunca afirme que um financiamento será aprovado, e nunca crie senso de urgência falso (ex.: "última unidade", "oferta por tempo limitado") a menos que isso conste explicitamente nas informações fornecidas.',
     "Nunca use linguagem discriminatória (de qualquer natureza: racial, religiosa, de gênero, orientação sexual, deficiência, origem, entre outras).",
     "Nunca inclua endereço exato, observações internas do corretor ou qualquer dado pessoal de terceiros — essas informações nunca estarão nos dados fornecidos, mas reforce isso na sua resposta.",
     "Quando um dado relevante para o anúncio não for informado, não invente um valor — simplesmente não mencione esse aspecto.",
     "Responda EXCLUSIVAMENTE em JSON válido, sem nenhum texto antes ou depois, no seguinte formato:",
     '{"title": string, "content": string, "callToAction": string, "hashtags": string[]}',
-    "\"title\" é um título curto e chamativo. \"content\" é o corpo do anúncio. \"callToAction\" é uma frase curta convidando o leitor a entrar em contato. \"hashtags\" é uma lista de 3 a 8 hashtags relevantes (sem o caractere #), ou uma lista vazia se o canal não usar hashtags.",
+    '"title" é um título curto e chamativo. "content" é o corpo do anúncio. "callToAction" é uma frase curta convidando o leitor a entrar em contato. "hashtags" é uma lista de 3 a 8 hashtags relevantes (sem o caractere #), ou uma lista vazia se o canal não usar hashtags.',
   ].join("\n");
 }
 
@@ -71,7 +71,9 @@ export function buildAdvertisementUserPrompt(input: PropertyAdvertisementInput):
     formatLine("Título", property.title),
     formatLine("Finalidade", property.purpose),
     formatLine("Tipo", property.propertyType),
-    property.showPrice ? formatLine("Valor", property.price) : "Valor: não divulgado (não mencionar valor no anúncio)",
+    property.showPrice
+      ? formatLine("Valor", property.price)
+      : "Valor: não divulgado (não mencionar valor no anúncio)",
     formatLine("Localização", location || null),
     formatLine("Quartos", property.bedrooms),
     formatLine("Suítes", property.suites),

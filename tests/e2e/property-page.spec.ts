@@ -113,7 +113,9 @@ test.describe("Página individual do imóvel (RN-051 a RN-060)", () => {
     await page.getByRole("link", { name: /Casa com piscina no Jardim Europa/ }).click();
     await expect(page).toHaveURL(/\/catalogo\/[^/]+\/[^/]+$/);
 
-    await expect(page.getByRole("heading", { name: "Casa com piscina no Jardim Europa" })).toBeVisible();
+    await expect(
+      page.getByRole("heading", { name: "Casa com piscina no Jardim Europa" }),
+    ).toBeVisible();
     await expect(page.getByText("Uma casa maravilhosa com piscina e área gourmet.")).toBeVisible();
     await expect(page.getByText("Rua das Flores, 100")).toBeVisible();
 
@@ -125,9 +127,7 @@ test.describe("Página individual do imóvel (RN-051 a RN-060)", () => {
     expect(contactMessage).toContain("Corretor Teste");
 
     await expect(page.getByRole("heading", { name: "Imóveis semelhantes" })).toBeVisible();
-    await expect(
-      page.getByRole("link", { name: /Casa geminada na Vila Mariana/ }),
-    ).toBeVisible();
+    await expect(page.getByRole("link", { name: /Casa geminada na Vila Mariana/ })).toBeVisible();
 
     await deleteTestUserByEmail(email);
   });

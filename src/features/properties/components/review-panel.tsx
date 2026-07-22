@@ -25,7 +25,11 @@ interface ReviewPanelProps {
 }
 
 function confirmDeletion(event: FormEvent<HTMLFormElement>): void {
-  if (!confirm("Excluir este imóvel? Ele poderá ser restaurado depois, mas sairá do catálogo imediatamente.")) {
+  if (
+    !confirm(
+      "Excluir este imóvel? Ele poderá ser restaurado depois, mas sairá do catálogo imediatamente.",
+    )
+  ) {
     event.preventDefault();
   }
 }
@@ -64,7 +68,10 @@ export function ReviewPanel({ property }: ReviewPanelProps) {
     <div className="flex flex-col gap-6">
       {state.status !== "idle" && state.message ? (
         <div ref={messageRef} tabIndex={-1}>
-          <FormMessage status={state.status === "error" ? "error" : "success"} message={state.message} />
+          <FormMessage
+            status={state.status === "error" ? "error" : "success"}
+            message={state.message}
+          />
         </div>
       ) : null}
 
@@ -91,17 +98,25 @@ export function ReviewPanel({ property }: ReviewPanelProps) {
               {PURPOSE_LABELS[property.purpose]} · {PROPERTY_TYPE_LABELS[property.propertyType]}
             </p>
             <p className="text-sm font-medium text-zinc-900 dark:text-zinc-50">
-              {property.showPrice ? formatCurrencyBRL(property.price) || "Valor não informado" : "Consulte o valor"}
+              {property.showPrice
+                ? formatCurrencyBRL(property.price) || "Valor não informado"
+                : "Consulte o valor"}
             </p>
             <p className="text-sm text-zinc-600 dark:text-zinc-400">
-              {[property.bedrooms && `${property.bedrooms} quartos`, property.bathrooms && `${property.bathrooms} banheiros`, property.parkingSpaces && `${property.parkingSpaces} vagas`]
+              {[
+                property.bedrooms && `${property.bedrooms} quartos`,
+                property.bathrooms && `${property.bathrooms} banheiros`,
+                property.parkingSpaces && `${property.parkingSpaces} vagas`,
+              ]
                 .filter(Boolean)
                 .join(" · ") || "Características não informadas"}
             </p>
             <p className="text-sm text-zinc-600 dark:text-zinc-400">
               {property.address?.neighborhood ?? "Bairro não informado"} —{" "}
               {property.address?.city ?? "Cidade não informada"}
-              {property.address ? ` (${ADDRESS_VISIBILITY_LABELS[property.address.visibilityType]})` : ""}
+              {property.address
+                ? ` (${ADDRESS_VISIBILITY_LABELS[property.address.visibilityType]})`
+                : ""}
             </p>
             <p className="text-sm">
               Status:{" "}

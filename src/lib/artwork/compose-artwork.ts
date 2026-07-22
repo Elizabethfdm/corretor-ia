@@ -103,9 +103,7 @@ export async function composeArtwork(input: ComposeArtworkInput): Promise<Compos
 
   let base: Buffer;
   try {
-    base = await sharp(input.photoBuffer)
-      .resize({ width, height, fit: "cover" })
-      .toBuffer();
+    base = await sharp(input.photoBuffer).resize({ width, height, fit: "cover" }).toBuffer();
   } catch {
     throw new ArtworkRenderError("Não foi possível processar a foto selecionada.");
   }

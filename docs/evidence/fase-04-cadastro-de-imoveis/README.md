@@ -15,15 +15,15 @@ permitidos (RN-027), duplicação (RN-029), exclusão lógica reversível
 
 ## Comandos executados e resultado
 
-| Comando                          | Resultado                                                                                        |
-| --------------------------------- | ------------------------------------------------------------------------------------------------- |
-| `npm run typecheck`               | Sem erros (TypeScript modo estrito)                                                              |
-| `npm run lint`                    | 0 erros, 0 warnings                                                                               |
-| `npm run build`                   | Build de produção concluído com sucesso                                                          |
-| `npm run test` (Vitest)           | 170 testes aprovados (25 arquivos) — unitário + integração contra Postgres e MinIO reais          |
-| `npx prisma migrate dev --name properties` | Migração aplicada com sucesso                                                           |
-| `npm audit --audit-level=high`    | 0 vulnerabilidades altas/críticas                                                                 |
-| `npx playwright test` (5 navegadores/viewports) | 165/165 aprovados — ver seção "Execução E2E" abaixo                                 |
+| Comando                                         | Resultado                                                                                |
+| ----------------------------------------------- | ---------------------------------------------------------------------------------------- |
+| `npm run typecheck`                             | Sem erros (TypeScript modo estrito)                                                      |
+| `npm run lint`                                  | 0 erros, 0 warnings                                                                      |
+| `npm run build`                                 | Build de produção concluído com sucesso                                                  |
+| `npm run test` (Vitest)                         | 170 testes aprovados (25 arquivos) — unitário + integração contra Postgres e MinIO reais |
+| `npx prisma migrate dev --name properties`      | Migração aplicada com sucesso                                                            |
+| `npm audit --audit-level=high`                  | 0 vulnerabilidades altas/críticas                                                        |
+| `npx playwright test` (5 navegadores/viewports) | 165/165 aprovados — ver seção "Execução E2E" abaixo                                      |
 
 ## Execução E2E
 

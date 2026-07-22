@@ -41,14 +41,18 @@ export function PropertyCard({ property, brokerSlug }: PropertyCardProps) {
           </span>
         ) : null}
 
-        <h3 className="text-base font-semibold text-zinc-900 dark:text-zinc-50">{property.title}</h3>
+        <h3 className="text-base font-semibold text-zinc-900 dark:text-zinc-50">
+          {property.title}
+        </h3>
 
         <p className="text-sm text-zinc-500">
           {property.propertyType} · {property.purpose}
         </p>
 
         <p className="text-base font-medium text-zinc-900 dark:text-zinc-50">
-          {property.showPrice ? formatCurrencyBRL(property.price) || "Valor não informado" : "Consulte o valor"}
+          {property.showPrice
+            ? formatCurrencyBRL(property.price) || "Valor não informado"
+            : "Consulte o valor"}
         </p>
 
         {specs.length > 0 ? (

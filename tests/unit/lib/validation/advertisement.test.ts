@@ -25,9 +25,9 @@ describe("generateAdvertisementSchema (RF-054)", () => {
     expect(
       generateAdvertisementSchema.safeParse({ ...validInput, tone: "ENGRAÇADO" }).success,
     ).toBe(false);
-    expect(
-      generateAdvertisementSchema.safeParse({ ...validInput, size: "GIGANTE" }).success,
-    ).toBe(false);
+    expect(generateAdvertisementSchema.safeParse({ ...validInput, size: "GIGANTE" }).success).toBe(
+      false,
+    );
   });
 
   it("rejeita objetivo vazio ou ausente", () => {

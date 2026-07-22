@@ -30,7 +30,9 @@ export default async function PainelAdminPage() {
       </header>
 
       <section className="flex flex-col gap-3">
-        <h2 className="text-lg font-semibold text-zinc-900 dark:text-zinc-50">Indicadores gerais</h2>
+        <h2 className="text-lg font-semibold text-zinc-900 dark:text-zinc-50">
+          Indicadores gerais
+        </h2>
         <PlatformIndicatorsCards indicators={indicators} />
       </section>
 

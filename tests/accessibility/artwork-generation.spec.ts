@@ -20,7 +20,9 @@ test.describe("Acessibilidade — geração de artes para redes sociais", () => 
     await page.goto("/painel/perfil");
     await page.getByLabel("Nome profissional").fill("Corretor Teste");
     await page.getByLabel("Nome completo").fill("Corretor Teste Completo");
-    await page.getByLabel("Endereço do catálogo (slug)").fill(`a11y-artwork-generation-${Date.now()}`);
+    await page
+      .getByLabel("Endereço do catálogo (slug)")
+      .fill(`a11y-artwork-generation-${Date.now()}`);
     await page.getByRole("button", { name: "Salvar perfil" }).click();
     await expect(page.getByText("Perfil salvo com sucesso.")).toBeVisible();
 

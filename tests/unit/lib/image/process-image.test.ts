@@ -20,9 +20,9 @@ describe("processImage (RN-024, RN-035, RN-037)", () => {
   it("rejeita um arquivo que não é uma imagem (RN-035 — validação pelo conteúdo real)", async () => {
     const fakeExecutable = Buffer.from("MZ\x90\x00\x03\x00\x00\x00conteudo-nao-eh-imagem");
 
-    await expect(
-      processImage(fakeExecutable, { maxWidth: 512, maxHeight: 512 }),
-    ).rejects.toThrow(UnsupportedImageFormatError);
+    await expect(processImage(fakeExecutable, { maxWidth: 512, maxHeight: 512 })).rejects.toThrow(
+      UnsupportedImageFormatError,
+    );
   });
 
   it("rejeita SVG (vetor de XSS via <script> embutido)", async () => {

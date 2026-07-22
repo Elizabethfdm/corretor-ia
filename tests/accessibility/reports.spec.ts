@@ -22,7 +22,9 @@ test.describe("Acessibilidade — relatórios", () => {
     await expect(page.getByText("Perfil salvo com sucesso.")).toBeVisible();
 
     await page.goto("/painel/relatorios");
-    await expect(page.getByText("Nenhum dado registrado para o período selecionado.")).toBeVisible();
+    await expect(
+      page.getByText("Nenhum dado registrado para o período selecionado."),
+    ).toBeVisible();
 
     const emptyResults = await new AxeBuilder({ page }).withTags(["wcag2a", "wcag2aa"]).analyze();
     expect(emptyResults.violations).toEqual([]);
@@ -42,7 +44,9 @@ test.describe("Acessibilidade — relatórios", () => {
       page.getByRole("button", { name: "Aplicar" }).click(),
     ]);
     await page.waitForLoadState("load");
-    await expect(page.getByText("Nenhum dado registrado para o período selecionado.")).toBeVisible();
+    await expect(
+      page.getByText("Nenhum dado registrado para o período selecionado."),
+    ).toBeVisible();
 
     const filledResults = await new AxeBuilder({ page }).withTags(["wcag2a", "wcag2aa"]).analyze();
     expect(filledResults.violations).toEqual([]);

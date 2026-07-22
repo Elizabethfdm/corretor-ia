@@ -32,7 +32,9 @@ export class FakeAiProvider implements AiContentProvider {
         .filter(Boolean)
         .join(" "),
       callToAction: "Entre em contato para saber mais!",
-      hashtags: input.highlightAspects.slice(0, 5).map((aspect) => aspect.toLowerCase().replace(/\s+/g, "")),
+      hashtags: input.highlightAspects
+        .slice(0, 5)
+        .map((aspect) => aspect.toLowerCase().replace(/\s+/g, "")),
     };
   }
 }

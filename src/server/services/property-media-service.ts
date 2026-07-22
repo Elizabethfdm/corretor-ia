@@ -50,7 +50,8 @@ export async function uploadPropertyPhotos(
   }
 
   const hasCover = existing.some((m) => m.isCover);
-  let nextDisplayOrder = existing.length > 0 ? Math.max(...existing.map((m) => m.displayOrder)) + 1 : 0;
+  let nextDisplayOrder =
+    existing.length > 0 ? Math.max(...existing.map((m) => m.displayOrder)) + 1 : 0;
   const storage = getStorageProvider();
   const created: PropertyMedia[] = [];
 

@@ -235,7 +235,9 @@ function buildPublicWhere(brokerId: string, filters: CatalogFilters): Prisma.Pro
   };
 }
 
-function buildPublicOrderBy(sort: CatalogFilters["sort"]): Prisma.PropertyOrderByWithRelationInput[] {
+function buildPublicOrderBy(
+  sort: CatalogFilters["sort"],
+): Prisma.PropertyOrderByWithRelationInput[] {
   switch (sort) {
     case "price_asc":
       return [{ price: { sort: "asc", nulls: "last" } }, { publishedAt: "desc" }];

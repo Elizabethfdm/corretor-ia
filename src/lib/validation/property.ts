@@ -108,7 +108,10 @@ export const locationSchema = z.object({
       const empty = emptyToUndefined(value);
       return typeof empty === "string" ? empty.trim().toUpperCase() : empty;
     },
-    z.string().regex(/^[A-Z]{2}$/, { error: "Use a sigla do estado (ex.: SP)." }).optional(),
+    z
+      .string()
+      .regex(/^[A-Z]{2}$/, { error: "Use a sigla do estado (ex.: SP)." })
+      .optional(),
   ),
   city: optionalText(100),
   neighborhood: optionalText(100),
@@ -150,7 +153,7 @@ export function getPropertyPublicationRequirementErrors(property: {
 
   if (!property.internalTitle) errors.push("Informe o título do imóvel.");
   if (property.showPrice && !property.price) {
-    errors.push("Informe o valor ou marque a opção \"Consulte o valor\".");
+    errors.push('Informe o valor ou marque a opção "Consulte o valor".');
   }
   if (!property.city) errors.push("Informe a cidade do imóvel.");
   if (!property.neighborhood) errors.push("Informe o bairro do imóvel.");

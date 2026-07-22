@@ -30,13 +30,13 @@ ADR-0007 documenta duas decisões, ambas sem dependência nova:
 
 ## Comandos executados e resultado
 
-| Comando                          | Resultado                                                                                        |
-| --------------------------------- | ------------------------------------------------------------------------------------------------- |
-| `npm run typecheck`               | Sem erros (TypeScript modo estrito)                                                              |
-| `npm run lint`                    | 0 erros, 0 warnings                                                                               |
-| `npm run build`                   | Build de produção concluído com sucesso                                                          |
-| `npm run test` (Vitest)           | 306 testes aprovados (41 arquivos) — unitário + integração contra Postgres e MinIO reais          |
-| `npx playwright test` (5 navegadores/viewports) | **240/240 aprovados** — ver seção "Execução E2E" abaixo                          |
+| Comando                                         | Resultado                                                                                |
+| ----------------------------------------------- | ---------------------------------------------------------------------------------------- |
+| `npm run typecheck`                             | Sem erros (TypeScript modo estrito)                                                      |
+| `npm run lint`                                  | 0 erros, 0 warnings                                                                      |
+| `npm run build`                                 | Build de produção concluído com sucesso                                                  |
+| `npm run test` (Vitest)                         | 306 testes aprovados (41 arquivos) — unitário + integração contra Postgres e MinIO reais |
+| `npx playwright test` (5 navegadores/viewports) | **240/240 aprovados** — ver seção "Execução E2E" abaixo                                  |
 
 ## Execução E2E
 
@@ -57,12 +57,12 @@ em navegadores diferentes) de `"Falha ao registrar evento de
 analytics"` com violação de chave estrangeira ao gravar um
 `PROPERTY_VIEW`. Investigado: acontece quando o Next.js pré-busca em
 segundo plano (`prefetch` automático de `<Link>`, ex.: a seção "Imóveis
-semelhantes") um link para uma página de imóvel *depois* que o teste já
+semelhantes") um link para uma página de imóvel _depois_ que o teste já
 encerrou e seu `deleteTestUserByEmail` já removeu o corretor/imóvel —
 uma corrida entre a limpeza do teste e uma requisição de prefetch
 órfã do navegador, não reproduzível em produção (um corretor real não é
 excluído milissegundos depois de uma pré-busca de link de um
-visitante). O tratamento *best effort* de `recordAnalyticsEvent`
+visitante). O tratamento _best effort_ de `recordAnalyticsEvent`
 funcionou exatamente como projetado: capturou o erro, registrou o log e
 não afetou nenhum teste nem a navegação real do visitante.
 

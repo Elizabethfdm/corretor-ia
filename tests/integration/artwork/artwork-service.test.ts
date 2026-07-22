@@ -98,109 +98,88 @@ afterEach(async () => {
 }, 30_000);
 
 describe("generateArtwork (RN-075 a RN-081)", () => {
-  it(
-    "gera e persiste uma arte a partir da foto escolhida",
-    async () => {
-      const { broker, propertyId, photoMediaId } =
-        await createBrokerProfileAndProperty("art-generate");
+  it("gera e persiste uma arte a partir da foto escolhida", async () => {
+    const { broker, propertyId, photoMediaId } =
+      await createBrokerProfileAndProperty("art-generate");
 
-      const artwork = await generateArtwork(broker, buildInput(propertyId, photoMediaId));
+    const artwork = await generateArtwork(broker, buildInput(propertyId, photoMediaId));
 
-      expect(artwork.format).toBe("SQUARE_FEED");
-      expect(artwork.templateType).toBe("NEW_PROPERTY");
-      expect(artwork.title).toBe("Casa nova no Jardim Europa");
-      expect(artwork.outputUrl).toBeTruthy();
-      expect(artwork.width).toBeGreaterThan(0);
-      expect(artwork.height).toBeGreaterThan(0);
-    },
-    30_000,
-  );
+    expect(artwork.format).toBe("SQUARE_FEED");
+    expect(artwork.templateType).toBe("NEW_PROPERTY");
+    expect(artwork.title).toBe("Casa nova no Jardim Europa");
+    expect(artwork.outputUrl).toBeTruthy();
+    expect(artwork.width).toBeGreaterThan(0);
+    expect(artwork.height).toBeGreaterThan(0);
+  }, 30_000);
 
-  it(
-    "aplica a identidade visual do corretor quando o logotipo está configurado (RN-076)",
-    async () => {
-      const { broker, propertyId, photoMediaId } =
-        await createBrokerProfileAndProperty("art-logo");
+  it("aplica a identidade visual do corretor quando o logotipo está configurado (RN-076)", async () => {
+    const { broker, propertyId, photoMediaId } = await createBrokerProfileAndProperty("art-logo");
 
-      await uploadProfileLogo(broker.userId, pngFile("logo.png"));
-      const brokerWithLogo = await prisma.brokerProfile.findUniqueOrThrow({
-        where: { id: broker.id },
-      });
-      expect(brokerWithLogo.logoUrl).toBeTruthy();
+    await uploadProfileLogo(broker.userId, pngFile("logo.png"));
+    const brokerWithLogo = await prisma.brokerProfile.findUniqueOrThrow({
+      where: { id: broker.id },
+    });
+    expect(brokerWithLogo.logoUrl).toBeTruthy();
 
-      await expect(
-        generateArtwork(brokerWithLogo, buildInput(propertyId, photoMediaId)),
-      ).resolves.toBeTruthy();
-    },
-    30_000,
-  );
+    await expect(
+      generateArtwork(brokerWithLogo, buildInput(propertyId, photoMediaId)),
+    ).resolves.toBeTruthy();
+  }, 30_000);
 
-  it(
-    "lança PropertyNotFoundError para imóvel de outro corretor (RN-026)",
-    async () => {
-      const { propertyId, photoMediaId } = await createBrokerProfileAndProperty("art-iso-owner");
-      const { broker: otherBroker } = await createBrokerProfileAndProperty("art-iso-other");
+  it("lança PropertyNotFoundError para imóvel de outro corretor (RN-026)", async () => {
+    const { propertyId, photoMediaId } = await createBrokerProfileAndProperty("art-iso-owner");
+    const { broker: otherBroker } = await createBrokerProfileAndProperty("art-iso-other");
 
-      await expect(
-        generateArtwork(otherBroker, buildInput(propertyId, photoMediaId)),
-      ).rejects.toThrow(PropertyNotFoundError);
-    },
-    30_000,
-  );
+    await expect(
+      generateArtwork(otherBroker, buildInput(propertyId, photoMediaId)),
+    ).rejects.toThrow(PropertyNotFoundError);
+  }, 30_000);
 
-  it(
-    "lança ArtworkPhotoNotFoundError para foto de outro imóvel (RN-026)",
-    async () => {
-      const { broker, propertyId } = await createBrokerProfileAndProperty("art-photo-owner");
-      const { photoMediaId: otherPhotoId } = await createBrokerProfileAndProperty("art-photo-other");
+  it("lança ArtworkPhotoNotFoundError para foto de outro imóvel (RN-026)", async () => {
+    const { broker, propertyId } = await createBrokerProfileAndProperty("art-photo-owner");
+    const { photoMediaId: otherPhotoId } = await createBrokerProfileAndProperty("art-photo-other");
 
-      await expect(
-        generateArtwork(broker, buildInput(propertyId, otherPhotoId)),
-      ).rejects.toThrow(ArtworkPhotoNotFoundError);
-    },
-    30_000,
-  );
+    await expect(generateArtwork(broker, buildInput(propertyId, otherPhotoId))).rejects.toThrow(
+      ArtworkPhotoNotFoundError,
+    );
+  }, 30_000);
 });
 
 describe("listArtworkForProperty (RN-026)", () => {
-  it(
-    "retorna o histórico em ordem decrescente, isolado por corretor",
-    async () => {
-      const { broker, propertyId, photoMediaId } = await createBrokerProfileAndProperty("art-history");
-      const { broker: otherBroker } = await createBrokerProfileAndProperty("art-history-other");
+  it("retorna o histórico em ordem decrescente, isolado por corretor", async () => {
+    const { broker, propertyId, photoMediaId } =
+      await createBrokerProfileAndProperty("art-history");
+    const { broker: otherBroker } = await createBrokerProfileAndProperty("art-history-other");
 
-      await generateArtwork(broker, buildInput(propertyId, photoMediaId, { templateType: "HIGHLIGHT" }));
-      await generateArtwork(broker, buildInput(propertyId, photoMediaId, { templateType: "SALE" }));
+    await generateArtwork(
+      broker,
+      buildInput(propertyId, photoMediaId, { templateType: "HIGHLIGHT" }),
+    );
+    await generateArtwork(broker, buildInput(propertyId, photoMediaId, { templateType: "SALE" }));
 
-      const history = await listArtworkForProperty(propertyId, broker.id);
-      expect(history).toHaveLength(2);
-      expect(history[0]!.templateType).toBe("SALE");
-      expect(history[1]!.templateType).toBe("HIGHLIGHT");
+    const history = await listArtworkForProperty(propertyId, broker.id);
+    expect(history).toHaveLength(2);
+    expect(history[0]!.templateType).toBe("SALE");
+    expect(history[1]!.templateType).toBe("HIGHLIGHT");
 
-      await expect(listArtworkForProperty(propertyId, otherBroker.id)).rejects.toThrow(
-        PropertyNotFoundError,
-      );
-    },
-    30_000,
-  );
+    await expect(listArtworkForProperty(propertyId, otherBroker.id)).rejects.toThrow(
+      PropertyNotFoundError,
+    );
+  }, 30_000);
 });
 
 describe("getArtworkForDownload (RF-065, RN-026)", () => {
-  it(
-    "só permite o download ao corretor dono da arte",
-    async () => {
-      const { broker, propertyId, photoMediaId } = await createBrokerProfileAndProperty("art-download");
-      const { broker: otherBroker } = await createBrokerProfileAndProperty("art-download-other");
-      const artwork = await generateArtwork(broker, buildInput(propertyId, photoMediaId));
+  it("só permite o download ao corretor dono da arte", async () => {
+    const { broker, propertyId, photoMediaId } =
+      await createBrokerProfileAndProperty("art-download");
+    const { broker: otherBroker } = await createBrokerProfileAndProperty("art-download-other");
+    const artwork = await generateArtwork(broker, buildInput(propertyId, photoMediaId));
 
-      await expect(getArtworkForDownload(artwork.id, broker.id)).resolves.toMatchObject({
-        id: artwork.id,
-      });
-      await expect(getArtworkForDownload(artwork.id, otherBroker.id)).rejects.toThrow(
-        ArtworkNotFoundError,
-      );
-    },
-    30_000,
-  );
+    await expect(getArtworkForDownload(artwork.id, broker.id)).resolves.toMatchObject({
+      id: artwork.id,
+    });
+    await expect(getArtworkForDownload(artwork.id, otherBroker.id)).rejects.toThrow(
+      ArtworkNotFoundError,
+    );
+  }, 30_000);
 });
-

@@ -48,23 +48,13 @@ export function CharacteristicsForm({ property }: CharacteristicsFormProps) {
 
       <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
         <FormField id="bedrooms" label="Quartos" errors={errors["bedrooms"]}>
-          <Input
-            name="bedrooms"
-            type="number"
-            min="0"
-            defaultValue={property.bedrooms ?? ""}
-          />
+          <Input name="bedrooms" type="number" min="0" defaultValue={property.bedrooms ?? ""} />
         </FormField>
         <FormField id="suites" label="Suítes" errors={errors["suites"]}>
           <Input name="suites" type="number" min="0" defaultValue={property.suites ?? ""} />
         </FormField>
         <FormField id="bathrooms" label="Banheiros" errors={errors["bathrooms"]}>
-          <Input
-            name="bathrooms"
-            type="number"
-            min="0"
-            defaultValue={property.bathrooms ?? ""}
-          />
+          <Input name="bathrooms" type="number" min="0" defaultValue={property.bathrooms ?? ""} />
         </FormField>
         <FormField id="parkingSpaces" label="Vagas" errors={errors["parkingSpaces"]}>
           <Input

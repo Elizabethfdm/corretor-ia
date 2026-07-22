@@ -53,14 +53,18 @@ export function AdvertisementCard({ advertisement, propertyId }: AdvertisementCa
           Gerado por IA
         </span>
         <span className="text-xs text-zinc-500">
-          {ADVERTISEMENT_CHANNEL_LABELS[advertisement.channel]} · {ADVERTISEMENT_TONE_LABELS[advertisement.tone]} ·{" "}
+          {ADVERTISEMENT_CHANNEL_LABELS[advertisement.channel]} ·{" "}
+          {ADVERTISEMENT_TONE_LABELS[advertisement.tone]} ·{" "}
           {ADVERTISEMENT_STATUS_LABELS[advertisement.status]}
         </span>
       </div>
 
       {state.status !== "idle" && state.message ? (
         <div ref={messageRef} tabIndex={-1}>
-          <FormMessage status={state.status === "error" ? "error" : "success"} message={state.message} />
+          <FormMessage
+            status={state.status === "error" ? "error" : "success"}
+            message={state.message}
+          />
         </div>
       ) : null}
 
@@ -73,7 +77,7 @@ export function AdvertisementCard({ advertisement, propertyId }: AdvertisementCa
             name="title"
             type="text"
             defaultValue={advertisement.title}
-            className="w-full rounded-md border border-zinc-300 bg-white px-3 py-2 text-base text-zinc-900 focus:border-zinc-500 focus:outline-none focus:ring-2 focus:ring-zinc-500 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-50"
+            className="w-full rounded-md border border-zinc-300 bg-white px-3 py-2 text-base text-zinc-900 focus:border-zinc-500 focus:ring-2 focus:ring-zinc-500 focus:outline-none dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-50"
           />
         </FormField>
 
@@ -86,21 +90,29 @@ export function AdvertisementCard({ advertisement, propertyId }: AdvertisementCa
           />
         </FormField>
 
-        <FormField id={`cta-${advertisement.id}`} label="Chamada para ação" errors={errors["callToAction"]}>
+        <FormField
+          id={`cta-${advertisement.id}`}
+          label="Chamada para ação"
+          errors={errors["callToAction"]}
+        >
           <input
             name="callToAction"
             type="text"
             defaultValue={advertisement.callToAction}
-            className="w-full rounded-md border border-zinc-300 bg-white px-3 py-2 text-base text-zinc-900 focus:border-zinc-500 focus:outline-none focus:ring-2 focus:ring-zinc-500 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-50"
+            className="w-full rounded-md border border-zinc-300 bg-white px-3 py-2 text-base text-zinc-900 focus:border-zinc-500 focus:ring-2 focus:ring-zinc-500 focus:outline-none dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-50"
           />
         </FormField>
 
-        <FormField id={`hashtags-${advertisement.id}`} label="Hashtags (separadas por vírgula)" errors={errors["hashtags"]}>
+        <FormField
+          id={`hashtags-${advertisement.id}`}
+          label="Hashtags (separadas por vírgula)"
+          errors={errors["hashtags"]}
+        >
           <input
             name="hashtags"
             type="text"
             defaultValue={advertisement.hashtags.join(", ")}
-            className="w-full rounded-md border border-zinc-300 bg-white px-3 py-2 text-base text-zinc-900 focus:border-zinc-500 focus:outline-none focus:ring-2 focus:ring-zinc-500 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-50"
+            className="w-full rounded-md border border-zinc-300 bg-white px-3 py-2 text-base text-zinc-900 focus:border-zinc-500 focus:ring-2 focus:ring-zinc-500 focus:outline-none dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-50"
           />
         </FormField>
 

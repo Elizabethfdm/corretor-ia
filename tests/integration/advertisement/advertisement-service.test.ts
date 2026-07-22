@@ -115,9 +115,9 @@ describe("generateAdvertisement (RN-061 a RN-074)", () => {
     const { propertyId } = await createBrokerProfileAndProperty("ad-iso-owner");
     const { brokerId: otherBrokerId } = await createBrokerProfileAndProperty("ad-iso-other");
 
-    await expect(
-      generateAdvertisement(otherBrokerId, buildInput(propertyId)),
-    ).rejects.toThrow(PropertyNotFoundError);
+    await expect(generateAdvertisement(otherBrokerId, buildInput(propertyId))).rejects.toThrow(
+      PropertyNotFoundError,
+    );
   });
 
   it("bloqueia novas gerações ao atingir o limite mensal (RN-070)", async () => {

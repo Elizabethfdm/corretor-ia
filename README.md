@@ -91,25 +91,25 @@ e [`docs/architecture/data-model.md`](docs/architecture/data-model.md).
 
 ## 6. Tecnologias
 
-| Camada                      | Tecnologia                                                                       |
-| --------------------------- | -------------------------------------------------------------------------------- |
-| Framework web               | Next.js (App Router)                                                             |
-| Linguagem                   | TypeScript (modo estrito)                                                        |
-| UI                          | React + Tailwind CSS                                                             |
-| Banco de dados              | PostgreSQL                                                                       |
-| ORM                         | Prisma 7 (driver adapter `@prisma/adapter-pg`)                                   |
-| Autenticação                | Better Auth (e-mail/senha, plugin `admin`)                                       |
-| Validação                   | Zod                                                                              |
-| Formulários                 | Server Actions + React 19 (`useActionState`)                                     |
-| Armazenamento de mídia      | Compatível com S3 (`@aws-sdk/client-s3`; MinIO local) + `sharp`                  |
-| IA (geração de anúncios)    | Anthropic Claude (`@anthropic-ai/sdk`); provedor fake em dev/testes              |
-| Artes para redes sociais    | `sharp` (composição de foto + texto via Pango, sem dependência nova)             |
+| Camada                      | Tecnologia                                                                        |
+| --------------------------- | --------------------------------------------------------------------------------- |
+| Framework web               | Next.js (App Router)                                                              |
+| Linguagem                   | TypeScript (modo estrito)                                                         |
+| UI                          | React + Tailwind CSS                                                              |
+| Banco de dados              | PostgreSQL                                                                        |
+| ORM                         | Prisma 7 (driver adapter `@prisma/adapter-pg`)                                    |
+| Autenticação                | Better Auth (e-mail/senha, plugin `admin`)                                        |
+| Validação                   | Zod                                                                               |
+| Formulários                 | Server Actions + React 19 (`useActionState`)                                      |
+| Armazenamento de mídia      | Compatível com S3 (`@aws-sdk/client-s3`; MinIO local) + `sharp`                   |
+| IA (geração de anúncios)    | Anthropic Claude (`@anthropic-ai/sdk`); provedor fake em dev/testes               |
+| Artes para redes sociais    | `sharp` (composição de foto + texto via Pango, sem dependência nova)              |
 | Analytics/relatórios        | Eventos agregados por corretor; dedup por hash, sem cookie (sem dependência nova) |
-| Testes unitários/integração | Vitest (+ Testing Library)                                                       |
-| Testes E2E                  | Playwright                                                                       |
-| Qualidade de código         | ESLint + Prettier                                                                |
-| Ambiente local              | Docker                                                                           |
-| Integração contínua         | GitHub Actions                                                                   |
+| Testes unitários/integração | Vitest (+ Testing Library)                                                        |
+| Testes E2E                  | Playwright                                                                        |
+| Qualidade de código         | ESLint + Prettier                                                                 |
+| Ambiente local              | Docker                                                                            |
+| Integração contínua         | GitHub Actions                                                                    |
 
 ## 7. Pré-requisitos
 
@@ -266,19 +266,19 @@ corretor-ia/
 Ver plano completo de fases em
 [`docs/planning/phases-plan.md`](docs/planning/phases-plan.md). Resumo:
 
-| Fase | Nome                        | Status       |
-| ---- | --------------------------- | ------------ |
-| 0    | Descoberta e planejamento   | Concluída    |
-| 1    | Fundação do projeto         | Concluída    |
-| 2    | Autenticação                | Concluída    |
-| 3    | Perfil do corretor          | Concluída    |
-| 4    | Cadastro de imóveis         | Concluída    |
-| 5    | Catálogo digital            | Concluída    |
-| 6    | Página individual do imóvel | Concluída    |
-| 7    | IA para anúncios            | Concluída    |
-| 8    | Artes                       | Concluída    |
-| 9    | Relatórios                  | Concluída    |
-| 10   | Hardening                   | Concluída    |
+| Fase | Nome                        | Status    |
+| ---- | --------------------------- | --------- |
+| 0    | Descoberta e planejamento   | Concluída |
+| 1    | Fundação do projeto         | Concluída |
+| 2    | Autenticação                | Concluída |
+| 3    | Perfil do corretor          | Concluída |
+| 4    | Cadastro de imóveis         | Concluída |
+| 5    | Catálogo digital            | Concluída |
+| 6    | Página individual do imóvel | Concluída |
+| 7    | IA para anúncios            | Concluída |
+| 8    | Artes                       | Concluída |
+| 9    | Relatórios                  | Concluída |
+| 10   | Hardening                   | Concluída |
 
 ## 17. Contribuição
 

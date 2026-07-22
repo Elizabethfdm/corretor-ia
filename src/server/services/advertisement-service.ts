@@ -94,10 +94,7 @@ export async function listAdvertisementsForProperty(propertyId: string, brokerId
  * `SubmitButton` desabilita o próprio formulário durante o envio
  * (`useFormStatus`), mesmo padrão já usado em toda a aplicação.
  */
-export async function generateAdvertisement(
-  brokerId: string,
-  input: GenerateAdvertisementInput,
-) {
+export async function generateAdvertisement(brokerId: string, input: GenerateAdvertisementInput) {
   const property = await getOwnProperty(input.propertyId, brokerId);
 
   const limit = getMonthlyAdvertisementLimit();

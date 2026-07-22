@@ -32,7 +32,11 @@ test.describe("Painel administrativo (RN-091 a RN-095)", () => {
     test.setTimeout(90_000);
 
     const adminEmail = uniqueEmail("e2e-admin");
-    await createTestUser(request, { name: "Admin Teste", email: adminEmail, password: "senha1234" });
+    await createTestUser(request, {
+      name: "Admin Teste",
+      email: adminEmail,
+      password: "senha1234",
+    });
     await promoteToAdmin(adminEmail);
 
     const brokerEmail = uniqueEmail("e2e-admin-broker");
@@ -54,7 +58,9 @@ test.describe("Painel administrativo (RN-091 a RN-095)", () => {
     await brokerPage.goto("/painel/perfil");
     await brokerPage.getByLabel("Nome profissional").fill("Corretor Alvo");
     await brokerPage.getByLabel("Nome completo").fill("Corretor Alvo Completo");
-    await brokerPage.getByLabel("Endereço do catálogo (slug)").fill(`e2e-admin-broker-${Date.now()}`);
+    await brokerPage
+      .getByLabel("Endereço do catálogo (slug)")
+      .fill(`e2e-admin-broker-${Date.now()}`);
     await brokerPage.getByRole("button", { name: "Salvar perfil" }).click();
     await expect(brokerPage.getByText("Perfil salvo com sucesso.")).toBeVisible();
     await brokerContext.close();

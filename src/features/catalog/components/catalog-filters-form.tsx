@@ -47,7 +47,12 @@ export function CatalogFiltersForm({ slug, filters }: CatalogFiltersFormProps) {
           <label htmlFor="purpose" className="mb-1 block text-xs text-zinc-600 dark:text-zinc-400">
             Finalidade
           </label>
-          <select id="purpose" name="purpose" defaultValue={filters.purpose ?? ""} className={INPUT_CLASS}>
+          <select
+            id="purpose"
+            name="purpose"
+            defaultValue={filters.purpose ?? ""}
+            className={INPUT_CLASS}
+          >
             <option value="">Todas</option>
             {Object.values(PropertyPurpose).map((value) => (
               <option key={value} value={value}>
@@ -75,11 +80,20 @@ export function CatalogFiltersForm({ slug, filters }: CatalogFiltersFormProps) {
           <label htmlFor="city" className="mb-1 block text-xs text-zinc-600 dark:text-zinc-400">
             Cidade
           </label>
-          <input id="city" name="city" type="text" defaultValue={filters.city ?? ""} className={INPUT_CLASS} />
+          <input
+            id="city"
+            name="city"
+            type="text"
+            defaultValue={filters.city ?? ""}
+            className={INPUT_CLASS}
+          />
         </div>
 
         <div>
-          <label htmlFor="neighborhood" className="mb-1 block text-xs text-zinc-600 dark:text-zinc-400">
+          <label
+            htmlFor="neighborhood"
+            className="mb-1 block text-xs text-zinc-600 dark:text-zinc-400"
+          >
             Bairro
           </label>
           <input
@@ -122,7 +136,10 @@ export function CatalogFiltersForm({ slug, filters }: CatalogFiltersFormProps) {
         </div>
 
         <div>
-          <label htmlFor="bedroomsMin" className="mb-1 block text-xs text-zinc-600 dark:text-zinc-400">
+          <label
+            htmlFor="bedroomsMin"
+            className="mb-1 block text-xs text-zinc-600 dark:text-zinc-400"
+          >
             Quartos (mín.)
           </label>
           <input
@@ -136,7 +153,10 @@ export function CatalogFiltersForm({ slug, filters }: CatalogFiltersFormProps) {
         </div>
 
         <div>
-          <label htmlFor="parkingMin" className="mb-1 block text-xs text-zinc-600 dark:text-zinc-400">
+          <label
+            htmlFor="parkingMin"
+            className="mb-1 block text-xs text-zinc-600 dark:text-zinc-400"
+          >
             Vagas (mín.)
           </label>
           <input
@@ -167,7 +187,10 @@ export function CatalogFiltersForm({ slug, filters }: CatalogFiltersFormProps) {
         <legend className="mb-1 text-xs text-zinc-600 dark:text-zinc-400">Características</legend>
         <div className="grid grid-cols-2 gap-1 sm:grid-cols-4">
           {Object.values(FeatureType).map((feature) => (
-            <label key={feature} className="flex items-center gap-1.5 text-xs text-zinc-700 dark:text-zinc-300">
+            <label
+              key={feature}
+              className="flex items-center gap-1.5 text-xs text-zinc-700 dark:text-zinc-300"
+            >
               <input
                 type="checkbox"
                 name="features"
@@ -194,7 +217,7 @@ export function CatalogFiltersForm({ slug, filters }: CatalogFiltersFormProps) {
 
       <button
         type="submit"
-        className="w-full rounded-md bg-zinc-900 px-4 py-2.5 text-sm font-medium text-white hover:bg-zinc-700 dark:bg-zinc-50 dark:text-zinc-900 dark:hover:bg-zinc-200 sm:w-auto"
+        className="w-full rounded-md bg-zinc-900 px-4 py-2.5 text-sm font-medium text-white hover:bg-zinc-700 sm:w-auto dark:bg-zinc-50 dark:text-zinc-900 dark:hover:bg-zinc-200"
       >
         Filtrar
       </button>

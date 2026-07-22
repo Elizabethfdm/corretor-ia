@@ -49,11 +49,7 @@ export function BasicInfoForm({ property }: BasicInfoFormProps) {
         />
       </FormField>
 
-      <FormField
-        id="publicTitle"
-        label="Título público (opcional)"
-        errors={errors["publicTitle"]}
-      >
+      <FormField id="publicTitle" label="Título público (opcional)" errors={errors["publicTitle"]}>
         <Input
           name="publicTitle"
           type="text"
@@ -84,7 +80,11 @@ export function BasicInfoForm({ property }: BasicInfoFormProps) {
         </FormField>
       </div>
 
-      <FormField id="referenceCode" label="Código de referência (opcional)" errors={errors["referenceCode"]}>
+      <FormField
+        id="referenceCode"
+        label="Código de referência (opcional)"
+        errors={errors["referenceCode"]}
+      >
         <Input
           name="referenceCode"
           type="text"

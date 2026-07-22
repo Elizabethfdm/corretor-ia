@@ -39,14 +39,26 @@ export function ReportPeriodForm({ filters }: ReportPeriodFormProps) {
         <label htmlFor="from" className="mb-1 block text-xs text-zinc-600 dark:text-zinc-400">
           De
         </label>
-        <input id="from" name="from" type="date" defaultValue={filters.from ?? ""} className={INPUT_CLASS} />
+        <input
+          id="from"
+          name="from"
+          type="date"
+          defaultValue={filters.from ?? ""}
+          className={INPUT_CLASS}
+        />
       </div>
 
       <div>
         <label htmlFor="to" className="mb-1 block text-xs text-zinc-600 dark:text-zinc-400">
           Até
         </label>
-        <input id="to" name="to" type="date" defaultValue={filters.to ?? ""} className={INPUT_CLASS} />
+        <input
+          id="to"
+          name="to"
+          type="date"
+          defaultValue={filters.to ?? ""}
+          className={INPUT_CLASS}
+        />
       </div>
 
       <button

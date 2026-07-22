@@ -53,7 +53,10 @@ export function PhotoManager({ property }: PhotoManagerProps) {
           </div>
         ) : null}
 
-        <label htmlFor="photo-files" className="text-sm font-medium text-zinc-800 dark:text-zinc-200">
+        <label
+          htmlFor="photo-files"
+          className="text-sm font-medium text-zinc-800 dark:text-zinc-200"
+        >
           Adicionar fotos
         </label>
         <input
@@ -89,7 +92,10 @@ export function PhotoManager({ property }: PhotoManagerProps) {
               <form action={setPhotoAltTextAction} className="flex flex-col gap-1">
                 <input type="hidden" name="propertyId" value={property.id} />
                 <input type="hidden" name="mediaId" value={item.id} />
-                <label htmlFor={`alt-text-${item.id}`} className="text-xs text-zinc-600 dark:text-zinc-400">
+                <label
+                  htmlFor={`alt-text-${item.id}`}
+                  className="text-xs text-zinc-600 dark:text-zinc-400"
+                >
                   Texto alternativo (acessibilidade/SEO)
                 </label>
                 <div className="flex gap-1">

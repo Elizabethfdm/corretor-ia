@@ -83,135 +83,111 @@ afterEach(async () => {
 }, 30_000);
 
 describe("listBrokersForAdmin, getPlatformIndicators (RF-072, RF-075)", () => {
-  it(
-    "lista corretores com contagem de imóveis e reflete nos indicadores gerais",
-    async () => {
-      const before = await getPlatformIndicators();
-      const { brokerId, email } = await createBrokerWithProperty("admin-list");
+  it("lista corretores com contagem de imóveis e reflete nos indicadores gerais", async () => {
+    const before = await getPlatformIndicators();
+    const { brokerId, email } = await createBrokerWithProperty("admin-list");
 
-      const brokers = await listBrokersForAdmin();
-      const row = brokers.find((b) => b.id === brokerId);
-      expect(row).toBeTruthy();
-      expect(row?.email).toBe(email);
-      expect(row?.propertyCount).toBe(1);
-      expect(row?.banned).toBe(false);
+    const brokers = await listBrokersForAdmin();
+    const row = brokers.find((b) => b.id === brokerId);
+    expect(row).toBeTruthy();
+    expect(row?.email).toBe(email);
+    expect(row?.propertyCount).toBe(1);
+    expect(row?.banned).toBe(false);
 
-      // Comparação por limite inferior, não igualdade exata: os
-      // indicadores são globais por design (visão do admin), e outros
-      // arquivos de teste de integração podem estar criando dados
-      // concorrentemente contra o mesmo banco.
-      const after = await getPlatformIndicators();
-      expect(after.totalBrokers).toBeGreaterThanOrEqual(before.totalBrokers + 1);
-      expect(after.totalProperties).toBeGreaterThanOrEqual(before.totalProperties + 1);
-    },
-    30_000,
-  );
+    // Comparação por limite inferior, não igualdade exata: os
+    // indicadores são globais por design (visão do admin), e outros
+    // arquivos de teste de integração podem estar criando dados
+    // concorrentemente contra o mesmo banco.
+    const after = await getPlatformIndicators();
+    expect(after.totalBrokers).toBeGreaterThanOrEqual(before.totalBrokers + 1);
+    expect(after.totalProperties).toBeGreaterThanOrEqual(before.totalProperties + 1);
+  }, 30_000);
 });
 
 describe("blockBroker / unblockBroker (RF-073, RN-092, RN-094)", () => {
-  it(
-    "bloqueia a conta e revoga a sessão ativa do corretor imediatamente",
-    async () => {
-      const adminHeaders = await createAdminSessionHeaders();
-      const { userId, email } = await createBrokerWithProperty("admin-block");
+  it("bloqueia a conta e revoga a sessão ativa do corretor imediatamente", async () => {
+    const adminHeaders = await createAdminSessionHeaders();
+    const { userId, email } = await createBrokerWithProperty("admin-block");
 
-      const brokerSignIn = await auth.api.signInEmail({
-        body: { email, password: PASSWORD },
-        returnHeaders: true,
-      });
-      const brokerCookie = convertSetCookieToCookie(brokerSignIn.headers);
+    const brokerSignIn = await auth.api.signInEmail({
+      body: { email, password: PASSWORD },
+      returnHeaders: true,
+    });
+    const brokerCookie = convertSetCookieToCookie(brokerSignIn.headers);
 
-      const beforeSession = await auth.api.getSession({ headers: brokerCookie });
-      expect(beforeSession?.user.id).toBe(userId);
+    const beforeSession = await auth.api.getSession({ headers: brokerCookie });
+    expect(beforeSession?.user.id).toBe(userId);
 
-      vi.mocked(headers).mockResolvedValue(adminHeaders as never);
-      await blockBroker(userId);
+    vi.mocked(headers).mockResolvedValue(adminHeaders as never);
+    await blockBroker(userId);
 
-      const afterSession = await auth.api.getSession({ headers: brokerCookie });
-      expect(afterSession).toBeNull();
+    const afterSession = await auth.api.getSession({ headers: brokerCookie });
+    expect(afterSession).toBeNull();
 
-      await expect(
-        auth.api.signInEmail({ body: { email, password: PASSWORD } }),
-      ).rejects.toThrow();
-    },
-    30_000,
-  );
+    await expect(auth.api.signInEmail({ body: { email, password: PASSWORD } })).rejects.toThrow();
+  }, 30_000);
 
-  it(
-    "desbloqueia a conta e permite login novamente",
-    async () => {
-      const adminHeaders = await createAdminSessionHeaders();
-      const { userId, email } = await createBrokerWithProperty("admin-unblock");
+  it("desbloqueia a conta e permite login novamente", async () => {
+    const adminHeaders = await createAdminSessionHeaders();
+    const { userId, email } = await createBrokerWithProperty("admin-unblock");
 
-      vi.mocked(headers).mockResolvedValue(adminHeaders as never);
-      await blockBroker(userId);
-      await expect(
-        auth.api.signInEmail({ body: { email, password: PASSWORD } }),
-      ).rejects.toThrow();
+    vi.mocked(headers).mockResolvedValue(adminHeaders as never);
+    await blockBroker(userId);
+    await expect(auth.api.signInEmail({ body: { email, password: PASSWORD } })).rejects.toThrow();
 
-      await unblockBroker(userId);
-      const signInAfterUnblock = await auth.api.signInEmail({
-        body: { email, password: PASSWORD },
-      });
-      expect(signInAfterUnblock.user.id).toBe(userId);
-    },
-    30_000,
-  );
+    await unblockBroker(userId);
+    const signInAfterUnblock = await auth.api.signInEmail({
+      body: { email, password: PASSWORD },
+    });
+    expect(signInAfterUnblock.user.id).toBe(userId);
+  }, 30_000);
 });
 
 describe("getPublicProfileBySlug oculta catálogo de conta bloqueada (RN-093)", () => {
-  it(
-    "retorna null para o catálogo de um corretor bloqueado, mesmo publicado",
-    async () => {
-      const email = uniqueEmail("admin-catalog-hide");
-      const signUp = await auth.api.signUpEmail({
-        body: { name: "Corretor Teste", email, password: PASSWORD },
-      });
-      const slug = `admin-catalog-hide-${Date.now()}`;
-      await saveOwnProfile(
-        signUp.user.id,
-        brokerProfileSchema.parse({
-          professionalName: "Corretor Teste",
-          fullName: "Corretor Teste Completo",
-          slug,
-          creciNumber: "12345",
-          creciState: "SP",
-          whatsapp: "11999999999",
-          city: "São Paulo",
-        }),
-      );
-      await setCatalogEnabled(signUp.user.id, true);
+  it("retorna null para o catálogo de um corretor bloqueado, mesmo publicado", async () => {
+    const email = uniqueEmail("admin-catalog-hide");
+    const signUp = await auth.api.signUpEmail({
+      body: { name: "Corretor Teste", email, password: PASSWORD },
+    });
+    const slug = `admin-catalog-hide-${Date.now()}`;
+    await saveOwnProfile(
+      signUp.user.id,
+      brokerProfileSchema.parse({
+        professionalName: "Corretor Teste",
+        fullName: "Corretor Teste Completo",
+        slug,
+        creciNumber: "12345",
+        creciState: "SP",
+        whatsapp: "11999999999",
+        city: "São Paulo",
+      }),
+    );
+    await setCatalogEnabled(signUp.user.id, true);
 
-      expect(await getPublicProfileBySlug(slug)).not.toBeNull();
+    expect(await getPublicProfileBySlug(slug)).not.toBeNull();
 
-      await prisma.user.update({ where: { id: signUp.user.id }, data: { banned: true } });
+    await prisma.user.update({ where: { id: signUp.user.id }, data: { banned: true } });
 
-      expect(await getPublicProfileBySlug(slug)).toBeNull();
+    expect(await getPublicProfileBySlug(slug)).toBeNull();
 
-      testEmails.push(email);
-    },
-    30_000,
-  );
+    testEmails.push(email);
+  }, 30_000);
 });
 
 describe("listRecentAuditLog (RF-074)", () => {
-  it(
-    "retorna eventos recentes com o e-mail do responsável resolvido",
-    async () => {
-      const { userId, email } = await createBrokerWithProperty("admin-audit");
-      const { recordAuditLog } = await import("@/server/services/audit-log-service");
-      await recordAuditLog({
-        userId,
-        action: "BROKER_BLOCKED",
-        entityType: "User",
-        entityId: userId,
-      });
+  it("retorna eventos recentes com o e-mail do responsável resolvido", async () => {
+    const { userId, email } = await createBrokerWithProperty("admin-audit");
+    const { recordAuditLog } = await import("@/server/services/audit-log-service");
+    await recordAuditLog({
+      userId,
+      action: "BROKER_BLOCKED",
+      entityType: "User",
+      entityId: userId,
+    });
 
-      const entries = await listRecentAuditLog(10);
-      const entry = entries.find((e) => e.entityId === userId && e.action === "BROKER_BLOCKED");
-      expect(entry).toBeTruthy();
-      expect(entry?.userEmail).toBe(email);
-    },
-    30_000,
-  );
+    const entries = await listRecentAuditLog(10);
+    const entry = entries.find((e) => e.entityId === userId && e.action === "BROKER_BLOCKED");
+    expect(entry).toBeTruthy();
+    expect(entry?.userEmail).toBe(email);
+  }, 30_000);
 });

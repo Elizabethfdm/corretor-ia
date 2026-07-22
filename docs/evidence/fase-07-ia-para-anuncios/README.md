@@ -26,14 +26,14 @@ escrever qualquer código de integração (nunca presumida), conforme exige
 
 ## Comandos executados e resultado
 
-| Comando                          | Resultado                                                                                        |
-| --------------------------------- | ------------------------------------------------------------------------------------------------- |
-| `npm run typecheck`               | Sem erros (TypeScript modo estrito)                                                              |
-| `npm run lint`                    | 0 erros, 0 warnings                                                                               |
-| `npm run build`                   | Build de produção concluído com sucesso (confirma que `@anthropic-ai/sdk` nunca vaza para o bundle do cliente) |
-| `npm run test` (Vitest)           | 242 testes aprovados (32 arquivos) — unitário + integração contra Postgres e MinIO reais          |
-| `npm audit --audit-level=high`    | 0 vulnerabilidades altas/críticas                                                                 |
-| `npx playwright test` (5 navegadores/viewports) | **215/215 aprovados** — ver seção "Execução E2E" abaixo                          |
+| Comando                                         | Resultado                                                                                                      |
+| ----------------------------------------------- | -------------------------------------------------------------------------------------------------------------- |
+| `npm run typecheck`                             | Sem erros (TypeScript modo estrito)                                                                            |
+| `npm run lint`                                  | 0 erros, 0 warnings                                                                                            |
+| `npm run build`                                 | Build de produção concluído com sucesso (confirma que `@anthropic-ai/sdk` nunca vaza para o bundle do cliente) |
+| `npm run test` (Vitest)                         | 242 testes aprovados (32 arquivos) — unitário + integração contra Postgres e MinIO reais                       |
+| `npm audit --audit-level=high`                  | 0 vulnerabilidades altas/críticas                                                                              |
+| `npx playwright test` (5 navegadores/viewports) | **215/215 aprovados** — ver seção "Execução E2E" abaixo                                                        |
 
 ## Execução E2E
 

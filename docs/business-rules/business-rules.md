@@ -154,7 +154,7 @@ renumeradas para manter numeração única no projeto.
 
 - **RN-046 — Somente imóveis disponíveis no catálogo.** O catálogo exibe
   exclusivamente imóveis com situação "disponível", nunca rascunhos,
-  reservados, vendidos, alugados ou inativos. *Decisão tomada na Fase 5
+  reservados, vendidos, alugados ou inativos. _Decisão tomada na Fase 5
   (implementação): a redação original previa exibir "reservado"/
   "vendido"/"alugado" conforme uma "configuração de exibição" que nunca
   chegou a existir no produto; ao chegar a hora de implementar, optou-se
@@ -162,7 +162,7 @@ renumeradas para manter numeração única no projeto.
   sai de "disponível" — evitando expor no catálogo público um imóvel que
   o corretor já considera fora de negociação. Revisitar caso o produto
   precise, no futuro, de uma vitrine de "imóveis já negociados" como
-  prova social.*
+  prova social._
 - **RN-047 — Filtros preservados na URL.** Os filtros aplicados no
   catálogo devem ser refletidos na URL, permitindo compartilhamento do
   resultado filtrado.

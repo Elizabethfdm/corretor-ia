@@ -29,8 +29,16 @@ describe("computeSessionHash (RN-084, RN-087)", () => {
   });
 
   it("difere em dias diferentes (janela de sessão renova por dia)", () => {
-    const day1 = computeSessionHash("203.0.113.10", "Mozilla/5.0", new Date("2026-07-21T23:59:00.000Z"));
-    const day2 = computeSessionHash("203.0.113.10", "Mozilla/5.0", new Date("2026-07-22T00:01:00.000Z"));
+    const day1 = computeSessionHash(
+      "203.0.113.10",
+      "Mozilla/5.0",
+      new Date("2026-07-21T23:59:00.000Z"),
+    );
+    const day2 = computeSessionHash(
+      "203.0.113.10",
+      "Mozilla/5.0",
+      new Date("2026-07-22T00:01:00.000Z"),
+    );
     expect(day1).not.toBe(day2);
   });
 });

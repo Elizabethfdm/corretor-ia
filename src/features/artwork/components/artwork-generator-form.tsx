@@ -59,13 +59,18 @@ export function ArtworkGeneratorForm({ property }: ArtworkGeneratorFormProps) {
 
       {state.status !== "idle" && state.message ? (
         <div ref={messageRef} tabIndex={-1}>
-          <FormMessage status={state.status === "error" ? "error" : "success"} message={state.message} />
+          <FormMessage
+            status={state.status === "error" ? "error" : "success"}
+            message={state.message}
+          />
         </div>
       ) : null}
 
       <fieldset className="flex flex-col gap-2">
         <legend className="mb-1 text-sm font-medium text-zinc-800 dark:text-zinc-200">Foto</legend>
-        {errors["photoMediaId"] ? <p className="text-sm text-red-600">{errors["photoMediaId"][0]}</p> : null}
+        {errors["photoMediaId"] ? (
+          <p className="text-sm text-red-600">{errors["photoMediaId"][0]}</p>
+        ) : null}
         <div className="grid grid-cols-3 gap-2 sm:grid-cols-5">
           {property.media.map((item, index) => (
             <label key={item.id} className="cursor-pointer">

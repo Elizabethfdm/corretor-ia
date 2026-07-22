@@ -38,7 +38,10 @@ export function AdvertisementGeneratorForm({ property }: AdvertisementGeneratorF
 
       {state.status !== "idle" && state.message ? (
         <div ref={messageRef} tabIndex={-1}>
-          <FormMessage status={state.status === "error" ? "error" : "success"} message={state.message} />
+          <FormMessage
+            status={state.status === "error" ? "error" : "success"}
+            message={state.message}
+          />
         </div>
       ) : null}
 
@@ -88,18 +91,22 @@ export function AdvertisementGeneratorForm({ property }: AdvertisementGeneratorF
           required
           maxLength={200}
           placeholder="Ex.: atrair famílias procurando o primeiro imóvel"
-          className="w-full rounded-md border border-zinc-300 bg-white px-3 py-2 text-base text-zinc-900 focus:border-zinc-500 focus:outline-none focus:ring-2 focus:ring-zinc-500 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-50"
+          className="w-full rounded-md border border-zinc-300 bg-white px-3 py-2 text-base text-zinc-900 focus:border-zinc-500 focus:ring-2 focus:ring-zinc-500 focus:outline-none dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-50"
         />
       </FormField>
 
-      <FormField id="targetAudience" label="Público-alvo (opcional)" errors={errors["targetAudience"]}>
+      <FormField
+        id="targetAudience"
+        label="Público-alvo (opcional)"
+        errors={errors["targetAudience"]}
+      >
         <input
           id="targetAudience"
           name="targetAudience"
           type="text"
           maxLength={150}
           placeholder="Ex.: casais jovens, investidores, aposentados"
-          className="w-full rounded-md border border-zinc-300 bg-white px-3 py-2 text-base text-zinc-900 focus:border-zinc-500 focus:outline-none focus:ring-2 focus:ring-zinc-500 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-50"
+          className="w-full rounded-md border border-zinc-300 bg-white px-3 py-2 text-base text-zinc-900 focus:border-zinc-500 focus:ring-2 focus:ring-zinc-500 focus:outline-none dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-50"
         />
       </FormField>
 

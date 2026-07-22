@@ -20,14 +20,18 @@ describe("basicInfoSchema", () => {
 
   it("rejeita título interno vazio ou muito curto", () => {
     expect(basicInfoSchema.safeParse({ ...validBasicInfo, internalTitle: "" }).success).toBe(false);
-    expect(basicInfoSchema.safeParse({ ...validBasicInfo, internalTitle: "A" }).success).toBe(false);
+    expect(basicInfoSchema.safeParse({ ...validBasicInfo, internalTitle: "A" }).success).toBe(
+      false,
+    );
   });
 
   it("rejeita finalidade ou tipo fora do enum", () => {
-    expect(basicInfoSchema.safeParse({ ...validBasicInfo, purpose: "ALUGUEL" }).success).toBe(false);
-    expect(
-      basicInfoSchema.safeParse({ ...validBasicInfo, propertyType: "CASTELO" }).success,
-    ).toBe(false);
+    expect(basicInfoSchema.safeParse({ ...validBasicInfo, purpose: "ALUGUEL" }).success).toBe(
+      false,
+    );
+    expect(basicInfoSchema.safeParse({ ...validBasicInfo, propertyType: "CASTELO" }).success).toBe(
+      false,
+    );
   });
 
   it("mantém o valor monetário como string, preservando os centavos (RN-030)", () => {
@@ -40,9 +44,9 @@ describe("basicInfoSchema", () => {
   });
 
   it("rejeita valor monetário em formato inválido", () => {
-    expect(basicInfoSchema.safeParse({ ...validBasicInfo, price: "quatrocentos mil" }).success).toBe(
-      false,
-    );
+    expect(
+      basicInfoSchema.safeParse({ ...validBasicInfo, price: "quatrocentos mil" }).success,
+    ).toBe(false);
   });
 
   it("converte string vazia em undefined para campos opcionais", () => {

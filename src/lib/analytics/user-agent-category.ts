@@ -10,7 +10,11 @@ export function classifyUserAgent(userAgent: string | null | undefined): UserAge
     return UserAgentCategory.UNKNOWN;
   }
 
-  if (/iPad/i.test(userAgent) || /Tablet/i.test(userAgent) || (/Android/i.test(userAgent) && !/Mobile/i.test(userAgent))) {
+  if (
+    /iPad/i.test(userAgent) ||
+    /Tablet/i.test(userAgent) ||
+    (/Android/i.test(userAgent) && !/Mobile/i.test(userAgent))
+  ) {
     return UserAgentCategory.TABLET;
   }
 

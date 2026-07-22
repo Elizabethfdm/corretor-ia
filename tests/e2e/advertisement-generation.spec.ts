@@ -28,7 +28,10 @@ async function createMinimalProperty(page: Page): Promise<string> {
 }
 
 test.describe("Geração de anúncios com IA (RN-061 a RN-074)", () => {
-  test("corretor gera um anúncio, vê o selo de IA, e edita o resultado", async ({ page, request }) => {
+  test("corretor gera um anúncio, vê o selo de IA, e edita o resultado", async ({
+    page,
+    request,
+  }) => {
     test.setTimeout(90_000);
 
     const email = uniqueEmail("e2e-ad-generate");

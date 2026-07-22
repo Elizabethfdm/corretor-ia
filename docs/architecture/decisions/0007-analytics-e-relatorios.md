@@ -15,10 +15,10 @@ desnecessários do visitante (RN-087).
 
 ## Alternativas consideradas (mitigação de duplicidade)
 
-| Alternativa                                                        | Prós                                                         | Contras                                                                                     |
-| -------------------------------------------------------------------- | -------------------------------------------------------------- | ----------------------------------------------------------------------------------------------- |
-| Cookie de visitante anônimo + `middleware.ts` para garantir o cookie | Sessão estável entre requisições, dedup mais precisa           | Exige novo arquivo de middleware rodando em toda rota pública; Server Components não podem escrever cookies durante a renderização, só Server Actions/Route Handlers/middleware |
-| Hash calculado por requisição (IP + User-Agent + dia)               | Nenhuma infraestrutura nova; funciona em Server Components e Server Actions igualmente | Duas pessoas por trás do mesmo IP corporativo/NAT no mesmo dia podem ser tratadas como uma só sessão (mesma limitação inerente a qualquer fingerprint sem cookie) |
+| Alternativa                                                          | Prós                                                                                   | Contras                                                                                                                                                                         |
+| -------------------------------------------------------------------- | -------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Cookie de visitante anônimo + `middleware.ts` para garantir o cookie | Sessão estável entre requisições, dedup mais precisa                                   | Exige novo arquivo de middleware rodando em toda rota pública; Server Components não podem escrever cookies durante a renderização, só Server Actions/Route Handlers/middleware |
+| Hash calculado por requisição (IP + User-Agent + dia)                | Nenhuma infraestrutura nova; funciona em Server Components e Server Actions igualmente | Duas pessoas por trás do mesmo IP corporativo/NAT no mesmo dia podem ser tratadas como uma só sessão (mesma limitação inerente a qualquer fingerprint sem cookie)               |
 
 ## Decisão
 

@@ -102,7 +102,10 @@ export async function recordPropertyView(brokerId: string, propertyId: string): 
   await recordVisitorEvent(brokerId, propertyId, AnalyticsEventType.PROPERTY_VIEW);
 }
 
-export async function recordWhatsappClick(brokerId: string, propertyId: string | null): Promise<void> {
+export async function recordWhatsappClick(
+  brokerId: string,
+  propertyId: string | null,
+): Promise<void> {
   await recordVisitorEvent(brokerId, propertyId, AnalyticsEventType.WHATSAPP_CLICK);
 }
 
@@ -129,7 +132,10 @@ export interface ReportSummary {
 }
 
 /** RF-067 a RF-071: relatório agregado, isolado por corretor (RN-082), com estado vazio claro (RN-088). */
-export async function getReportSummary(brokerId: string, filters: ReportFilters): Promise<ReportSummary> {
+export async function getReportSummary(
+  brokerId: string,
+  filters: ReportFilters,
+): Promise<ReportSummary> {
   const { from, to } = resolveReportDateRange(filters);
   const grouped = await analyticsEventRepository.countByBrokerAndType(brokerId, from, to);
 
@@ -142,7 +148,11 @@ export async function getReportSummary(brokerId: string, filters: ReportFilters)
   if (top) {
     const property = await propertyRepository.findByIdForBroker(top.propertyId, brokerId);
     if (property) {
-      mostViewedProperty = { propertyId: property.id, title: buildPublicTitle(property), views: top.views };
+      mostViewedProperty = {
+        propertyId: property.id,
+        title: buildPublicTitle(property),
+        views: top.views,
+      };
     }
   }
 

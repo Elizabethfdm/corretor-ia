@@ -14,9 +14,9 @@ describe("parseReportFilters (RF-068)", () => {
   it("aceita cada período válido", () => {
     expect(parseReportFilters({ period: "today" }).period).toBe("today");
     expect(parseReportFilters({ period: "30d" }).period).toBe("30d");
-    expect(parseReportFilters({ period: "custom", from: "2026-07-01", to: "2026-07-10" }).period).toBe(
-      "custom",
-    );
+    expect(
+      parseReportFilters({ period: "custom", from: "2026-07-01", to: "2026-07-10" }).period,
+    ).toBe("custom");
   });
 
   it("nunca derruba a página com um período inválido — cai para o padrão (RN-047-like resiliência)", () => {
@@ -25,7 +25,11 @@ describe("parseReportFilters (RF-068)", () => {
   });
 
   it("ignora datas malformadas em vez de lançar", () => {
-    const filters = parseReportFilters({ period: "custom", from: "não-é-uma-data", to: "2026-07-10" });
+    const filters = parseReportFilters({
+      period: "custom",
+      from: "não-é-uma-data",
+      to: "2026-07-10",
+    });
     expect(filters.from).toBeUndefined();
   });
 });

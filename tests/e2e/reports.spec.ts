@@ -183,7 +183,9 @@ test.describe("Relatórios (RN-082 a RN-090)", () => {
     await expect(page.getByText("Perfil salvo com sucesso.")).toBeVisible();
 
     await page.goto("/painel/relatorios");
-    await expect(page.getByText("Nenhum dado registrado para o período selecionado.")).toBeVisible();
+    await expect(
+      page.getByText("Nenhum dado registrado para o período selecionado."),
+    ).toBeVisible();
 
     await deleteTestUserByEmail(email);
   });

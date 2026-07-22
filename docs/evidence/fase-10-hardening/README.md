@@ -34,14 +34,15 @@ Docker (PostgreSQL e MinIO locais via `docker-compose.yml`).
 
 ## Comandos executados e resultado
 
-| Comando                          | Resultado                                                                                        |
-| --------------------------------- | ------------------------------------------------------------------------------------------------- |
-| `npm run typecheck`               | Sem erros (TypeScript modo estrito)                                                              |
-| `npm run lint`                    | 0 erros, 0 warnings                                                                               |
-| `npm run build`                   | Build de produção concluído com sucesso; `/painel-admin` gerado como rota dinâmica                |
-| `npm run test` (Vitest)           | 311 testes aprovados (42 arquivos) — unitário + integração contra Postgres e MinIO reais          |
-| `npm audit --audit-level=high`    | **Exit 0** — nenhuma vulnerabilidade alta/crítica. 6 vulnerabilidades moderadas, todas em dependências de ferramental de build (Prisma CLI dev server via `@hono/node-server`; PostCSS embutido no Next.js via `better-auth`→`next`), nenhuma no caminho de execução exposto a requisições reais. Correção da segunda exigiria downgrade do Next.js (`next@9.3.3`) — não aplicada; risco aceito e documentado. |
-| `npx playwright test` (5 navegadores/viewports) | **255/255 aprovados** — ver seção "Execução E2E" abaixo                          |
+| Comando                                         | Resultado                                                                                                                                                                                                                                                                                                                                                                                                      |
+| ----------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `npm run typecheck`                             | Sem erros (TypeScript modo estrito)                                                                                                                                                                                                                                                                                                                                                                            |
+| `npm run lint`                                  | 0 erros, 0 warnings                                                                                                                                                                                                                                                                                                                                                                                            |
+| `npm run build`                                 | Build de produção concluído com sucesso; `/painel-admin` gerado como rota dinâmica                                                                                                                                                                                                                                                                                                                             |
+| `npm run test` (Vitest)                         | 311 testes aprovados (42 arquivos) — unitário + integração contra Postgres e MinIO reais                                                                                                                                                                                                                                                                                                                       |
+| `npm audit --audit-level=high`                  | **Exit 0** — nenhuma vulnerabilidade alta/crítica. 6 vulnerabilidades moderadas, todas em dependências de ferramental de build (Prisma CLI dev server via `@hono/node-server`; PostCSS embutido no Next.js via `better-auth`→`next`), nenhuma no caminho de execução exposto a requisições reais. Correção da segunda exigiria downgrade do Next.js (`next@9.3.3`) — não aplicada; risco aceito e documentado. |
+| `npm run format:check`                          | **Falhou na primeira verificação** (70 arquivos com formatação divergente, acumulados desde a Fase 5) — corrigido com `npm run format`; revalidado limpo. Ver "Bugs encontrados" abaixo.                                                                                                                                                                                                                    |
+| `npx playwright test` (5 navegadores/viewports) | **255/255 aprovados** — ver seção "Execução E2E" abaixo                                                                                                                                                                                                                                                                                                                                                        |
 
 ## Execução E2E
 
@@ -64,39 +65,39 @@ após corrigir o teste, fechou 255/255 de forma limpa.
 
 ## Revisão de segurança dirigida (`docs/quality/test-strategy.md`, seção 6)
 
-| Item                                                    | Resultado                                                                                                     |
-| -------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------ |
-| Acesso cruzado entre usuários (IDOR)                    | Verificado — RN-026 testado em toda entidade de domínio (imóveis, anúncios, artes, analytics) desde a Fase 4; reconfirmado nesta fase para o painel admin (RN-095, `requireAdmin`) |
-| Manipulação de identificador na URL/payload              | Verificado — toda consulta revalida posse por `brokerId`/sessão no servidor, nunca confia no ID do cliente     |
-| Upload de arquivo inválido/disfarçado                    | Verificado (Fase 3/4) — validação por conteúdo real via `sharp`, nunca extensão/MIME declarado                |
-| Payload de script (XSS)                                  | Verificado — React escapa por padrão; nenhum `dangerouslySetInnerHTML`; markup dinâmico (Pango, artes) escapado explicitamente (Fase 8) |
-| Injeção SQL/NoSQL                                        | Verificado — 100% das consultas via Prisma parametrizado, nenhuma concatenação de SQL em todo o projeto        |
-| Rate limiting em rotas de autenticação                   | Configurado (Fase 2); desabilitado em dev/teste por dívida técnica já documentada (`test-strategy.md`, seção 12) |
-| Proteção de rota administrativa                          | Verificado nesta fase — `requireAdmin()` redireciona corretor comum para `/acesso-negado` (`tests/e2e/admin.spec.ts`) |
-| Recuperação de senha sem enumeração de e-mail             | Verificado (Fase 2)                                                                                            |
-| Sessão/token expirado ou revogado                        | Verificado nesta fase — `banUser` revoga sessão ativa imediatamente (`tests/integration/admin/admin-service.test.ts`) |
-| Exposição de dado interno em resposta de API             | Verificado — serializadores públicos usam allowlist explícita desde a Fase 5 (catálogo, anúncios, artes)      |
-| Enumeração de e-mails cadastrados                        | Verificado (Fase 2)                                                                                            |
+| Item                                          | Resultado                                                                                                                                                                          |
+| --------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Acesso cruzado entre usuários (IDOR)          | Verificado — RN-026 testado em toda entidade de domínio (imóveis, anúncios, artes, analytics) desde a Fase 4; reconfirmado nesta fase para o painel admin (RN-095, `requireAdmin`) |
+| Manipulação de identificador na URL/payload   | Verificado — toda consulta revalida posse por `brokerId`/sessão no servidor, nunca confia no ID do cliente                                                                         |
+| Upload de arquivo inválido/disfarçado         | Verificado (Fase 3/4) — validação por conteúdo real via `sharp`, nunca extensão/MIME declarado                                                                                     |
+| Payload de script (XSS)                       | Verificado — React escapa por padrão; nenhum `dangerouslySetInnerHTML`; markup dinâmico (Pango, artes) escapado explicitamente (Fase 8)                                            |
+| Injeção SQL/NoSQL                             | Verificado — 100% das consultas via Prisma parametrizado, nenhuma concatenação de SQL em todo o projeto                                                                            |
+| Rate limiting em rotas de autenticação        | Configurado (Fase 2); desabilitado em dev/teste por dívida técnica já documentada (`test-strategy.md`, seção 12)                                                                   |
+| Proteção de rota administrativa               | Verificado nesta fase — `requireAdmin()` redireciona corretor comum para `/acesso-negado` (`tests/e2e/admin.spec.ts`)                                                              |
+| Recuperação de senha sem enumeração de e-mail | Verificado (Fase 2)                                                                                                                                                                |
+| Sessão/token expirado ou revogado             | Verificado nesta fase — `banUser` revoga sessão ativa imediatamente (`tests/integration/admin/admin-service.test.ts`)                                                              |
+| Exposição de dado interno em resposta de API  | Verificado — serializadores públicos usam allowlist explícita desde a Fase 5 (catálogo, anúncios, artes)                                                                           |
+| Enumeração de e-mails cadastrados             | Verificado (Fase 2)                                                                                                                                                                |
 
 ## Charters exploratórios (`test-strategy.md`, seção 8)
 
-| Charter                                                   | Status                                                                                                          |
-| ------------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------- |
-| Cadastro interrompido no meio do fluxo                        | Coberto por design — cada etapa salva independentemente (rascunho), sem estado client-only perdível             |
-| Internet instável / upload interrompido                        | **Gap conhecido** — sem simulação automatizada de rede instável; mensagens de erro genéricas existem (RNF-008), mas o cenário não foi exercitado manualmente nesta fase. Severidade baixa (upload é re-tentável pelo usuário) |
-| Múltiplos cliques em ação de submissão                         | Coberto — `SubmitButton`/`useFormStatus` desabilita o formulário durante o envio, em toda a aplicação            |
-| Botão "voltar" do navegador durante cadastro em etapas         | Coberto por design — etapas são estado server-persistido, não um wizard client-only; voltar não perde dados salvos |
-| Atualização (F5) no meio de uma etapa                         | Coberto por design — formulários não controlados com `defaultValue` a partir do servidor; só perde edição não salva do campo atual, comportamento web padrão esperado |
-| Sessão expirada durante uso ativo                             | Coberto — `requireUser`/`requireBrokerProfile`/`requireAdmin` redirecionam ao login quando a sessão não é mais válida; mecanismo exercitado por `auth-route-protection.spec.ts` e, nesta fase, pelo teste de revogação de sessão do painel admin |
-| Duas abas simultâneas na mesma conta                          | Risco baixo por design — sessão via cookie compartilhado entre abas, sem estado client-only que possa divergir  |
-| Arquivos de foto muito grandes                                | Coberto — `UploadTooLargeError` testado (Fase 3/4)                                                              |
-| Dados incompletos submetidos propositalmente                  | Coberto extensivamente — validação Zod testada em toda entidade desde a Fase 2                                  |
-| Caracteres especiais/acentuação                               | Coberto — conteúdo em português com acentuação usado nos próprios testes desde a Fase 2; escape explícito de markup dinâmico testado na Fase 8 (`pango-markup.test.ts`) |
-| Alterar o slug do catálogo com imóveis já publicados          | **Gap conhecido** — sem teste dedicado a "trocar slug após publicar e confirmar link antigo quebra/novo funciona". Severidade baixa (RN-019/RN-020 já garantem unicidade; o comportamento decorre diretamente da consulta por slug atual, sem cache) |
-| Imóvel removido durante acesso público ativo                  | Coberto pelo estado final — `getPublicProperty` retorna null para imóvel excluído/despublicado (testado); a condição de corrida em si (remoção no exato instante do acesso) não é distinguível do caso "já removido" no comportamento observável |
-| Falha simulada da IA                                          | Coberto — `AiProviderError` tratado e testado (Fase 7)                                                          |
-| Falha simulada do armazenamento de mídia                      | **Gap conhecido** — sem teste com mock de falha do S3/MinIO. Severidade baixa (erro de upload já cai no tratamento genérico de exceção não mapeada, exibindo mensagem sem stack trace — RNF-040 — mas o texto não é específico a "storage indisponível") |
-| Falha simulada do banco de dados                              | **Gap conhecido, aceito** — requer infraestrutura de injeção de falha (matar conexão do Postgres em teste) desproporcional para este MVP; `/api/health` já reporta `database: "down"` quando a conexão falha (RNF-038), mas não há teste automatizado forçando essa condição |
+| Charter                                                | Status                                                                                                                                                                                                                                                                       |
+| ------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Cadastro interrompido no meio do fluxo                 | Coberto por design — cada etapa salva independentemente (rascunho), sem estado client-only perdível                                                                                                                                                                          |
+| Internet instável / upload interrompido                | **Gap conhecido** — sem simulação automatizada de rede instável; mensagens de erro genéricas existem (RNF-008), mas o cenário não foi exercitado manualmente nesta fase. Severidade baixa (upload é re-tentável pelo usuário)                                                |
+| Múltiplos cliques em ação de submissão                 | Coberto — `SubmitButton`/`useFormStatus` desabilita o formulário durante o envio, em toda a aplicação                                                                                                                                                                        |
+| Botão "voltar" do navegador durante cadastro em etapas | Coberto por design — etapas são estado server-persistido, não um wizard client-only; voltar não perde dados salvos                                                                                                                                                           |
+| Atualização (F5) no meio de uma etapa                  | Coberto por design — formulários não controlados com `defaultValue` a partir do servidor; só perde edição não salva do campo atual, comportamento web padrão esperado                                                                                                        |
+| Sessão expirada durante uso ativo                      | Coberto — `requireUser`/`requireBrokerProfile`/`requireAdmin` redirecionam ao login quando a sessão não é mais válida; mecanismo exercitado por `auth-route-protection.spec.ts` e, nesta fase, pelo teste de revogação de sessão do painel admin                             |
+| Duas abas simultâneas na mesma conta                   | Risco baixo por design — sessão via cookie compartilhado entre abas, sem estado client-only que possa divergir                                                                                                                                                               |
+| Arquivos de foto muito grandes                         | Coberto — `UploadTooLargeError` testado (Fase 3/4)                                                                                                                                                                                                                           |
+| Dados incompletos submetidos propositalmente           | Coberto extensivamente — validação Zod testada em toda entidade desde a Fase 2                                                                                                                                                                                               |
+| Caracteres especiais/acentuação                        | Coberto — conteúdo em português com acentuação usado nos próprios testes desde a Fase 2; escape explícito de markup dinâmico testado na Fase 8 (`pango-markup.test.ts`)                                                                                                      |
+| Alterar o slug do catálogo com imóveis já publicados   | **Gap conhecido** — sem teste dedicado a "trocar slug após publicar e confirmar link antigo quebra/novo funciona". Severidade baixa (RN-019/RN-020 já garantem unicidade; o comportamento decorre diretamente da consulta por slug atual, sem cache)                         |
+| Imóvel removido durante acesso público ativo           | Coberto pelo estado final — `getPublicProperty` retorna null para imóvel excluído/despublicado (testado); a condição de corrida em si (remoção no exato instante do acesso) não é distinguível do caso "já removido" no comportamento observável                             |
+| Falha simulada da IA                                   | Coberto — `AiProviderError` tratado e testado (Fase 7)                                                                                                                                                                                                                       |
+| Falha simulada do armazenamento de mídia               | **Gap conhecido** — sem teste com mock de falha do S3/MinIO. Severidade baixa (erro de upload já cai no tratamento genérico de exceção não mapeada, exibindo mensagem sem stack trace — RNF-040 — mas o texto não é específico a "storage indisponível")                     |
+| Falha simulada do banco de dados                       | **Gap conhecido, aceito** — requer infraestrutura de injeção de falha (matar conexão do Postgres em teste) desproporcional para este MVP; `/api/health` já reporta `database: "down"` quando a conexão falha (RNF-038), mas não há teste automatizado forçando essa condição |
 
 Nenhum dos gaps acima é crítico ou alto pela classificação de
 `docs/quality/definition-of-done.md` (nenhum causa vazamento de dados,
@@ -105,33 +106,33 @@ dívida técnica de teste, não como bloqueio de entrega.
 
 ## Checklist final do MVP (`docs/product/mvp-scope.md`, seção 3)
 
-| # | Critério                                                          | Status | Evidência |
-| - | ------------------------------------------------------------------ | ------ | --------- |
-| 1 | Corretor consegue criar conta                                     | ✅     | `docs/evidence/fase-02-autenticacao/` |
-| 2 | Consegue completar perfil                                          | ✅     | `docs/evidence/fase-03-perfil-corretor/` |
-| 3 | Acesso pelo celular e tablet sem problemas de layout               | ✅     | E2E em 5 navegadores/viewports, todas as fases |
-| 4 | Consegue cadastrar um imóvel                                       | ✅     | `docs/evidence/fase-04-cadastro-de-imoveis/` |
-| 5 | Consegue adicionar e organizar fotos                               | ✅     | `docs/evidence/fase-04-cadastro-de-imoveis/` |
-| 6 | Consegue salvar rascunho                                           | ✅     | `docs/evidence/fase-04-cadastro-de-imoveis/` |
-| 7 | Consegue publicar o imóvel                                         | ✅     | `docs/evidence/fase-04-cadastro-de-imoveis/` |
-| 8 | Imóvel aparece no catálogo correto (e somente nele)                | ✅     | `docs/evidence/fase-05-catalogo-digital/` |
-| 9 | Outro corretor não acessa no painel                                | ✅     | RN-026 testado em toda fase |
-| 10 | Visitante abre o catálogo sem autenticação                        | ✅     | `docs/evidence/fase-05-catalogo-digital/` |
-| 11 | Consegue pesquisar e filtrar imóveis                               | ✅     | `docs/evidence/fase-05-catalogo-digital/` |
-| 12 | Consegue abrir a página de um imóvel                               | ✅     | `docs/evidence/fase-06-pagina-do-imovel/` |
-| 13 | Endereço privado não exibido quando oculto                        | ✅     | `docs/evidence/fase-06-pagina-do-imovel/` |
-| 14 | Consegue abrir o WhatsApp com mensagem preparada                   | ✅     | `docs/evidence/fase-06-pagina-do-imovel/` |
-| 15 | Corretor consegue gerar um anúncio com IA                          | ✅     | `docs/evidence/fase-07-ia-para-anuncios/` |
-| 16 | IA não inventa características em testes controlados               | ✅     | Prompt restrito a dados reais do imóvel (RN-061 a RN-065); provedor fake determinístico usado em toda a suíte automatizada |
-| 17 | Corretor consegue criar uma arte                                   | ✅     | `docs/evidence/fase-08-artes/` |
-| 18 | Consegue consultar acessos e cliques do catálogo                   | ✅     | `docs/evidence/fase-09-relatorios/` |
-| 19 | Funciona nas resoluções mínimas definidas                          | ✅     | 5 projetos Playwright (desktop × 3 motores, mobile, tablet) em todas as fases |
-| 20 | Pipeline de CI está verde                                          | ⚠️     | `.github/workflows/ci.yml` configurado desde a Fase 1 (lint, tipos, testes, build, E2E); os mesmos comandos passam localmente neste ambiente — execução real no GitHub Actions não verificada a partir deste ambiente (sem acesso a `gh`/API do GitHub aqui) |
-| 21 | Não existem bugs críticos ou altos abertos                         | ✅     | Nenhum bug crítico/alto encontrado permanece aberto; gaps de teste identificados nesta fase são baixa severidade (ver charters acima) |
-| 22 | Documentação está atualizada                                       | ✅     | Este commit atualiza data-model, ADRs, regras de negócio, matriz de rastreabilidade, README, CHANGELOG |
-| 23 | Build de produção passa                                            | ✅     | Ver tabela de comandos acima |
-| 24 | Principais jornadas E2E passam                                     | ✅     | Ver seção "Execução E2E" |
-| 25 | Revisão de segurança não encontra falhas críticas                  | ✅     | `npm audit` sem altas/críticas; revisão dirigida acima sem achado crítico |
+| #   | Critério                                             | Status | Evidência                                                                                                                                                                                                                                                    |
+| --- | ---------------------------------------------------- | ------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| 1   | Corretor consegue criar conta                        | ✅     | `docs/evidence/fase-02-autenticacao/`                                                                                                                                                                                                                        |
+| 2   | Consegue completar perfil                            | ✅     | `docs/evidence/fase-03-perfil-corretor/`                                                                                                                                                                                                                     |
+| 3   | Acesso pelo celular e tablet sem problemas de layout | ✅     | E2E em 5 navegadores/viewports, todas as fases                                                                                                                                                                                                               |
+| 4   | Consegue cadastrar um imóvel                         | ✅     | `docs/evidence/fase-04-cadastro-de-imoveis/`                                                                                                                                                                                                                 |
+| 5   | Consegue adicionar e organizar fotos                 | ✅     | `docs/evidence/fase-04-cadastro-de-imoveis/`                                                                                                                                                                                                                 |
+| 6   | Consegue salvar rascunho                             | ✅     | `docs/evidence/fase-04-cadastro-de-imoveis/`                                                                                                                                                                                                                 |
+| 7   | Consegue publicar o imóvel                           | ✅     | `docs/evidence/fase-04-cadastro-de-imoveis/`                                                                                                                                                                                                                 |
+| 8   | Imóvel aparece no catálogo correto (e somente nele)  | ✅     | `docs/evidence/fase-05-catalogo-digital/`                                                                                                                                                                                                                    |
+| 9   | Outro corretor não acessa no painel                  | ✅     | RN-026 testado em toda fase                                                                                                                                                                                                                                  |
+| 10  | Visitante abre o catálogo sem autenticação           | ✅     | `docs/evidence/fase-05-catalogo-digital/`                                                                                                                                                                                                                    |
+| 11  | Consegue pesquisar e filtrar imóveis                 | ✅     | `docs/evidence/fase-05-catalogo-digital/`                                                                                                                                                                                                                    |
+| 12  | Consegue abrir a página de um imóvel                 | ✅     | `docs/evidence/fase-06-pagina-do-imovel/`                                                                                                                                                                                                                    |
+| 13  | Endereço privado não exibido quando oculto           | ✅     | `docs/evidence/fase-06-pagina-do-imovel/`                                                                                                                                                                                                                    |
+| 14  | Consegue abrir o WhatsApp com mensagem preparada     | ✅     | `docs/evidence/fase-06-pagina-do-imovel/`                                                                                                                                                                                                                    |
+| 15  | Corretor consegue gerar um anúncio com IA            | ✅     | `docs/evidence/fase-07-ia-para-anuncios/`                                                                                                                                                                                                                    |
+| 16  | IA não inventa características em testes controlados | ✅     | Prompt restrito a dados reais do imóvel (RN-061 a RN-065); provedor fake determinístico usado em toda a suíte automatizada                                                                                                                                   |
+| 17  | Corretor consegue criar uma arte                     | ✅     | `docs/evidence/fase-08-artes/`                                                                                                                                                                                                                               |
+| 18  | Consegue consultar acessos e cliques do catálogo     | ✅     | `docs/evidence/fase-09-relatorios/`                                                                                                                                                                                                                          |
+| 19  | Funciona nas resoluções mínimas definidas            | ✅     | 5 projetos Playwright (desktop × 3 motores, mobile, tablet) em todas as fases                                                                                                                                                                                |
+| 20  | Pipeline de CI está verde                            | ⚠️     | `.github/workflows/ci.yml` configurado desde a Fase 1 (lint, tipos, testes, build, E2E); os mesmos comandos passam localmente neste ambiente — execução real no GitHub Actions não verificada a partir deste ambiente (sem acesso a `gh`/API do GitHub aqui) |
+| 21  | Não existem bugs críticos ou altos abertos           | ✅     | Nenhum bug crítico/alto encontrado permanece aberto; gaps de teste identificados nesta fase são baixa severidade (ver charters acima)                                                                                                                        |
+| 22  | Documentação está atualizada                         | ✅     | Este commit atualiza data-model, ADRs, regras de negócio, matriz de rastreabilidade, README, CHANGELOG                                                                                                                                                       |
+| 23  | Build de produção passa                              | ✅     | Ver tabela de comandos acima                                                                                                                                                                                                                                 |
+| 24  | Principais jornadas E2E passam                       | ✅     | Ver seção "Execução E2E"                                                                                                                                                                                                                                     |
+| 25  | Revisão de segurança não encontra falhas críticas    | ✅     | `npm audit` sem altas/críticas; revisão dirigida acima sem achado crítico                                                                                                                                                                                    |
 
 **Item 20 é o único não totalmente verificável a partir deste ambiente**
 — recomenda-se confirmar manualmente a última execução do workflow em
@@ -181,7 +182,7 @@ pronto para validação com usuários reais.
    uma navegação ainda em andamento**: depois de corrigir o bug do
    WebKit acima, sobrou uma falha isolada e intermitente —
    `page.evaluate: Execution context was destroyed, most likely because
-   of a navigation` no teste de acessibilidade de `/painel/relatorios`
+of a navigation` no teste de acessibilidade de `/painel/relatorios`
    no WebKit. Causa: o teste clicava em "Aplicar" (filtro de período —
    um formulário GET, navegação completa) e chamava
    `AxeBuilder.analyze()` em seguida sem uma confirmação suficientemente
@@ -194,6 +195,22 @@ pronto para validação com usuários reais.
    `Promise.all`, aguardando a própria URL refletir o filtro aplicado
    antes de prosseguir — reconfirmado com 4 execuções isoladas
    consecutivas sem falha antes de rodar a suíte completa novamente.
+6. **`npm run format:check` nunca foi rodado durante as Fases 5 a 10 —
+   descoberto só depois do push, pelo pipeline de CI real.** A rotina de
+   validação seguida nesta sessão (typecheck, lint, testes, build, E2E)
+   nunca incluiu explicitamente a checagem de formatação do Prettier —
+   uma etapa que o `docs/quality/definition-of-done.md` (item 5) e o
+   próprio `ci.yml` exigem, mas que não bloqueia `lint`/`typecheck`/
+   `test`/`build` isoladamente. O CI falhou rapidamente (47s) logo após
+   o push do commit da Fase 10, e só foi percebido porque o usuário
+   conferiu a execução no GitHub Actions e reportou a falha. Rodado
+   `npm run format:check` retroativamente: 70 arquivos com formatação
+   divergente, acumulados desde a Fase 5. Corrigido com `npm run
+   format` (reescrita automática, sem mudança de comportamento) e
+   revalidado typecheck/lint/testes/build depois — todos continuaram
+   passando. **Lição registrada**: `npm run format:check` (ou `format`)
+   passa a fazer parte da rotina de validação de toda fase, junto com
+   os quatro comandos já seguidos.
 
 ## Limitações conhecidas (não implementadas nesta fase)
 

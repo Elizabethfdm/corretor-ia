@@ -12,10 +12,10 @@ Nenhum cabeçalho de segurança estava configurado até a Fase 10.
 
 ## Alternativas consideradas (CSP)
 
-| Alternativa                                                        | Prós                                                                 | Contras                                                                                                                       |
-| ---------------------------------------------------------------------- | ------------------------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------- |
-| CSP com nonce por requisição (`proxy.ts`)                             | Política mais estrita, sem `'unsafe-inline'`                              | Exige renderização dinâmica em **100% das páginas** — perde geração estática das páginas realmente estáticas do site (home, termos de uso, política de privacidade); maior custo de hospedagem (RNF-049) |
-| CSP estática em `next.config.ts`, sem nonce (`'unsafe-inline'`)        | Nenhuma infraestrutura nova; mantém páginas estáticas como estão hoje    | `script-src`/`style-src` precisam de `'unsafe-inline'` (o próprio bootstrap do Next.js e os estilos do Tailwind dependem disso sem nonce) — mitiga menos XSS via inline script que a versão com nonce |
+| Alternativa                                                     | Prós                                                                  | Contras                                                                                                                                                                                                  |
+| --------------------------------------------------------------- | --------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| CSP com nonce por requisição (`proxy.ts`)                       | Política mais estrita, sem `'unsafe-inline'`                          | Exige renderização dinâmica em **100% das páginas** — perde geração estática das páginas realmente estáticas do site (home, termos de uso, política de privacidade); maior custo de hospedagem (RNF-049) |
+| CSP estática em `next.config.ts`, sem nonce (`'unsafe-inline'`) | Nenhuma infraestrutura nova; mantém páginas estáticas como estão hoje | `script-src`/`style-src` precisam de `'unsafe-inline'` (o próprio bootstrap do Next.js e os estilos do Tailwind dependem disso sem nonce) — mitiga menos XSS via inline script que a versão com nonce    |
 
 ## Decisão
 

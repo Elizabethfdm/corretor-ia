@@ -38,7 +38,10 @@ export function PropertyEditor({ property, advertisements, artworks }: PropertyE
 
   return (
     <div className="flex flex-col gap-6">
-      <nav aria-label="Etapas do cadastro" className="flex flex-wrap gap-2 border-b border-zinc-200 pb-2 dark:border-zinc-800">
+      <nav
+        aria-label="Etapas do cadastro"
+        className="flex flex-wrap gap-2 border-b border-zinc-200 pb-2 dark:border-zinc-800"
+      >
         {TABS.map((tab) => (
           <button
             key={tab.id}
@@ -66,7 +69,9 @@ export function PropertyEditor({ property, advertisements, artworks }: PropertyE
           <div className="flex flex-col gap-6">
             <AdvertisementGeneratorForm property={property} />
             <div className="border-t border-zinc-200 pt-6 dark:border-zinc-800">
-              <h2 className="mb-3 text-lg font-semibold text-zinc-900 dark:text-zinc-50">Histórico</h2>
+              <h2 className="mb-3 text-lg font-semibold text-zinc-900 dark:text-zinc-50">
+                Histórico
+              </h2>
               <AdvertisementHistory advertisements={advertisements} propertyId={property.id} />
             </div>
           </div>
@@ -75,7 +80,9 @@ export function PropertyEditor({ property, advertisements, artworks }: PropertyE
           <div className="flex flex-col gap-6">
             <ArtworkGeneratorForm property={property} />
             <div className="border-t border-zinc-200 pt-6 dark:border-zinc-800">
-              <h2 className="mb-3 text-lg font-semibold text-zinc-900 dark:text-zinc-50">Histórico</h2>
+              <h2 className="mb-3 text-lg font-semibold text-zinc-900 dark:text-zinc-50">
+                Histórico
+              </h2>
               <ArtworkHistory artworks={artworks} />
             </div>
           </div>

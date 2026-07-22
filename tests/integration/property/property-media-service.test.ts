@@ -189,8 +189,6 @@ describe("Isolamento entre corretores (RN-026)", () => {
     const { propertyId } = await createBrokerWithDraftProperty("media-iso-owner");
     const { brokerId: otherBrokerId } = await createBrokerWithDraftProperty("media-iso-other");
 
-    await expect(
-      uploadPropertyPhotos(propertyId, otherBrokerId, [pngFile()]),
-    ).rejects.toThrow();
+    await expect(uploadPropertyPhotos(propertyId, otherBrokerId, [pngFile()])).rejects.toThrow();
   });
 });
