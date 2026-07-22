@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { BasicInfoForm } from "@/features/properties/components/basic-info-form";
 import { CharacteristicsForm } from "@/features/properties/components/characteristics-form";
 import { LocationForm } from "@/features/properties/components/location-form";
@@ -37,58 +38,71 @@ export function PropertyEditor({ property, advertisements, artworks }: PropertyE
   const [activeTab, setActiveTab] = useState<TabId>("basico");
 
   return (
-    <div className="flex flex-col gap-6">
-      <nav
-        aria-label="Etapas do cadastro"
-        className="flex flex-wrap gap-2 border-b border-zinc-200 pb-2 dark:border-zinc-800"
-      >
+    <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as TabId)}>
+      <TabsList aria-label="Etapas do cadastro" className="flex-wrap">
         {TABS.map((tab) => (
-          <button
-            key={tab.id}
-            type="button"
-            onClick={() => setActiveTab(tab.id)}
-            aria-current={activeTab === tab.id ? "step" : undefined}
-            className={`rounded-md px-3 py-1.5 text-sm font-medium ${
-              activeTab === tab.id
-                ? "bg-zinc-900 text-white dark:bg-zinc-50 dark:text-zinc-900"
-                : "text-zinc-600 hover:bg-zinc-100 dark:text-zinc-400 dark:hover:bg-zinc-900"
-            }`}
-          >
+          <TabsTrigger key={tab.id} value={tab.id}>
             {tab.label}
-          </button>
+          </TabsTrigger>
         ))}
-      </nav>
+      </TabsList>
 
-      <div>
-        {activeTab === "basico" ? <BasicInfoForm property={property} /> : null}
-        {activeTab === "caracteristicas" ? <CharacteristicsForm property={property} /> : null}
-        {activeTab === "localizacao" ? <LocationForm property={property} /> : null}
-        {activeTab === "fotos" ? <PhotoManager property={property} /> : null}
-        {activeTab === "descricao" ? <DescriptionForm property={property} /> : null}
-        {activeTab === "anuncios" ? (
+      {activeTab === "basico" ? (
+        <TabsContent value="basico">
+          <BasicInfoForm property={property} />
+        </TabsContent>
+      ) : null}
+      {activeTab === "caracteristicas" ? (
+        <TabsContent value="caracteristicas">
+          <CharacteristicsForm property={property} />
+        </TabsContent>
+      ) : null}
+      {activeTab === "localizacao" ? (
+        <TabsContent value="localizacao">
+          <LocationForm property={property} />
+        </TabsContent>
+      ) : null}
+      {activeTab === "fotos" ? (
+        <TabsContent value="fotos">
+          <PhotoManager property={property} />
+        </TabsContent>
+      ) : null}
+      {activeTab === "descricao" ? (
+        <TabsContent value="descricao">
+          <DescriptionForm property={property} />
+        </TabsContent>
+      ) : null}
+      {activeTab === "anuncios" ? (
+        <TabsContent value="anuncios">
           <div className="flex flex-col gap-6">
             <AdvertisementGeneratorForm property={property} />
-            <div className="border-t border-zinc-200 pt-6 dark:border-zinc-800">
-              <h2 className="mb-3 text-lg font-semibold text-zinc-900 dark:text-zinc-50">
+            <div className="border-t border-neutral-200 pt-6 dark:border-neutral-800">
+              <h2 className="mb-3 text-lg font-semibold text-neutral-900 dark:text-neutral-50">
                 Histórico
               </h2>
               <AdvertisementHistory advertisements={advertisements} propertyId={property.id} />
             </div>
           </div>
-        ) : null}
-        {activeTab === "artes" ? (
+        </TabsContent>
+      ) : null}
+      {activeTab === "artes" ? (
+        <TabsContent value="artes">
           <div className="flex flex-col gap-6">
             <ArtworkGeneratorForm property={property} />
-            <div className="border-t border-zinc-200 pt-6 dark:border-zinc-800">
-              <h2 className="mb-3 text-lg font-semibold text-zinc-900 dark:text-zinc-50">
+            <div className="border-t border-neutral-200 pt-6 dark:border-neutral-800">
+              <h2 className="mb-3 text-lg font-semibold text-neutral-900 dark:text-neutral-50">
                 Histórico
               </h2>
               <ArtworkHistory artworks={artworks} />
             </div>
           </div>
-        ) : null}
-        {activeTab === "revisao" ? <ReviewPanel property={property} /> : null}
-      </div>
-    </div>
+        </TabsContent>
+      ) : null}
+      {activeTab === "revisao" ? (
+        <TabsContent value="revisao">
+          <ReviewPanel property={property} />
+        </TabsContent>
+      ) : null}
+    </Tabs>
   );
 }

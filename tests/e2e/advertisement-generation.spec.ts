@@ -42,8 +42,8 @@ test.describe("Geração de anúncios com IA (RN-061 a RN-074)", () => {
     await createMinimalProperty(page);
 
     await page
-      .getByRole("navigation", { name: "Etapas do cadastro" })
-      .getByRole("button", { name: "Anúncios com IA", exact: true })
+      .getByRole("tablist", { name: "Etapas do cadastro" })
+      .getByRole("tab", { name: "Anúncios com IA", exact: true })
       .click();
 
     await expect(page.getByText("Nenhum anúncio gerado ainda para este imóvel.")).toBeVisible();

@@ -40,23 +40,23 @@ test.describe("Acessibilidade — página individual do imóvel", () => {
     await page.getByRole("button", { name: "Salvar informações básicas" }).click();
     await expect(page.getByText("Informações básicas salvas.")).toBeVisible();
 
-    await page.getByRole("button", { name: "Localização" }).click();
+    await page.getByRole("tab", { name: "Localização" }).click();
     await page.getByLabel("Cidade", { exact: true }).fill("São Paulo");
     await page.getByLabel("Bairro").fill("Centro");
     await page.getByRole("button", { name: "Salvar localização" }).click();
     await expect(page.getByText("Localização salva.")).toBeVisible();
 
-    await page.getByRole("button", { name: "Fotos" }).click();
+    await page.getByRole("tab", { name: "Fotos" }).click();
     await page.locator('input[type="file"]#photo-files').setInputFiles(FIXTURE_PATH);
     await page.getByRole("button", { name: "Enviar fotos" }).click();
     await expect(page.getByText("1 foto(s) enviada(s) com sucesso.")).toBeVisible();
 
-    await page.getByRole("button", { name: "Descrição" }).click();
+    await page.getByRole("tab", { name: "Descrição" }).click();
     await page.getByLabel("Descrição completa").fill("Descrição para teste de acessibilidade.");
     await page.getByRole("button", { name: "Salvar descrição" }).click();
     await expect(page.getByText("Descrição salva.")).toBeVisible();
 
-    await page.getByRole("button", { name: "Revisão e publicação" }).click();
+    await page.getByRole("tab", { name: "Revisão e publicação" }).click();
     await page.getByRole("button", { name: "Publicar catálogo" }).click();
     await expect(page.getByText("Imóvel publicado.")).toBeVisible();
 

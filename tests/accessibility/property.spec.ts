@@ -50,10 +50,10 @@ test.describe("Acessibilidade — cadastro de imóveis", () => {
     await page.getByRole("button", { name: "Novo imóvel" }).click();
     await expect(page).toHaveURL(/\/painel\/imoveis\/[^/]+$/);
 
-    const tabNav = page.getByRole("navigation", { name: "Etapas do cadastro" });
+    const tabNav = page.getByRole("tablist", { name: "Etapas do cadastro" });
 
     for (const tab of TABS) {
-      await tabNav.getByRole("button", { name: tab, exact: true }).click();
+      await tabNav.getByRole("tab", { name: tab, exact: true }).click();
       const results = await new AxeBuilder({ page }).withTags(["wcag2a", "wcag2aa"]).analyze();
       expect(results.violations, `etapa "${tab}" não deve ter violações`).toEqual([]);
     }

@@ -26,8 +26,8 @@ async function createPropertyWithPhoto(page: Page): Promise<void> {
   await page.getByRole("button", { name: "Salvar informações básicas" }).click();
   await expect(page.getByText("Informações básicas salvas.")).toBeVisible();
 
-  const nav = page.getByRole("navigation", { name: "Etapas do cadastro" });
-  await nav.getByRole("button", { name: "Fotos", exact: true }).click();
+  const nav = page.getByRole("tablist", { name: "Etapas do cadastro" });
+  await nav.getByRole("tab", { name: "Fotos", exact: true }).click();
   await page.locator('input[type="file"]#photo-files').setInputFiles(FIXTURE_PATH);
   await page.getByRole("button", { name: "Enviar fotos" }).click();
   await expect(page.getByText("1 foto(s) enviada(s) com sucesso.")).toBeVisible();
@@ -48,8 +48,8 @@ test.describe("Geração de artes para redes sociais (RN-075 a RN-081)", () => {
     await saveMinimalProfile(page, `e2e-artwork-generate-${Date.now()}`);
     await createPropertyWithPhoto(page);
 
-    const nav = page.getByRole("navigation", { name: "Etapas do cadastro" });
-    await nav.getByRole("button", { name: "Artes", exact: true }).click();
+    const nav = page.getByRole("tablist", { name: "Etapas do cadastro" });
+    await nav.getByRole("tab", { name: "Artes", exact: true }).click();
 
     await expect(page.getByText("Nenhuma arte gerada ainda para este imóvel.")).toBeVisible();
 

@@ -8,6 +8,39 @@ partir da primeira versão publicada.
 
 ## [Não lançado]
 
+### Adicionado — Refatoração de UX/UI, Fase 2 (Shell/navegação do painel)
+
+- Layout compartilhado para todas as rotas do painel
+  (`src/app/(dashboard)/layout.tsx`): sidebar com ícones (Radix/
+  `lucide-react`, item "Administração" condicional ao papel do
+  usuário) e cabeçalho fixo com nome/e-mail/badge de admin e botão
+  "Sair" — elimina a duplicação de cabeçalho que cada página do
+  painel desenhava à mão.
+- Menu de navegação em drawer para telas pequenas (RNF-002), usando o
+  primitivo `@radix-ui/react-dialog` diretamente.
+- `/painel-admin` movido para dentro do grupo de rotas `(dashboard)`
+  (mesma URL — grupos de rotas não afetam o caminho) para compartilhar
+  o novo shell; `requireAdmin()` continua validando no servidor
+  independentemente da UI (RN-095).
+- `PropertyEditor` ("Etapas do cadastro") migrado do padrão manual
+  `<nav><button aria-current="step">` para o componente `Tabs`
+  (Radix) da Fase 1 — passa a usar os papéis ARIA padrão de abas
+  (`tablist`/`tab`/`tabpanel`).
+- 10 arquivos de teste E2E/acessibilidade atualizados para os novos
+  papéis de aba (`getByRole("tablist"/"tab")` em vez de
+  `"navigation"/"button"`).
+- Novos testes de componente para `NavLinks` e `MobileNav` (item
+  "Administração" condicional, estado ativo, fechamento do drawer ao
+  navegar).
+
+Corrigido durante o desenvolvimento (não chegou a ser entregue): a
+página `/painel` exibia o e-mail do usuário tanto no cabeçalho
+compartilhado quanto no próprio conteúdo da página — a suíte E2E
+completa (5 navegadores) capturou a ambiguidade (`getByText(email)`
+resolvendo para 2 elementos), quebrando `auth-login-logout.spec.ts` e
+`auth-register.spec.ts` de forma determinística nos 5 navegadores.
+Corrigido removendo a duplicação do conteúdo da página.
+
 ### Adicionado — Refatoração de UX/UI, Fase 1 (Fundação do design system)
 
 - ADR-0009: `class-variance-authority` + `clsx` + `tailwind-merge`

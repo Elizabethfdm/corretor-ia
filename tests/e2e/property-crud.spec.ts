@@ -44,7 +44,7 @@ test.describe("Cadastro de imóveis (RN-026 a RN-045)", () => {
     await expect(page.getByText("Informações básicas salvas.")).toBeVisible();
 
     // Etapa 2: características
-    await page.getByRole("button", { name: "Características" }).click();
+    await page.getByRole("tab", { name: "Características" }).click();
     await page.getByLabel("Quartos").fill("3");
     await page.getByLabel("Banheiros").fill("2");
     await page.getByLabel("Vagas").fill("2");
@@ -53,27 +53,27 @@ test.describe("Cadastro de imóveis (RN-026 a RN-045)", () => {
     await expect(page.getByText("Características salvas.")).toBeVisible();
 
     // Etapa 3: localização
-    await page.getByRole("button", { name: "Localização" }).click();
+    await page.getByRole("tab", { name: "Localização" }).click();
     await page.getByLabel("Cidade", { exact: true }).fill("São Paulo");
     await page.getByLabel("Bairro").fill("Jardim Europa");
     await page.getByRole("button", { name: "Salvar localização" }).click();
     await expect(page.getByText("Localização salva.")).toBeVisible();
 
     // Etapa 4: fotos
-    await page.getByRole("button", { name: "Fotos" }).click();
+    await page.getByRole("tab", { name: "Fotos" }).click();
     await page.locator('input[type="file"]#photo-files').setInputFiles(FIXTURE_PATH);
     await page.getByRole("button", { name: "Enviar fotos" }).click();
     await expect(page.getByText("1 foto(s) enviada(s) com sucesso.")).toBeVisible();
     await expect(page.getByText("Capa")).toBeVisible();
 
     // Etapa 5: descrição
-    await page.getByRole("button", { name: "Descrição" }).click();
+    await page.getByRole("tab", { name: "Descrição" }).click();
     await page.getByLabel("Descrição completa").fill("Uma bela casa com piscina e área gourmet.");
     await page.getByRole("button", { name: "Salvar descrição" }).click();
     await expect(page.getByText("Descrição salva.")).toBeVisible();
 
     // Etapa 6: revisão e publicação
-    await page.getByRole("button", { name: "Revisão e publicação" }).click();
+    await page.getByRole("tab", { name: "Revisão e publicação" }).click();
     await expect(page.getByText("Pendente para publicação:")).not.toBeVisible();
     await page.getByRole("button", { name: "Publicar catálogo" }).click();
     await expect(page.getByText("Imóvel publicado.")).toBeVisible();
@@ -98,7 +98,7 @@ test.describe("Cadastro de imóveis (RN-026 a RN-045)", () => {
 
     await createPropertyAndOpenEditor(page);
 
-    await page.getByRole("button", { name: "Revisão e publicação" }).click();
+    await page.getByRole("tab", { name: "Revisão e publicação" }).click();
 
     await expect(page.getByText("Pendente para publicação:")).toBeVisible();
     await expect(
@@ -130,23 +130,23 @@ test.describe("Cadastro de imóveis (RN-026 a RN-045)", () => {
     await page.getByRole("button", { name: "Salvar informações básicas" }).click();
     await expect(page.getByText("Informações básicas salvas.")).toBeVisible();
 
-    await page.getByRole("button", { name: "Localização" }).click();
+    await page.getByRole("tab", { name: "Localização" }).click();
     await page.getByLabel("Cidade", { exact: true }).fill("Belo Horizonte");
     await page.getByLabel("Bairro").fill("Savassi");
     await page.getByRole("button", { name: "Salvar localização" }).click();
     await expect(page.getByText("Localização salva.")).toBeVisible();
 
-    await page.getByRole("button", { name: "Fotos" }).click();
+    await page.getByRole("tab", { name: "Fotos" }).click();
     await page.locator('input[type="file"]#photo-files').setInputFiles(FIXTURE_PATH);
     await page.getByRole("button", { name: "Enviar fotos" }).click();
     await expect(page.getByText("1 foto(s) enviada(s) com sucesso.")).toBeVisible();
 
-    await page.getByRole("button", { name: "Descrição" }).click();
+    await page.getByRole("tab", { name: "Descrição" }).click();
     await page.getByLabel("Descrição completa").fill("Apartamento mobiliado e completo.");
     await page.getByRole("button", { name: "Salvar descrição" }).click();
     await expect(page.getByText("Descrição salva.")).toBeVisible();
 
-    await page.getByRole("button", { name: "Revisão e publicação" }).click();
+    await page.getByRole("tab", { name: "Revisão e publicação" }).click();
     await page.getByRole("button", { name: "Publicar catálogo" }).click();
     await expect(page.getByText("Imóvel publicado.")).toBeVisible();
 
@@ -174,7 +174,7 @@ test.describe("Cadastro de imóveis (RN-026 a RN-045)", () => {
     await page.getByRole("button", { name: "Salvar informações básicas" }).click();
     await expect(page.getByText("Informações básicas salvas.")).toBeVisible();
 
-    await page.getByRole("button", { name: "Revisão e publicação" }).click();
+    await page.getByRole("tab", { name: "Revisão e publicação" }).click();
     page.once("dialog", (dialog) => dialog.accept());
     await page.getByRole("button", { name: "Excluir imóvel" }).click();
     await expect(page).toHaveURL(/\/painel\/imoveis$/);

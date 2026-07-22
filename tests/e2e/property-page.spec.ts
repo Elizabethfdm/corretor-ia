@@ -46,7 +46,7 @@ async function createAndPublishProperty(page: Page, input: PropertyInput): Promi
   await page.getByRole("button", { name: "Salvar informações básicas" }).click();
   await expect(page.getByText("Informações básicas salvas.")).toBeVisible();
 
-  await page.getByRole("button", { name: "Localização" }).click();
+  await page.getByRole("tab", { name: "Localização" }).click();
   await page.getByLabel("Cidade", { exact: true }).fill(input.city);
   await page.getByLabel("Bairro").fill(input.neighborhood);
   if (input.street) await page.getByLabel("Logradouro").fill(input.street);
@@ -57,17 +57,17 @@ async function createAndPublishProperty(page: Page, input: PropertyInput): Promi
   await page.getByRole("button", { name: "Salvar localização" }).click();
   await expect(page.getByText("Localização salva.")).toBeVisible();
 
-  await page.getByRole("button", { name: "Fotos" }).click();
+  await page.getByRole("tab", { name: "Fotos" }).click();
   await page.locator('input[type="file"]#photo-files').setInputFiles(FIXTURE_PATH);
   await page.getByRole("button", { name: "Enviar fotos" }).click();
   await expect(page.getByText("1 foto(s) enviada(s) com sucesso.")).toBeVisible();
 
-  await page.getByRole("button", { name: "Descrição" }).click();
+  await page.getByRole("tab", { name: "Descrição" }).click();
   await page.getByLabel("Descrição completa").fill(input.description);
   await page.getByRole("button", { name: "Salvar descrição" }).click();
   await expect(page.getByText("Descrição salva.")).toBeVisible();
 
-  await page.getByRole("button", { name: "Revisão e publicação" }).click();
+  await page.getByRole("tab", { name: "Revisão e publicação" }).click();
   await page.getByRole("button", { name: "Publicar catálogo" }).click();
   await expect(page.getByText("Imóvel publicado.")).toBeVisible();
 
@@ -245,7 +245,7 @@ test.describe("Página individual do imóvel (RN-051 a RN-060)", () => {
     expect(publicHref).toMatch(new RegExp(`^/catalogo/${slug}/imovel-a-despublicar-[0-9a-f]{6}$`));
 
     await page.goto(`/painel/imoveis/${propertyId}`);
-    await page.getByRole("button", { name: "Revisão e publicação" }).click();
+    await page.getByRole("tab", { name: "Revisão e publicação" }).click();
     await page.getByRole("button", { name: "Despublicar" }).click();
     await expect(page.getByText("Imóvel despublicado.")).toBeVisible();
 

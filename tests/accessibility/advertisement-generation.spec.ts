@@ -30,8 +30,8 @@ test.describe("Acessibilidade — geração de anúncios com IA", () => {
     await page.getByRole("button", { name: "Salvar informações básicas" }).click();
     await expect(page.getByText("Informações básicas salvas.")).toBeVisible();
 
-    const tabNav = page.getByRole("navigation", { name: "Etapas do cadastro" });
-    await tabNav.getByRole("button", { name: "Anúncios com IA", exact: true }).click();
+    const tabNav = page.getByRole("tablist", { name: "Etapas do cadastro" });
+    await tabNav.getByRole("tab", { name: "Anúncios com IA", exact: true }).click();
 
     const emptyResults = await new AxeBuilder({ page }).withTags(["wcag2a", "wcag2aa"]).analyze();
     expect(emptyResults.violations).toEqual([]);

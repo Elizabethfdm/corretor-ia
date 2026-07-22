@@ -35,8 +35,8 @@ test.describe("Acessibilidade — geração de artes para redes sociais", () => 
     await page.getByRole("button", { name: "Salvar informações básicas" }).click();
     await expect(page.getByText("Informações básicas salvas.")).toBeVisible();
 
-    const tabNav = page.getByRole("navigation", { name: "Etapas do cadastro" });
-    await tabNav.getByRole("button", { name: "Artes", exact: true }).click();
+    const tabNav = page.getByRole("tablist", { name: "Etapas do cadastro" });
+    await tabNav.getByRole("tab", { name: "Artes", exact: true }).click();
     await expect(
       page.getByText('Adicione ao menos uma foto ao imóvel (aba "Fotos") antes de gerar uma arte.'),
     ).toBeVisible();
@@ -44,12 +44,12 @@ test.describe("Acessibilidade — geração de artes para redes sociais", () => 
     const noPhotoResults = await new AxeBuilder({ page }).withTags(["wcag2a", "wcag2aa"]).analyze();
     expect(noPhotoResults.violations).toEqual([]);
 
-    await tabNav.getByRole("button", { name: "Fotos", exact: true }).click();
+    await tabNav.getByRole("tab", { name: "Fotos", exact: true }).click();
     await page.locator('input[type="file"]#photo-files').setInputFiles(FIXTURE_PATH);
     await page.getByRole("button", { name: "Enviar fotos" }).click();
     await expect(page.getByText("1 foto(s) enviada(s) com sucesso.")).toBeVisible();
 
-    await tabNav.getByRole("button", { name: "Artes", exact: true }).click();
+    await tabNav.getByRole("tab", { name: "Artes", exact: true }).click();
     const formResults = await new AxeBuilder({ page }).withTags(["wcag2a", "wcag2aa"]).analyze();
     expect(formResults.violations).toEqual([]);
 

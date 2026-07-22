@@ -34,24 +34,24 @@ async function createAndPublishProperty(page: Page, title: string): Promise<stri
   await page.getByRole("button", { name: "Salvar informações básicas" }).click();
   await expect(page.getByText("Informações básicas salvas.")).toBeVisible();
 
-  const nav = page.getByRole("navigation", { name: "Etapas do cadastro" });
-  await nav.getByRole("button", { name: "Localização", exact: true }).click();
+  const nav = page.getByRole("tablist", { name: "Etapas do cadastro" });
+  await nav.getByRole("tab", { name: "Localização", exact: true }).click();
   await page.getByLabel("Cidade", { exact: true }).fill("São Paulo");
   await page.getByLabel("Bairro").fill("Jardim Europa");
   await page.getByRole("button", { name: "Salvar localização" }).click();
   await expect(page.getByText("Localização salva.")).toBeVisible();
 
-  await nav.getByRole("button", { name: "Fotos", exact: true }).click();
+  await nav.getByRole("tab", { name: "Fotos", exact: true }).click();
   await page.locator('input[type="file"]#photo-files').setInputFiles(FIXTURE_PATH);
   await page.getByRole("button", { name: "Enviar fotos" }).click();
   await expect(page.getByText("1 foto(s) enviada(s) com sucesso.")).toBeVisible();
 
-  await nav.getByRole("button", { name: "Descrição", exact: true }).click();
+  await nav.getByRole("tab", { name: "Descrição", exact: true }).click();
   await page.getByLabel("Descrição completa").fill("Uma bela casa para o relatório de teste.");
   await page.getByRole("button", { name: "Salvar descrição" }).click();
   await expect(page.getByText("Descrição salva.")).toBeVisible();
 
-  await nav.getByRole("button", { name: "Revisão e publicação", exact: true }).click();
+  await nav.getByRole("tab", { name: "Revisão e publicação", exact: true }).click();
   await page.getByRole("button", { name: "Publicar catálogo" }).click();
   await expect(page.getByText("Imóvel publicado.")).toBeVisible();
 
@@ -113,15 +113,15 @@ test.describe("Relatórios (RN-082 a RN-090)", () => {
     await page.getByRole("link", { name: /Casa para relatório/ }).click();
     await expect(page).toHaveURL(/\/painel\/imoveis\/[^/]+$/);
 
-    const nav = page.getByRole("navigation", { name: "Etapas do cadastro" });
-    await nav.getByRole("button", { name: "Anúncios com IA", exact: true }).click();
+    const nav = page.getByRole("tablist", { name: "Etapas do cadastro" });
+    await nav.getByRole("tab", { name: "Anúncios com IA", exact: true }).click();
     await page.getByLabel("Canal").selectOption("INSTAGRAM");
     await page.getByLabel("Tom").selectOption("PROFESSIONAL");
     await page.getByLabel("Objetivo do anúncio").fill("Atrair famílias jovens");
     await page.getByRole("button", { name: "Gerar anúncio com IA" }).click();
     await expect(page.getByText("Anúncio gerado.")).toBeVisible();
 
-    await nav.getByRole("button", { name: "Artes", exact: true }).click();
+    await nav.getByRole("tab", { name: "Artes", exact: true }).click();
     await page.getByLabel("Tipo de anúncio").selectOption("NEW_PROPERTY");
     await page.getByRole("button", { name: "Gerar arte" }).click();
     await expect(page.getByText("Arte gerada.")).toBeVisible();
