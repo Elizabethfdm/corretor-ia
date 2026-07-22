@@ -1,13 +1,15 @@
 # Corretor IA
 
-> **Status atual: Fase 9 — Relatórios concluída.**
-> Autenticação, perfil profissional, cadastro completo de imóveis, o
-> catálogo público, a página individual do imóvel, a geração de
-> anúncios com IA (Anthropic Claude, com provedor fake para dev/testes),
-> a criação de artes para redes sociais e o relatório de acessos,
-> cliques e conteúdo gerado (com filtro por período) estão funcionando
-> de ponta a ponta. Hardening final (segurança, acessibilidade,
-> performance) ainda não foi feito — isso começa na Fase 10. Ver
+> **Status atual: Fase 10 — Hardening concluída. MVP completo.**
+> Todas as 10 fases planejadas foram entregues: autenticação, perfil
+> profissional, cadastro completo de imóveis, catálogo público, página
+> individual do imóvel, geração de anúncios com IA, criação de artes
+> para redes sociais, relatório de acessos/cliques, painel
+> administrativo mínimo (lista de corretores, bloqueio/desbloqueio,
+> auditoria, indicadores gerais) e cabeçalhos de segurança HTTP. Ver
+> [`docs/evidence/fase-10-hardening/`](docs/evidence/fase-10-hardening/)
+> para a revisão final de segurança/acessibilidade e o checklist de
+> aceite do MVP, e
 > [`docs/planning/phases-plan.md`](docs/planning/phases-plan.md) para o
 > plano completo por fases.
 
@@ -141,8 +143,10 @@ use `127.0.0.1` (não `localhost`) em `DATABASE_URL`, pois a resolução de
 
 O modelo de dados está documentado em
 [`docs/architecture/data-model.md`](docs/architecture/data-model.md).
-Modelos implementados até agora: `user`/`session`/`account`/`verification`/`rateLimit`
-(Better Auth), `AuditLog` e `BrokerProfile`.
+Modelos implementados: `user`/`session`/`account`/`verification`/`rateLimit`
+(Better Auth), `AuditLog`, `BrokerProfile`, `Property` (+ `PropertyAddress`,
+`PropertyFeature`, `PropertyMedia`), `GeneratedAdvertisement`,
+`GeneratedArtwork` e `AnalyticsEvent`.
 
 ```bash
 # Sobe o PostgreSQL e o MinIO (S3-compatível) locais
@@ -173,8 +177,9 @@ Aplicação disponível em `http://localhost:3000`. Health check em
 `http://localhost:3000/api/health` (verifica também a conexão com o
 banco de dados). Fluxos de autenticação disponíveis em `/cadastro`,
 `/login`, `/recuperar-senha` e `/redefinir-senha`; `/painel` e
-`/painel/perfil` exigem login. Catálogo público em `/catalogo/{slug}`
-(só acessível quando o corretor publica o catálogo).
+`/painel/perfil` exigem login. `/painel-admin` exige papel de
+administrador. Catálogo público em `/catalogo/{slug}` (só acessível
+quando o corretor publica o catálogo e a conta não está bloqueada).
 
 ## 12. Testes
 
@@ -273,7 +278,7 @@ Ver plano completo de fases em
 | 7    | IA para anúncios            | Concluída    |
 | 8    | Artes                       | Concluída    |
 | 9    | Relatórios                  | Concluída    |
-| 10   | Hardening                   | Não iniciada |
+| 10   | Hardening                   | Concluída    |
 
 ## 17. Contribuição
 

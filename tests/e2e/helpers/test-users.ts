@@ -39,6 +39,21 @@ export async function createTestUser(
 }
 
 /**
+ * Promove um usuário de teste a administrador via SQL direto (mesmo
+ * motivo do `pg` direto em `deleteTestUserByEmail`) — usado apenas para
+ * preparar cenários E2E do painel administrativo (RN-095).
+ */
+export async function promoteToAdmin(email: string): Promise<void> {
+  const client = new Client({ connectionString: process.env["DATABASE_URL"] });
+  await client.connect();
+  try {
+    await client.query('UPDATE "user" SET role = $1 WHERE email = $2', ["admin", email]);
+  } finally {
+    await client.end();
+  }
+}
+
+/**
  * Remove um usuário de teste (e o respectivo broker_profile, se
  * existir — não há FK/cascade entre as tabelas, ver
  * docs/architecture/data-model.md) via SQL direto (pg), em vez do

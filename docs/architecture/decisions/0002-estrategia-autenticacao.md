@@ -97,6 +97,20 @@ apenas e-mail/senha, conforme `docs/product/mvp-scope.md`.
   models gerados manualmente de forma incompatível com o schema esperado
   pela biblioteca.
 
+## Decisão efetivamente implementada (Fase 10 — painel administrativo)
+
+O bloqueio/desbloqueio de conta (RF-073, RN-092, RN-094, RN-095) usa
+diretamente `auth.api.banUser`/`auth.api.unbanUser` do plugin `admin`
+(já configurado desde a Fase 2), em vez de alterar `user.banned` por
+escrita direta no banco. Confirmado na documentação oficial antes de
+implementar: `banUser` já revoga todas as sessões ativas do usuário
+imediatamente como parte do próprio endpoint — satisfaz RN-092 ("negado
+imediatamente nas próximas requisições") sem nenhuma verificação extra
+própria. `requireAdmin()` (`server/policies/auth-policy.ts`), já
+existente desde a Fase 2, protege a rota (RN-095); cada chamada também
+grava um `AuditLog` (`BROKER_BLOCKED`/`BROKER_UNBLOCKED`) na própria
+Server Action (RN-094).
+
 ## Referências
 
 - https://www.better-auth.com/docs/installation

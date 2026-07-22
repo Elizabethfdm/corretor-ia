@@ -124,20 +124,27 @@ Regras: RN-082 a RN-090.
 
 ## Fase 10 — Hardening
 
-Entregas: revisão completa de segurança, acessibilidade e performance;
-testes exploratórios guiados pelos charters de
-`docs/quality/test-strategy.md`; correções de bugs críticos/altos
-pendentes; atualização final de toda a documentação; evidências
-consolidadas; checklist de produção conferido contra
-`docs/product/mvp-scope.md` (critérios gerais de aceite do MVP).
+**Status: concluída.**
+
+Entregas: painel administrativo mínimo (RF-072 a RF-075, RN-091 a
+RN-095 — única funcionalidade do MVP ainda não construída até então);
+cabeçalhos de segurança HTTP (RNF-034, ADR-0008); RN-093 decidida
+(catálogo de conta bloqueada ocultado); revisão de segurança dirigida e
+`npm audit`; testes exploratórios guiados pelos charters de
+`docs/quality/test-strategy.md`, documentados com gaps de baixa
+severidade registrados como dívida técnica; checklist de 25 critérios
+de `docs/product/mvp-scope.md` conferido (24/25 verificados neste
+ambiente — execução do CI no GitHub Actions não confirmável a partir
+daqui); evidências consolidadas em `docs/evidence/fase-10-hardening/`.
 
 ## Observação sobre o painel administrativo
 
-O escopo mínimo de administração (RN-091 a RN-095, RF-072 a RF-075) é
-propositalmente pequeno e deve ser incorporado dentro da Fase 1
-(estrutura básica de papéis) e da Fase 2/10 (telas mínimas), sem
-justificar uma fase dedicada — conforme instrução explícita de não criar
-uma área administrativa excessivamente complexa nesta primeira versão.
+O escopo mínimo de administração (RN-091 a RN-095, RF-072 a RF-075) foi
+propositalmente pequeno e incorporado dentro da Fase 1 (estrutura básica
+de papéis — `requireAdmin()`) e da Fase 10 (telas mínimas —
+`/painel-admin`), sem uma fase dedicada — conforme instrução explícita
+de não criar uma área administrativa excessivamente complexa nesta
+primeira versão. Ver `docs/evidence/fase-10-hardening/`.
 
 ## Regra de avanço entre fases
 

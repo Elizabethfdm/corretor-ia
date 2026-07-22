@@ -8,6 +8,33 @@ partir da primeira versão publicada.
 
 ## [Não lançado]
 
+### Adicionado — Fase 10 (Hardening)
+
+- Painel administrativo mínimo (`/painel-admin`, RF-072 a RF-075): lista
+  de corretores com contagem de imóveis, bloqueio/desbloqueio de conta
+  (via `auth.api.banUser`/`unbanUser` do Better Auth — já revoga
+  sessões ativas imediatamente, RN-092), indicadores gerais da
+  plataforma e auditoria básica recente. Protegido no servidor por
+  `requireAdmin()` (RN-095), já existente desde a Fase 2.
+- **RN-093 decidida**: catálogo público de conta bloqueada é ocultado
+  imediatamente (mesmo comportamento de catálogo despublicado).
+- Cabeçalhos de segurança HTTP (RNF-034), ausentes até esta fase: CSP,
+  `X-Content-Type-Options: nosniff`, `X-Frame-Options: DENY`,
+  `Referrer-Policy: origin-when-cross-origin` (ADR-0008).
+- Revisão de segurança dirigida pela seção 6 de
+  `docs/quality/test-strategy.md`, `npm audit` (sem vulnerabilidades
+  altas/críticas), charters exploratórios (seção 8) documentados com
+  gaps de baixa severidade registrados como dívida técnica, e checklist
+  final dos 25 critérios de aceite do MVP (`docs/product/mvp-scope.md`)
+  conferido.
+- 6 novos testes de integração e 3 novos cenários E2E/acessibilidade.
+
+Corrigidos durante o desenvolvimento (nenhum chegou a ser entregue):
+asserção de teste frágil sob execução concorrente contra indicadores
+globais; requisição de teste sem cabeçalho `Origin` mascarando o
+resultado esperado; contextos de navegador Playwright compartilhando
+sessão indevidamente entre corretor e administrador nos testes E2E.
+
 ### Adicionado — Fase 9 (Relatórios)
 
 - Registro dos 7 eventos de analytics do MVP: `catalog_view`,

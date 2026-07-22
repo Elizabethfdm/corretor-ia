@@ -2,6 +2,7 @@ import {
   brokerProfileRepository,
   type BrokerProfileWriteInput,
 } from "@/server/repositories/broker-profile-repository";
+import { prisma } from "@/lib/database/prisma";
 import type { BrokerProfileInput } from "@/lib/validation/broker-profile";
 import { getPublicationRequirementErrors } from "@/lib/validation/broker-profile";
 import { generateStorageKey, getStorageProvider } from "@/lib/storage";
@@ -72,13 +73,23 @@ export async function getOwnProfile(userId: string): Promise<BrokerProfile | nul
 
 /**
  * RN-022: catálogo inativo nunca é retornado como público, mesmo que o
- * slug exista.
+ * slug exista. RN-093: catálogo de conta bloqueada é ocultado com o
+ * mesmo comportamento (indisponibilidade), decisão da Fase 10.
  */
 export async function getPublicProfileBySlug(slug: string): Promise<BrokerProfile | null> {
   const profile = await brokerProfileRepository.findBySlug(slug);
   if (!profile || !profile.catalogEnabled) {
     return null;
   }
+
+  const user = await prisma.user.findUnique({
+    where: { id: profile.userId },
+    select: { banned: true },
+  });
+  if (user?.banned) {
+    return null;
+  }
+
   return profile;
 }
 

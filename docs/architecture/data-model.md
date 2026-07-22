@@ -502,3 +502,14 @@ de validação associado que a diretriz de JSON exige.
   propertyId, eventType, occurredAt)` — o segundo cobre tanto a consulta
   de dedup (RN-084) quanto a agregação por imóvel (RF-069) sem exigir
   um índice adicional.
+
+## Notas de implementação (Fase 10)
+
+O painel administrativo (RF-072 a RF-075) **não introduz nenhum modelo
+novo** — reaproveita inteiramente `BrokerProfile` (com `_count` de
+`properties` para a contagem de imóveis por corretor), `Property`
+(contagens gerais), `User` do Better Auth (`banned`/`email`, já
+existente desde a Fase 2) e `AuditLog` (já existente desde a Fase 1).
+Bloqueio/desbloqueio não é uma escrita direta em `user.banned` — passa
+por `auth.api.banUser`/`unbanUser` (ver ADR-0002, seção Fase 10), que já
+revoga sessões ativas como parte do próprio endpoint.

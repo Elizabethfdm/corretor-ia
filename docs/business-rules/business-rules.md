@@ -305,10 +305,12 @@ renumeradas para manter numeração única no projeto.
 - **RN-092 — Bloqueio administrativo imediato.** Ao bloquear uma conta, o
   acesso ao painel deve ser negado imediatamente nas próximas
   requisições autenticadas.
-- **RN-093 — Catálogo de conta bloqueada.** Definir e documentar
-  explicitamente (ADR) se o catálogo público de uma conta bloqueada
-  permanece visível ou é ocultado — tratado como decisão de produto
-  pendente (ver seção de decisões pendentes na Fase 0).
+- **RN-093 — Catálogo de conta bloqueada.** Decidido na Fase 10: o
+  catálogo público de uma conta bloqueada é **ocultado imediatamente**
+  (passa a retornar indisponibilidade, mesmo comportamento de uma conta
+  com catálogo despublicado) — consistente com o bloqueio administrativo
+  sendo uma medida associada a suspeita de abuso/fraude/violação, não
+  uma pausa administrativa neutra.
 - **RN-094 — Auditoria de ações administrativas.** Toda ação
   administrativa sensível (bloqueio, desbloqueio) gera um `AuditLog`.
 - **RN-095 — Rotas administrativas protegidas.** Rotas administrativas só
