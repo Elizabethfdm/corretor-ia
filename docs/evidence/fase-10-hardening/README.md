@@ -34,15 +34,15 @@ Docker (PostgreSQL e MinIO locais via `docker-compose.yml`).
 
 ## Comandos executados e resultado
 
-| Comando                                         | Resultado                                                                                                                                                                                                                                                                                                                                                                                                      |
-| ----------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `npm run typecheck`                             | Sem erros (TypeScript modo estrito)                                                                                                                                                                                                                                                                                                                                                                            |
-| `npm run lint`                                  | 0 erros, 0 warnings                                                                                                                                                                                                                                                                                                                                                                                            |
-| `npm run build`                                 | Build de produção concluído com sucesso; `/painel-admin` gerado como rota dinâmica                                                                                                                                                                                                                                                                                                                             |
-| `npm run test` (Vitest)                         | 311 testes aprovados (42 arquivos) — unitário + integração contra Postgres e MinIO reais                                                                                                                                                                                                                                                                                                                       |
-| `npm audit --audit-level=high`                  | **Exit 0** — nenhuma vulnerabilidade alta/crítica. 6 vulnerabilidades moderadas, todas em dependências de ferramental de build (Prisma CLI dev server via `@hono/node-server`; PostCSS embutido no Next.js via `better-auth`→`next`), nenhuma no caminho de execução exposto a requisições reais. Correção da segunda exigiria downgrade do Next.js (`next@9.3.3`) — não aplicada; risco aceito e documentado. |
-| `npm run format:check`                          | **Falhou na primeira verificação** (70 arquivos com formatação divergente, acumulados desde a Fase 5) — corrigido com `npm run format`; revalidado limpo. Ver "Bugs encontrados" abaixo.                                                                                                                                                                                                                    |
-| `npx playwright test` (5 navegadores/viewports) | **255/255 aprovados** — ver seção "Execução E2E" abaixo                                                                                                                                                                                                                                                                                                                                                        |
+| Comando                                         | Resultado                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
+| ----------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `npm run typecheck`                             | Sem erros (TypeScript modo estrito)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
+| `npm run lint`                                  | 0 erros, 0 warnings                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
+| `npm run build`                                 | Build de produção concluído com sucesso; `/painel-admin` gerado como rota dinâmica                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
+| `npm run test` (Vitest)                         | 311 testes aprovados (42 arquivos) — unitário + integração contra Postgres e MinIO reais                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
+| `npm audit --audit-level=high`                  | **Exit 0** — nenhuma vulnerabilidade alta/crítica. Um aviso alto foi publicado horas depois da primeira checagem (cópia aninhada de `sharp` que o Next.js usa só para `next/image`, nunca importado neste projeto) e derrubou o CI real; corrigido com `overrides.sharp` no `package.json` (item 7 abaixo). 6 vulnerabilidades moderadas remanescentes, todas em dependências de ferramental de build (Prisma CLI dev server via `@hono/node-server`; PostCSS embutido no Next.js via `better-auth`→`next`), nenhuma no caminho de execução exposto a requisições reais — risco aceito e documentado. |
+| `npm run format:check`                          | **Falhou na primeira verificação** (70 arquivos com formatação divergente, acumulados desde a Fase 5) — corrigido com `npm run format`; revalidado limpo. Ver "Bugs encontrados" abaixo.                                                                                                                                                                                                                                                                                                                                                                                                              |
+| `npx playwright test` (5 navegadores/viewports) | **255/255 aprovados** — ver seção "Execução E2E" abaixo                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
 
 ## Execução E2E
 
@@ -206,11 +206,36 @@ of a navigation` no teste de acessibilidade de `/painel/relatorios`
    conferiu a execução no GitHub Actions e reportou a falha. Rodado
    `npm run format:check` retroativamente: 70 arquivos com formatação
    divergente, acumulados desde a Fase 5. Corrigido com `npm run
-   format` (reescrita automática, sem mudança de comportamento) e
+format` (reescrita automática, sem mudança de comportamento) e
    revalidado typecheck/lint/testes/build depois — todos continuaram
    passando. **Lição registrada**: `npm run format:check` (ou `format`)
    passa a fazer parte da rotina de validação de toda fase, junto com
    os quatro comandos já seguidos.
+7. **`npm audit --audit-level=high` passou a falhar entre a validação
+   local e o push, por uma vulnerabilidade nova publicada no meio do
+   caminho — não uma regressão de código.** Depois do commit da
+   formatação, o CI ainda falhava (confirmado pelo usuário verificando
+   a execução real no GitHub Actions, já que este ambiente não tem
+   acesso a `gh`/à autenticação do GitHub): o passo real com falha era
+   "Auditoria de dependências", reportando 2 vulnerabilidades **altas**
+   que a mesma checagem, rodada horas antes nesta mesma fase, não
+   apontava. Causa: `npm audit` consulta uma base de dados de
+   vulnerabilidades ao vivo — um novo aviso (CVE-2026-33327 e
+   relacionados, vulnerabilidades do libvips herdadas pelo `sharp`) foi
+   publicado nesse intervalo. A cópia vulnerável não era a nossa
+   dependência direta de `sharp` (`^0.35.3`, já numa versão segura), e
+   sim uma cópia aninhada que o próprio Next.js declara para seu recurso
+   de otimização de imagem (`next/image`) — confirmado que o projeto
+   nunca importa `next/image` em lugar nenhum (todas as imagens usam
+   `<img>` simples, já hospedadas/otimizadas pelo storage próprio desde
+   a Fase 3), então o código vulnerável nunca é executado de fato.
+   Corrigido adicionando `overrides.sharp: "^0.35.3"` ao `package.json`
+   — força o `npm` a deduplicar toda cópia de `sharp` na árvore de
+   dependências (incluindo a aninhada do Next.js) para a mesma versão
+   segura já usada diretamente pelo projeto, sem precisar esperar um
+   novo release do Next.js. Revalidado `npm audit --audit-level=high`
+   (voltou a sair limpo, exit 0) e typecheck/lint/format/testes/build
+   depois da mudança.
 
 ## Limitações conhecidas (não implementadas nesta fase)
 
