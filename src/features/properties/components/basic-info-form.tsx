@@ -3,6 +3,7 @@
 import { useActionState, useEffect, useRef } from "react";
 import { saveBasicInfoAction } from "@/features/properties/actions";
 import { idleActionState } from "@/lib/forms/action-state";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { FormField } from "@/components/ui/form-field";
 import { FormMessage } from "@/components/ui/form-message";
 import { Input } from "@/components/ui/input";
@@ -27,7 +28,7 @@ export function BasicInfoForm({ property }: BasicInfoFormProps) {
   const errors = state.fieldErrors ?? {};
 
   return (
-    <form action={formAction} className="flex flex-col gap-4" noValidate>
+    <form action={formAction} className="flex flex-col gap-6" noValidate>
       <input type="hidden" name="propertyId" value={property.id} />
 
       {state.status !== "idle" && state.message ? (
@@ -39,101 +40,123 @@ export function BasicInfoForm({ property }: BasicInfoFormProps) {
         </div>
       ) : null}
 
-      <FormField id="internalTitle" label="Título interno" errors={errors["internalTitle"]}>
-        <Input
-          name="internalTitle"
-          type="text"
-          required
-          maxLength={150}
-          defaultValue={property.internalTitle}
-        />
-      </FormField>
+      <Card>
+        <CardHeader>
+          <CardTitle>Identificação</CardTitle>
+        </CardHeader>
+        <CardContent className="flex flex-col gap-4">
+          <FormField id="internalTitle" label="Título interno" errors={errors["internalTitle"]}>
+            <Input
+              name="internalTitle"
+              type="text"
+              required
+              maxLength={150}
+              defaultValue={property.internalTitle}
+            />
+          </FormField>
 
-      <FormField id="publicTitle" label="Título público (opcional)" errors={errors["publicTitle"]}>
-        <Input
-          name="publicTitle"
-          type="text"
-          maxLength={150}
-          defaultValue={property.publicTitle ?? ""}
-        />
-      </FormField>
+          <FormField
+            id="publicTitle"
+            label="Título público (opcional)"
+            errors={errors["publicTitle"]}
+          >
+            <Input
+              name="publicTitle"
+              type="text"
+              maxLength={150}
+              defaultValue={property.publicTitle ?? ""}
+            />
+          </FormField>
 
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-        <FormField id="purpose" label="Finalidade" errors={errors["purpose"]}>
-          <Select name="purpose" required defaultValue={property.purpose}>
-            {Object.values(PropertyPurpose).map((value) => (
-              <option key={value} value={value}>
-                {PURPOSE_LABELS[value]}
-              </option>
-            ))}
-          </Select>
-        </FormField>
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+            <FormField id="purpose" label="Finalidade" errors={errors["purpose"]}>
+              <Select name="purpose" required defaultValue={property.purpose}>
+                {Object.values(PropertyPurpose).map((value) => (
+                  <option key={value} value={value}>
+                    {PURPOSE_LABELS[value]}
+                  </option>
+                ))}
+              </Select>
+            </FormField>
 
-        <FormField id="propertyType" label="Tipo do imóvel" errors={errors["propertyType"]}>
-          <Select name="propertyType" required defaultValue={property.propertyType}>
-            {Object.values(PropertyType).map((value) => (
-              <option key={value} value={value}>
-                {PROPERTY_TYPE_LABELS[value]}
-              </option>
-            ))}
-          </Select>
-        </FormField>
-      </div>
+            <FormField id="propertyType" label="Tipo do imóvel" errors={errors["propertyType"]}>
+              <Select name="propertyType" required defaultValue={property.propertyType}>
+                {Object.values(PropertyType).map((value) => (
+                  <option key={value} value={value}>
+                    {PROPERTY_TYPE_LABELS[value]}
+                  </option>
+                ))}
+              </Select>
+            </FormField>
+          </div>
 
-      <FormField
-        id="referenceCode"
-        label="Código de referência (opcional)"
-        errors={errors["referenceCode"]}
-      >
-        <Input
-          name="referenceCode"
-          type="text"
-          maxLength={30}
-          defaultValue={property.referenceCode ?? ""}
-        />
-      </FormField>
+          <FormField
+            id="referenceCode"
+            label="Código de referência (opcional)"
+            errors={errors["referenceCode"]}
+          >
+            <Input
+              name="referenceCode"
+              type="text"
+              maxLength={30}
+              defaultValue={property.referenceCode ?? ""}
+            />
+          </FormField>
+        </CardContent>
+      </Card>
 
-      <label className="flex items-center gap-2 text-sm text-zinc-700 dark:text-zinc-300">
-        <input
-          type="checkbox"
-          name="showPrice"
-          defaultChecked={property.showPrice}
-          className="h-4 w-4"
-        />
-        Exibir valor (desmarque para &quot;Consulte o valor&quot;)
-      </label>
+      <Card>
+        <CardHeader>
+          <CardTitle>Valores</CardTitle>
+        </CardHeader>
+        <CardContent className="flex flex-col gap-4">
+          <label className="flex items-center gap-2 text-sm text-neutral-700 dark:text-neutral-300">
+            <input
+              type="checkbox"
+              name="showPrice"
+              defaultChecked={property.showPrice}
+              className="h-4 w-4"
+            />
+            Exibir valor (desmarque para &quot;Consulte o valor&quot;)
+          </label>
 
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
-        <FormField id="price" label="Valor (R$)" errors={errors["price"]}>
-          <Input
-            name="price"
-            type="number"
-            step="0.01"
-            min="0"
-            defaultValue={property.price ?? ""}
-          />
-        </FormField>
-        <FormField id="condominiumFee" label="Condomínio (R$)" errors={errors["condominiumFee"]}>
-          <Input
-            name="condominiumFee"
-            type="number"
-            step="0.01"
-            min="0"
-            defaultValue={property.condominiumFee ?? ""}
-          />
-        </FormField>
-        <FormField id="propertyTax" label="IPTU (R$)" errors={errors["propertyTax"]}>
-          <Input
-            name="propertyTax"
-            type="number"
-            step="0.01"
-            min="0"
-            defaultValue={property.propertyTax ?? ""}
-          />
-        </FormField>
-      </div>
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+            <FormField id="price" label="Valor (R$)" errors={errors["price"]}>
+              <Input
+                name="price"
+                type="number"
+                step="0.01"
+                min="0"
+                defaultValue={property.price ?? ""}
+              />
+            </FormField>
+            <FormField
+              id="condominiumFee"
+              label="Condomínio (R$)"
+              errors={errors["condominiumFee"]}
+            >
+              <Input
+                name="condominiumFee"
+                type="number"
+                step="0.01"
+                min="0"
+                defaultValue={property.condominiumFee ?? ""}
+              />
+            </FormField>
+            <FormField id="propertyTax" label="IPTU (R$)" errors={errors["propertyTax"]}>
+              <Input
+                name="propertyTax"
+                type="number"
+                step="0.01"
+                min="0"
+                defaultValue={property.propertyTax ?? ""}
+              />
+            </FormField>
+          </div>
+        </CardContent>
+      </Card>
 
-      <label className="flex items-center gap-2 text-sm text-zinc-700 dark:text-zinc-300">
+      <label className="flex items-center gap-2 text-sm text-neutral-700 dark:text-neutral-300">
         <input
           type="checkbox"
           name="featured"

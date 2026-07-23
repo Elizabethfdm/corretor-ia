@@ -8,8 +8,12 @@ import {
   duplicatePropertyAction,
 } from "@/features/properties/actions";
 import { idleActionState } from "@/lib/forms/action-state";
+import { Badge } from "@/components/ui/badge";
+import { buttonVariants } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
 import { FormMessage } from "@/components/ui/form-message";
 import { SubmitButton } from "@/components/ui/submit-button";
+import { cn } from "@/lib/utils/cn";
 import { formatCurrencyBRL } from "@/lib/money/format-currency";
 import {
   ADDRESS_VISIBILITY_LABELS,
@@ -18,11 +22,24 @@ import {
   PURPOSE_LABELS,
 } from "@/lib/property/labels";
 import { getPropertyPublicationRequirementErrors } from "@/lib/validation/property";
+import type { PropertyStatus } from "@/generated/prisma/enums";
 import type { SerializedProperty } from "@/features/properties/serialize-property";
 
 interface ReviewPanelProps {
   property: SerializedProperty;
 }
+
+const STATUS_BADGE_VARIANT: Record<PropertyStatus, "neutral" | "success" | "warning" | "primary"> =
+  {
+    DRAFT: "neutral",
+    AVAILABLE: "success",
+    RESERVED: "warning",
+    SOLD: "primary",
+    RENTED: "primary",
+    INACTIVE: "neutral",
+  };
+
+const OUTLINE_SUBMIT_CLASS = cn(buttonVariants({ variant: "outline", size: "md" }), "w-auto");
 
 function confirmDeletion(event: FormEvent<HTMLFormElement>): void {
   if (
@@ -75,65 +92,68 @@ export function ReviewPanel({ property }: ReviewPanelProps) {
         </div>
       ) : null}
 
-      <section className="rounded-lg border border-zinc-200 p-4 dark:border-zinc-800">
-        <div className="flex flex-col gap-3 sm:flex-row">
-          {cover ? (
-            // eslint-disable-next-line @next/next/no-img-element -- imagem já hospedada/otimizada pelo storage próprio
-            <img
-              src={cover.publicUrl}
-              alt={cover.altText ?? ""}
-              className="h-32 w-full rounded object-cover sm:w-48"
-            />
-          ) : (
-            <div className="flex h-32 w-full items-center justify-center rounded border border-dashed border-zinc-300 text-xs text-zinc-500 sm:w-48 dark:border-zinc-700 dark:text-zinc-400">
-              Sem foto
+      <Card>
+        <CardContent className="flex flex-col gap-3 p-4">
+          <div className="flex flex-col gap-3 sm:flex-row">
+            {cover ? (
+              // eslint-disable-next-line @next/next/no-img-element -- imagem já hospedada/otimizada pelo storage próprio
+              <img
+                src={cover.publicUrl}
+                alt={cover.altText ?? ""}
+                className="h-32 w-full rounded object-cover sm:w-48"
+              />
+            ) : (
+              <div className="flex h-32 w-full items-center justify-center rounded border border-dashed border-neutral-300 text-xs text-neutral-500 sm:w-48 dark:border-neutral-700 dark:text-neutral-400">
+                Sem foto
+              </div>
+            )}
+
+            <div className="flex flex-1 flex-col gap-1">
+              <h3 className="text-lg font-semibold text-neutral-900 dark:text-neutral-50">
+                {property.publicTitle || property.internalTitle}
+              </h3>
+              <p className="text-sm text-neutral-600 dark:text-neutral-400">
+                {PURPOSE_LABELS[property.purpose]} · {PROPERTY_TYPE_LABELS[property.propertyType]}
+              </p>
+              <p className="text-sm font-medium text-neutral-900 dark:text-neutral-50">
+                {property.showPrice
+                  ? formatCurrencyBRL(property.price) || "Valor não informado"
+                  : "Consulte o valor"}
+              </p>
+              <p className="text-sm text-neutral-600 dark:text-neutral-400">
+                {[
+                  property.bedrooms && `${property.bedrooms} quartos`,
+                  property.bathrooms && `${property.bathrooms} banheiros`,
+                  property.parkingSpaces && `${property.parkingSpaces} vagas`,
+                ]
+                  .filter(Boolean)
+                  .join(" · ") || "Características não informadas"}
+              </p>
+              <p className="text-sm text-neutral-600 dark:text-neutral-400">
+                {property.address?.neighborhood ?? "Bairro não informado"} —{" "}
+                {property.address?.city ?? "Cidade não informada"}
+                {property.address
+                  ? ` (${ADDRESS_VISIBILITY_LABELS[property.address.visibilityType]})`
+                  : ""}
+              </p>
+              <div className="mt-1">
+                <Badge variant={STATUS_BADGE_VARIANT[property.status]}>
+                  {PROPERTY_STATUS_LABELS[property.status]}
+                </Badge>
+              </div>
             </div>
-          )}
-
-          <div className="flex flex-1 flex-col gap-1">
-            <h3 className="text-lg font-semibold text-zinc-900 dark:text-zinc-50">
-              {property.publicTitle || property.internalTitle}
-            </h3>
-            <p className="text-sm text-zinc-600 dark:text-zinc-400">
-              {PURPOSE_LABELS[property.purpose]} · {PROPERTY_TYPE_LABELS[property.propertyType]}
-            </p>
-            <p className="text-sm font-medium text-zinc-900 dark:text-zinc-50">
-              {property.showPrice
-                ? formatCurrencyBRL(property.price) || "Valor não informado"
-                : "Consulte o valor"}
-            </p>
-            <p className="text-sm text-zinc-600 dark:text-zinc-400">
-              {[
-                property.bedrooms && `${property.bedrooms} quartos`,
-                property.bathrooms && `${property.bathrooms} banheiros`,
-                property.parkingSpaces && `${property.parkingSpaces} vagas`,
-              ]
-                .filter(Boolean)
-                .join(" · ") || "Características não informadas"}
-            </p>
-            <p className="text-sm text-zinc-600 dark:text-zinc-400">
-              {property.address?.neighborhood ?? "Bairro não informado"} —{" "}
-              {property.address?.city ?? "Cidade não informada"}
-              {property.address
-                ? ` (${ADDRESS_VISIBILITY_LABELS[property.address.visibilityType]})`
-                : ""}
-            </p>
-            <p className="text-sm">
-              Status:{" "}
-              <strong className="text-zinc-900 dark:text-zinc-50">
-                {PROPERTY_STATUS_LABELS[property.status]}
-              </strong>
-            </p>
           </div>
-        </div>
 
-        {property.description ? (
-          <p className="mt-3 text-sm text-zinc-700 dark:text-zinc-300">{property.description}</p>
-        ) : null}
-      </section>
+          {property.description ? (
+            <p className="mt-3 text-sm text-neutral-700 dark:text-neutral-300">
+              {property.description}
+            </p>
+          ) : null}
+        </CardContent>
+      </Card>
 
       {missingForPublication.length > 0 ? (
-        <div className="rounded-md border border-amber-300 bg-amber-50 px-4 py-3 text-sm text-amber-900 dark:border-amber-800 dark:bg-amber-950 dark:text-amber-200">
+        <div className="border-warning-300 bg-warning-50 text-warning-900 dark:border-warning-800 dark:bg-warning-950 dark:text-warning-200 rounded-md border px-4 py-3 text-sm">
           <p className="font-medium">Pendente para publicação:</p>
           <ul className="list-disc pl-5">
             {missingForPublication.map((reason) => (
@@ -156,9 +176,7 @@ export function ReviewPanel({ property }: ReviewPanelProps) {
           <form action={statusFormAction}>
             <input type="hidden" name="propertyId" value={property.id} />
             <input type="hidden" name="status" value="INACTIVE" />
-            <SubmitButton className="w-auto bg-transparent px-4 py-2 text-sm text-zinc-900 ring-1 ring-zinc-300 hover:bg-zinc-100 dark:text-zinc-50 dark:ring-zinc-700 dark:hover:bg-zinc-900">
-              Despublicar
-            </SubmitButton>
+            <SubmitButton className={OUTLINE_SUBMIT_CLASS}>Despublicar</SubmitButton>
           </form>
         ) : null}
 
@@ -166,9 +184,7 @@ export function ReviewPanel({ property }: ReviewPanelProps) {
           <form action={statusFormAction}>
             <input type="hidden" name="propertyId" value={property.id} />
             <input type="hidden" name="status" value="RESERVED" />
-            <SubmitButton className="w-auto bg-transparent px-4 py-2 text-sm text-zinc-900 ring-1 ring-zinc-300 hover:bg-zinc-100 dark:text-zinc-50 dark:ring-zinc-700 dark:hover:bg-zinc-900">
-              Marcar como reservado
-            </SubmitButton>
+            <SubmitButton className={OUTLINE_SUBMIT_CLASS}>Marcar como reservado</SubmitButton>
           </form>
         ) : null}
 
@@ -176,9 +192,7 @@ export function ReviewPanel({ property }: ReviewPanelProps) {
           <form action={statusFormAction}>
             <input type="hidden" name="propertyId" value={property.id} />
             <input type="hidden" name="status" value="SOLD" />
-            <SubmitButton className="w-auto bg-transparent px-4 py-2 text-sm text-zinc-900 ring-1 ring-zinc-300 hover:bg-zinc-100 dark:text-zinc-50 dark:ring-zinc-700 dark:hover:bg-zinc-900">
-              Marcar como vendido
-            </SubmitButton>
+            <SubmitButton className={OUTLINE_SUBMIT_CLASS}>Marcar como vendido</SubmitButton>
           </form>
         ) : null}
 
@@ -186,14 +200,12 @@ export function ReviewPanel({ property }: ReviewPanelProps) {
           <form action={statusFormAction}>
             <input type="hidden" name="propertyId" value={property.id} />
             <input type="hidden" name="status" value="RENTED" />
-            <SubmitButton className="w-auto bg-transparent px-4 py-2 text-sm text-zinc-900 ring-1 ring-zinc-300 hover:bg-zinc-100 dark:text-zinc-50 dark:ring-zinc-700 dark:hover:bg-zinc-900">
-              Marcar como alugado
-            </SubmitButton>
+            <SubmitButton className={OUTLINE_SUBMIT_CLASS}>Marcar como alugado</SubmitButton>
           </form>
         ) : null}
       </div>
 
-      <div className="flex flex-wrap gap-3 border-t border-zinc-200 pt-4 dark:border-zinc-800">
+      <div className="flex flex-wrap gap-3 border-t border-neutral-200 pt-4 dark:border-neutral-800">
         <form action={duplicatePropertyAction}>
           <input type="hidden" name="propertyId" value={property.id} />
           <button type="submit" className="text-sm underline">
@@ -203,7 +215,7 @@ export function ReviewPanel({ property }: ReviewPanelProps) {
 
         <form action={deletePropertyAction} onSubmit={confirmDeletion}>
           <input type="hidden" name="propertyId" value={property.id} />
-          <button type="submit" className="text-sm text-red-600 underline dark:text-red-400">
+          <button type="submit" className="text-danger-600 dark:text-danger-400 text-sm underline">
             Excluir imóvel
           </button>
         </form>

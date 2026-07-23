@@ -8,6 +8,20 @@ partir da primeira versão publicada.
 
 ## [Não lançado]
 
+### Adicionado — Refatoração de UX/UI, Fase 4 (Cadastro de imóveis)
+
+- As 6 telas do editor de imóvel (Informações básicas, Características,
+  Localização, Fotos, Descrição, Revisão e publicação) passam a usar
+  `Card`/`CardHeader`/`CardTitle` para agrupar campos em seções visuais
+  e os tokens semânticos de cor (`neutral`/`success`/`warning`/`danger`)
+  no lugar de cores soltas (zinc/green/amber/red).
+- `PhotoManager`: miniaturas maiores (proporção 4:3 em vez de quadrado
+  pequeno), cada foto num `Card` próprio, selo "Capa" via `Badge`.
+- `ReviewPanel`: status do imóvel exibido como `Badge` colorido
+  conforme o estado (disponível/reservado/vendido/etc.).
+- Nenhuma regra de negócio, Server Action, validação ou rota mudou —
+  reestilização pura; nenhum texto de rótulo/botão foi alterado.
+
 ### Alterado — Anúncios com IA: fluxo manual via ChatGPT (substitui geração automática)
 
 - **Mudança de escopo (decisão de produto, ver ADR-0004 "Decisão
