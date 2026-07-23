@@ -1,3 +1,6 @@
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Select } from "@/components/ui/select";
 import { PROPERTY_TYPE_LABELS, PURPOSE_LABELS, FEATURE_LABELS } from "@/lib/property/labels";
 import { PropertyPurpose, PropertyType, FeatureType } from "@/generated/prisma/enums";
 import { CATALOG_SORT_OPTIONS, type CatalogFilters } from "@/lib/validation/catalog-filters";
@@ -15,9 +18,6 @@ const SORT_LABELS: Record<(typeof CATALOG_SORT_OPTIONS)[number], string> = {
   featured: "Destaques",
 };
 
-const INPUT_CLASS =
-  "w-full rounded-md border border-zinc-300 bg-white px-3 py-2 text-sm text-zinc-900 focus:border-zinc-500 focus:outline-none focus:ring-2 focus:ring-zinc-500 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-50";
-
 /**
  * Formulário GET simples (sem JavaScript): cada busca gera uma
  * navegação com os filtros na própria URL, atendendo RN-047 (filtro
@@ -32,164 +32,167 @@ export function CatalogFiltersForm({ slug, filters }: CatalogFiltersFormProps) {
         <label htmlFor="q" className="sr-only">
           Buscar imóveis
         </label>
-        <input
+        <Input
           id="q"
           name="q"
           type="search"
           placeholder="Buscar por título, descrição, bairro ou cidade"
           defaultValue={filters.q ?? ""}
-          className={INPUT_CLASS}
         />
       </div>
 
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
         <div>
-          <label htmlFor="purpose" className="mb-1 block text-xs text-zinc-600 dark:text-zinc-400">
+          <label
+            htmlFor="purpose"
+            className="mb-1 block text-xs text-neutral-600 dark:text-neutral-400"
+          >
             Finalidade
           </label>
-          <select
-            id="purpose"
-            name="purpose"
-            defaultValue={filters.purpose ?? ""}
-            className={INPUT_CLASS}
-          >
+          <Select id="purpose" name="purpose" defaultValue={filters.purpose ?? ""}>
             <option value="">Todas</option>
             {Object.values(PropertyPurpose).map((value) => (
               <option key={value} value={value}>
                 {PURPOSE_LABELS[value]}
               </option>
             ))}
-          </select>
+          </Select>
         </div>
 
         <div>
-          <label htmlFor="type" className="mb-1 block text-xs text-zinc-600 dark:text-zinc-400">
+          <label
+            htmlFor="type"
+            className="mb-1 block text-xs text-neutral-600 dark:text-neutral-400"
+          >
             Tipo
           </label>
-          <select id="type" name="type" defaultValue={filters.type ?? ""} className={INPUT_CLASS}>
+          <Select id="type" name="type" defaultValue={filters.type ?? ""}>
             <option value="">Todos</option>
             {Object.values(PropertyType).map((value) => (
               <option key={value} value={value}>
                 {PROPERTY_TYPE_LABELS[value]}
               </option>
             ))}
-          </select>
+          </Select>
         </div>
 
         <div>
-          <label htmlFor="city" className="mb-1 block text-xs text-zinc-600 dark:text-zinc-400">
+          <label
+            htmlFor="city"
+            className="mb-1 block text-xs text-neutral-600 dark:text-neutral-400"
+          >
             Cidade
           </label>
-          <input
-            id="city"
-            name="city"
-            type="text"
-            defaultValue={filters.city ?? ""}
-            className={INPUT_CLASS}
-          />
+          <Input id="city" name="city" type="text" defaultValue={filters.city ?? ""} />
         </div>
 
         <div>
           <label
             htmlFor="neighborhood"
-            className="mb-1 block text-xs text-zinc-600 dark:text-zinc-400"
+            className="mb-1 block text-xs text-neutral-600 dark:text-neutral-400"
           >
             Bairro
           </label>
-          <input
+          <Input
             id="neighborhood"
             name="neighborhood"
             type="text"
             defaultValue={filters.neighborhood ?? ""}
-            className={INPUT_CLASS}
           />
         </div>
 
         <div>
-          <label htmlFor="priceMin" className="mb-1 block text-xs text-zinc-600 dark:text-zinc-400">
+          <label
+            htmlFor="priceMin"
+            className="mb-1 block text-xs text-neutral-600 dark:text-neutral-400"
+          >
             Valor mínimo
           </label>
-          <input
+          <Input
             id="priceMin"
             name="priceMin"
             type="number"
             min="0"
             step="0.01"
             defaultValue={filters.priceMin ?? ""}
-            className={INPUT_CLASS}
           />
         </div>
 
         <div>
-          <label htmlFor="priceMax" className="mb-1 block text-xs text-zinc-600 dark:text-zinc-400">
+          <label
+            htmlFor="priceMax"
+            className="mb-1 block text-xs text-neutral-600 dark:text-neutral-400"
+          >
             Valor máximo
           </label>
-          <input
+          <Input
             id="priceMax"
             name="priceMax"
             type="number"
             min="0"
             step="0.01"
             defaultValue={filters.priceMax ?? ""}
-            className={INPUT_CLASS}
           />
         </div>
 
         <div>
           <label
             htmlFor="bedroomsMin"
-            className="mb-1 block text-xs text-zinc-600 dark:text-zinc-400"
+            className="mb-1 block text-xs text-neutral-600 dark:text-neutral-400"
           >
             Quartos (mín.)
           </label>
-          <input
+          <Input
             id="bedroomsMin"
             name="bedroomsMin"
             type="number"
             min="0"
             defaultValue={filters.bedroomsMin ?? ""}
-            className={INPUT_CLASS}
           />
         </div>
 
         <div>
           <label
             htmlFor="parkingMin"
-            className="mb-1 block text-xs text-zinc-600 dark:text-zinc-400"
+            className="mb-1 block text-xs text-neutral-600 dark:text-neutral-400"
           >
             Vagas (mín.)
           </label>
-          <input
+          <Input
             id="parkingMin"
             name="parkingMin"
             type="number"
             min="0"
             defaultValue={filters.parkingMin ?? ""}
-            className={INPUT_CLASS}
           />
         </div>
 
         <div>
-          <label htmlFor="sort" className="mb-1 block text-xs text-zinc-600 dark:text-zinc-400">
+          <label
+            htmlFor="sort"
+            className="mb-1 block text-xs text-neutral-600 dark:text-neutral-400"
+          >
             Ordenar por
           </label>
-          <select id="sort" name="sort" defaultValue={filters.sort} className={INPUT_CLASS}>
+          <Select id="sort" name="sort" defaultValue={filters.sort}>
             {CATALOG_SORT_OPTIONS.map((value) => (
               <option key={value} value={value}>
                 {SORT_LABELS[value]}
               </option>
             ))}
-          </select>
+          </Select>
         </div>
       </div>
 
       <fieldset className="flex flex-col gap-2">
-        <legend className="mb-1 text-xs text-zinc-600 dark:text-zinc-400">Características</legend>
+        <legend className="mb-1 text-xs text-neutral-600 dark:text-neutral-400">
+          Características
+        </legend>
         <div className="grid grid-cols-2 gap-1 sm:grid-cols-4">
           {Object.values(FeatureType).map((feature) => (
             <label
               key={feature}
-              className="flex items-center gap-1.5 text-xs text-zinc-700 dark:text-zinc-300"
+              className="flex items-center gap-1.5 text-xs text-neutral-700 dark:text-neutral-300"
             >
               <input
                 type="checkbox"
@@ -204,7 +207,7 @@ export function CatalogFiltersForm({ slug, filters }: CatalogFiltersFormProps) {
         </div>
       </fieldset>
 
-      <label className="flex items-center gap-2 text-sm text-zinc-700 dark:text-zinc-300">
+      <label className="flex items-center gap-2 text-sm text-neutral-700 dark:text-neutral-300">
         <input
           type="checkbox"
           name="financingAccepted"
@@ -215,12 +218,9 @@ export function CatalogFiltersForm({ slug, filters }: CatalogFiltersFormProps) {
         Aceita financiamento
       </label>
 
-      <button
-        type="submit"
-        className="w-full rounded-md bg-zinc-900 px-4 py-2.5 text-sm font-medium text-white hover:bg-zinc-700 sm:w-auto dark:bg-zinc-50 dark:text-zinc-900 dark:hover:bg-zinc-200"
-      >
+      <Button type="submit" className="w-full sm:w-auto">
         Filtrar
-      </button>
+      </Button>
     </form>
   );
 }

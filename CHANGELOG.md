@@ -8,6 +8,28 @@ partir da primeira versão publicada.
 
 ## [Não lançado]
 
+### Adicionado — Refatoração de UX/UI, Fase 5 (Catálogo público)
+
+- `PropertyCard` reestilizado sobre `Card`/`Badge` (selo "Destaque").
+- `CatalogPagination` passa a usar o componente `Pagination` da Fase 1
+  (criado então, sem uso até agora).
+- Filtros do catálogo público passam a ficar atrás de um botão
+  "Filtros" num drawer no mobile/tablet (RNF-002) — no desktop
+  continuam sempre visíveis, inline. Mesmo formulário GET nativo de
+  sempre (RN-047, filtro compartilhável via URL); só uma instância
+  fica montada por vez (decidido no cliente pela largura da tela) para
+  não duplicar ids/rótulos no DOM.
+- Nenhuma regra de negócio muda.
+
+Corrigido durante o desenvolvimento (não chegou a ser entregue): a
+primeira versão escondia o formulário duplicado só com CSS
+(`hidden`/`md:block`), deixando as duas cópias no DOM ao mesmo tempo —
+`getByPlaceholder`/`getByLabel` do Playwright não ignoram elementos
+com `display:none`, então a suíte E2E no projeto "mobile" pegou uma
+violação de "strict mode" (dois elementos com o mesmo placeholder).
+Corrigido montando só uma instância por vez, decidido no cliente via
+`matchMedia`.
+
 ### Adicionado — Refatoração de UX/UI, Fase 4 (Cadastro de imóveis)
 
 - As 6 telas do editor de imóvel (Informações básicas, Características,

@@ -5,7 +5,7 @@ import { getPublicCatalog } from "@/server/services/catalog-service";
 import { recordCatalogView } from "@/server/services/analytics-service";
 import { parseCatalogFilters } from "@/lib/validation/catalog-filters";
 import { buildWhatsAppLink } from "@/lib/whatsapp/build-link";
-import { CatalogFiltersForm } from "@/features/catalog/components/catalog-filters-form";
+import { CatalogFiltersDrawer } from "@/features/catalog/components/catalog-filters-drawer";
 import { CatalogGrid } from "@/features/catalog/components/catalog-grid";
 import { CatalogPagination } from "@/features/catalog/components/catalog-pagination";
 import { ShareButtons } from "@/features/catalog/components/share-buttons";
@@ -131,7 +131,7 @@ export default async function CatalogPage({ params, searchParams }: CatalogPageP
       ) : null}
 
       <section className="rounded-lg border border-zinc-200 p-4 dark:border-zinc-800">
-        <CatalogFiltersForm slug={slug} filters={filters} />
+        <CatalogFiltersDrawer slug={slug} filters={filters} />
       </section>
 
       <div className="flex flex-wrap items-center justify-between gap-3">

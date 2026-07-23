@@ -30,6 +30,18 @@ interface PropertyInput {
   description: string;
 }
 
+/**
+ * No mobile/tablet, os filtros ficam atrás de um botão "Filtros" (RNF-002)
+ * — no desktop esse botão não existe (o formulário já está visível), então
+ * este passo é um no-op ali.
+ */
+async function openFiltersIfNeeded(page: Page): Promise<void> {
+  const trigger = page.getByRole("button", { name: "Filtros" });
+  if (await trigger.isVisible()) {
+    await trigger.click();
+  }
+}
+
 async function createAndPublishProperty(page: Page, input: PropertyInput): Promise<void> {
   await page.goto("/painel/imoveis");
   await page.getByRole("button", { name: "Novo imóvel" }).click();
@@ -122,6 +134,7 @@ test.describe("Catálogo digital (RN-046 a RN-050)", () => {
     await expect(page.getByText("2 imóveis encontrados")).toBeVisible();
 
     // Busca por termo livre.
+    await openFiltersIfNeeded(page);
     await page.getByPlaceholder("Buscar por título, descrição, bairro ou cidade").fill("piscina");
     await page.getByRole("button", { name: "Filtrar" }).click();
     await expect(page).toHaveURL(/q=piscina/);
@@ -136,6 +149,7 @@ test.describe("Catálogo digital (RN-046 a RN-050)", () => {
 
     // Filtro por finalidade a partir de uma navegação limpa.
     await page.goto(`/catalogo/${slug}`);
+    await openFiltersIfNeeded(page);
     await page.getByLabel("Finalidade").selectOption("RENT");
     await page.getByRole("button", { name: "Filtrar" }).click();
     await expect(page).toHaveURL(/purpose=RENT/);
@@ -144,6 +158,7 @@ test.describe("Catálogo digital (RN-046 a RN-050)", () => {
 
     // Ordenação por menor preço.
     await page.goto(`/catalogo/${slug}`);
+    await openFiltersIfNeeded(page);
     await page.getByLabel("Ordenar por").selectOption("price_asc");
     await page.getByRole("button", { name: "Filtrar" }).click();
     await expect(page).toHaveURL(/sort=price_asc/);

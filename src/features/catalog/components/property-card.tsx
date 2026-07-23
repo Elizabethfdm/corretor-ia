@@ -1,4 +1,6 @@
 import Link from "next/link";
+import { Badge } from "@/components/ui/badge";
+import { Card, CardContent } from "@/components/ui/card";
 import { formatCurrencyBRL } from "@/lib/money/format-currency";
 import type { PublicProperty } from "@/server/services/catalog-service";
 
@@ -18,53 +20,56 @@ export function PropertyCard({ property, brokerSlug }: PropertyCardProps) {
   return (
     <Link
       href={`/catalogo/${brokerSlug}/${property.slug}`}
-      className="flex flex-col overflow-hidden rounded-lg border border-zinc-200 hover:border-zinc-400 dark:border-zinc-800 dark:hover:border-zinc-600"
+      className="block transition-shadow hover:shadow-md"
     >
-      {property.coverPhotoUrl ? (
-        // eslint-disable-next-line @next/next/no-img-element -- imagem já hospedada/otimizada pelo storage próprio
-        <img
-          src={property.coverPhotoUrl}
-          alt={property.coverPhotoAlt ?? property.title}
-          className="aspect-video w-full object-cover"
-          loading="lazy"
-        />
-      ) : (
-        <div className="flex aspect-video w-full items-center justify-center bg-zinc-100 text-sm text-zinc-500 dark:bg-zinc-900 dark:text-zinc-400">
-          Sem foto
+      <Card className="flex h-full flex-col overflow-hidden">
+        <div className="relative aspect-video w-full">
+          {property.coverPhotoUrl ? (
+            // eslint-disable-next-line @next/next/no-img-element -- imagem já hospedada/otimizada pelo storage próprio
+            <img
+              src={property.coverPhotoUrl}
+              alt={property.coverPhotoAlt ?? property.title}
+              className="h-full w-full object-cover"
+              loading="lazy"
+            />
+          ) : (
+            <div className="flex h-full w-full items-center justify-center bg-neutral-100 text-sm text-neutral-500 dark:bg-neutral-900 dark:text-neutral-400">
+              Sem foto
+            </div>
+          )}
+          {property.featured ? (
+            <Badge variant="warning" className="absolute top-2 left-2">
+              Destaque
+            </Badge>
+          ) : null}
         </div>
-      )}
 
-      <div className="flex flex-1 flex-col gap-1.5 p-4">
-        {property.featured ? (
-          <span className="w-fit rounded bg-amber-100 px-2 py-0.5 text-xs font-medium text-amber-800 dark:bg-amber-950 dark:text-amber-300">
-            Destaque
-          </span>
-        ) : null}
+        <CardContent className="flex flex-1 flex-col gap-1.5 p-4">
+          <h3 className="text-base font-semibold text-neutral-900 dark:text-neutral-50">
+            {property.title}
+          </h3>
 
-        <h3 className="text-base font-semibold text-zinc-900 dark:text-zinc-50">
-          {property.title}
-        </h3>
-
-        <p className="text-sm text-zinc-500">
-          {property.propertyType} · {property.purpose}
-        </p>
-
-        <p className="text-base font-medium text-zinc-900 dark:text-zinc-50">
-          {property.showPrice
-            ? formatCurrencyBRL(property.price) || "Valor não informado"
-            : "Consulte o valor"}
-        </p>
-
-        {specs.length > 0 ? (
-          <p className="text-sm text-zinc-600 dark:text-zinc-400">{specs.join(" · ")}</p>
-        ) : null}
-
-        {property.neighborhood || property.city ? (
-          <p className="text-sm text-zinc-500">
-            {[property.neighborhood, property.city].filter(Boolean).join(" — ")}
+          <p className="text-sm text-neutral-500">
+            {property.propertyType} · {property.purpose}
           </p>
-        ) : null}
-      </div>
+
+          <p className="text-base font-medium text-neutral-900 dark:text-neutral-50">
+            {property.showPrice
+              ? formatCurrencyBRL(property.price) || "Valor não informado"
+              : "Consulte o valor"}
+          </p>
+
+          {specs.length > 0 ? (
+            <p className="text-sm text-neutral-600 dark:text-neutral-400">{specs.join(" · ")}</p>
+          ) : null}
+
+          {property.neighborhood || property.city ? (
+            <p className="mt-auto text-sm text-neutral-500">
+              {[property.neighborhood, property.city].filter(Boolean).join(" — ")}
+            </p>
+          ) : null}
+        </CardContent>
+      </Card>
     </Link>
   );
 }
