@@ -8,6 +8,42 @@ partir da primeira versão publicada.
 
 ## [Não lançado]
 
+### Alterado — Anúncios com IA: fluxo manual via ChatGPT (substitui geração automática)
+
+- **Mudança de escopo (decisão de produto, ver ADR-0004 "Decisão
+  revisada"):** o sistema deixou de chamar um provedor de IA pago
+  (Anthropic) programaticamente. Agora monta um prompt autocontido a
+  partir dos dados do imóvel e das escolhas do corretor (canal/tom/
+  tamanho/objetivo/público/destaques), oferece "Copiar prompt" e um
+  link "Abrir ChatGPT" (nova aba); o corretor cola o resultado de volta
+  nos mesmos campos editáveis de sempre (título/texto/chamada para
+  ação/hashtags), que salvam e mantêm histórico como antes.
+- Removida a camada `AiContentProvider`/`AnthropicAiProvider`/
+  `FakeAiProvider` (`src/lib/ai/`) e a dependência `@anthropic-ai/sdk`
+  — nenhuma chamada de API é feita pelo servidor.
+- Removido o limite mensal de gerações (RN-070) — sem custo de API por
+  chamada, deixou de fazer sentido conter o uso.
+- RN-069, RN-071, RN-072 e RN-074 revogadas (registro de provedor/
+  modelo, tratamento de falha de provedor, timeout de chamada, chave de
+  API no cliente) — não se aplicam a um fluxo sem chamada de API. RN-061
+  a RN-065 continuam existindo como instruções dentro do prompt, mas
+  deixam de ser garantidas pelo sistema (o texto final é colado
+  livremente pelo corretor). Ver `docs/business-rules/business-rules.md`.
+- Selo da interface muda de "Gerado por IA" para "Assistido por IA".
+- `.env.example`: removidas as variáveis `AI_PROVIDER`, `AI_API_KEY`,
+  `AI_MODEL`, `AI_REQUEST_TIMEOUT_MS`, `AI_MONTHLY_GENERATION_LIMIT`.
+
+### Adicionado — Refatoração de UX/UI, Fase 3 (Dashboard do painel)
+
+- `/painel` deixa de ser quase vazio e ganha: cards de indicador
+  (imóveis cadastrados/publicados/rascunhos), atividade recente dos
+  últimos 7 dias (reaproveitando `getReportSummary`/`AnalyticsEvent` já
+  existentes, sem query nova) e ações rápidas (Novo imóvel, Editar
+  perfil, Ver relatórios) — usando `Card`/`Badge` da Fase 1.
+- Novo teste de acessibilidade para `/painel` (estado sem perfil e com
+  perfil/imóveis cadastrados) — página não tinha nenhuma cobertura de
+  acessibilidade própria até esta fase.
+
 ### Adicionado — Refatoração de UX/UI, Fase 2 (Shell/navegação do painel)
 
 - Layout compartilhado para todas as rotas do painel
