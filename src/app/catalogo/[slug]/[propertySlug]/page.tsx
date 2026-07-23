@@ -1,10 +1,16 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { Bath, Bed, BedDouble, Calendar, Car, Pencil, Ruler } from "lucide-react";
 import { getPublicProperty } from "@/server/services/catalog-service";
 import { recordPropertyView } from "@/server/services/analytics-service";
+import { getCurrentSession } from "@/server/policies/auth-policy";
 import { formatCurrencyBRL } from "@/lib/money/format-currency";
 import { buildPropertyShareText } from "@/lib/sharing/build-share-text";
+import { Badge } from "@/components/ui/badge";
+import { buttonVariants } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { cn } from "@/lib/utils/cn";
 import { PropertyGallery } from "@/features/catalog/components/property-gallery";
 import { PropertyContactCard } from "@/features/catalog/components/property-contact-card";
 import { SimilarProperties } from "@/features/catalog/components/similar-properties";
@@ -42,15 +48,20 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
   await recordPropertyView(profile.id, property.id);
   const propertyUrl = `${APP_URL}/catalogo/${slug}/${propertySlug}`;
 
+  const session = await getCurrentSession();
+  const isOwner = session?.user.id === profile.userId;
+
   const specs = [
-    property.bedrooms ? `${property.bedrooms} quartos` : null,
-    property.suites ? `${property.suites} suítes` : null,
-    property.bathrooms ? `${property.bathrooms} banheiros` : null,
-    property.parkingSpaces ? `${property.parkingSpaces} vagas` : null,
-    property.totalArea ? `${property.totalArea} m² totais` : null,
-    property.builtArea ? `${property.builtArea} m² construídos` : null,
-    property.constructionYear ? `construído em ${property.constructionYear}` : null,
-  ].filter(Boolean);
+    property.bedrooms ? { icon: Bed, label: `${property.bedrooms} quartos` } : null,
+    property.suites ? { icon: BedDouble, label: `${property.suites} suítes` } : null,
+    property.bathrooms ? { icon: Bath, label: `${property.bathrooms} banheiros` } : null,
+    property.parkingSpaces ? { icon: Car, label: `${property.parkingSpaces} vagas` } : null,
+    property.totalArea ? { icon: Ruler, label: `${property.totalArea} m² totais` } : null,
+    property.builtArea ? { icon: Ruler, label: `${property.builtArea} m² construídos` } : null,
+    property.constructionYear
+      ? { icon: Calendar, label: `Construído em ${property.constructionYear}` }
+      : null,
+  ].filter((spec): spec is { icon: typeof Bed; label: string } => spec !== null);
 
   const conditions = [
     property.furnished ? "Mobiliado" : null,
@@ -78,13 +89,30 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
         Voltar ao catálogo de {profile.professionalName}
       </Link>
 
+      {isOwner ? (
+        <Card>
+          <CardContent className="flex flex-wrap items-center justify-between gap-3 p-4">
+            <p className="text-sm text-neutral-700 dark:text-neutral-300">
+              Você está vendo seu imóvel publicado.
+            </p>
+            <Link
+              href={`/painel/imoveis/${property.id}`}
+              className={cn(buttonVariants({ variant: "outline", size: "sm" }))}
+            >
+              <Pencil className="h-4 w-4" aria-hidden="true" />
+              Gerenciar este imóvel
+            </Link>
+          </CardContent>
+        </Card>
+      ) : null}
+
       <PropertyGallery photos={property.photos} title={property.title} />
 
       <div className="flex flex-col gap-2">
         {property.featured ? (
-          <span className="w-fit rounded bg-amber-100 px-2 py-0.5 text-xs font-medium text-amber-800 dark:bg-amber-950 dark:text-amber-300">
+          <Badge variant="warning" className="w-fit">
             Destaque
-          </span>
+          </Badge>
         ) : null}
 
         <h1 className="text-2xl font-semibold text-zinc-900 dark:text-zinc-50">{property.title}</h1>
@@ -112,7 +140,17 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
         ) : null}
 
         {specs.length > 0 ? (
-          <p className="text-sm text-zinc-700 dark:text-zinc-300">{specs.join(" · ")}</p>
+          <ul className="grid grid-cols-2 gap-2 pt-1 sm:grid-cols-3">
+            {specs.map((spec) => (
+              <li
+                key={spec.label}
+                className="flex items-center gap-2 text-sm text-neutral-700 dark:text-neutral-300"
+              >
+                <spec.icon className="h-4 w-4 shrink-0 text-neutral-500" aria-hidden="true" />
+                {spec.label}
+              </li>
+            ))}
+          </ul>
         ) : null}
 
         {conditions.length > 0 ? (
@@ -126,11 +164,8 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
         {property.features.length > 0 ? (
           <ul className="flex flex-wrap gap-2 pt-2">
             {property.features.map((feature) => (
-              <li
-                key={feature}
-                className="rounded bg-zinc-100 px-2 py-0.5 text-xs text-zinc-700 dark:bg-zinc-800 dark:text-zinc-300"
-              >
-                {feature}
+              <li key={feature}>
+                <Badge variant="neutral">{feature}</Badge>
               </li>
             ))}
           </ul>

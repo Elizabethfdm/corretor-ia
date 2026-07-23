@@ -8,6 +8,26 @@ partir da primeira versão publicada.
 
 ## [Não lançado]
 
+### Adicionado — Refatoração de UX/UI, Fase 6 (Página do imóvel)
+
+- Galeria com lightbox: clicar em qualquer foto abre em tela cheia,
+  com navegação anterior/próxima (Radix Dialog).
+- Especificações do imóvel (quartos/suítes/banheiros/vagas/área/ano)
+  passam a ter ícones em vez de texto corrido; características
+  adicionais viram `Badge` em vez de `<span>` solto.
+- CTA "Falar no WhatsApp" consolidado numa única instância responsiva
+  (antes eram dois `<a>` idênticos, um escondido por CSS em cada
+  breakpoint — mesmo problema já corrigido no formulário de filtros da
+  Fase 5).
+- **RF-065**: novo atalho "Gerenciar este imóvel", visível apenas para
+  o próprio corretor autenticado ao visualizar seu imóvel publicado —
+  nunca para um visitante comum. Aponta para o editor no painel; a
+  geração de anúncio continua exclusiva da área autenticada (RN-070,
+  RN-074 — nada é gerado a partir da página pública). Posse validada
+  no servidor via `getCurrentSession()` (RN-026).
+- Novo teste E2E cobrindo o atalho (visível para o dono logado,
+  ausente para um visitante anônimo em contexto de navegador isolado).
+
 ### Adicionado — Refatoração de UX/UI, Fase 5 (Catálogo público)
 
 - `PropertyCard` reestilizado sobre `Card`/`Badge` (selo "Destaque").

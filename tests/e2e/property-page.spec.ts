@@ -166,6 +166,49 @@ test.describe("Página individual do imóvel (RN-051 a RN-060)", () => {
     await deleteTestUserByEmail(email);
   });
 
+  test('mostra o atalho "Gerenciar este imóvel" só para o próprio corretor logado (RF-065)', async ({
+    page,
+    request,
+    browser,
+  }) => {
+    test.setTimeout(90_000);
+
+    const email = uniqueEmail("e2e-property-owner-shortcut");
+    await createTestUser(request, { name: "Corretor Teste", email, password: "senha1234" });
+    const slug = `e2e-property-owner-shortcut-${Date.now()}`;
+
+    await loginAs(page, email, "senha1234");
+    await publishCatalog(page, slug);
+    const propertyId = await createAndPublishProperty(page, {
+      title: "Casa com atalho para o dono",
+      propertyType: "HOUSE",
+      price: "350000",
+      city: "São Paulo",
+      neighborhood: "Centro",
+      description: "Casa para teste do atalho do corretor dono.",
+    });
+
+    // Corretor logado, vendo o próprio imóvel publicado: vê o atalho.
+    await page.goto(`/catalogo/${slug}`);
+    await page.getByRole("link", { name: /Casa com atalho para o dono/ }).click();
+    await expect(page.getByText("Você está vendo seu imóvel publicado.")).toBeVisible();
+    await page.getByRole("link", { name: "Gerenciar este imóvel" }).click();
+    await expect(page).toHaveURL(`/painel/imoveis/${propertyId}`);
+
+    // Visitante anônimo (contexto de navegador isolado, sem sessão): nunca vê o atalho.
+    const visitorContext = await browser.newContext();
+    const visitorPage = await visitorContext.newPage();
+    await visitorPage.goto(`/catalogo/${slug}`);
+    await visitorPage.getByRole("link", { name: /Casa com atalho para o dono/ }).click();
+    await expect(visitorPage.getByText("Você está vendo seu imóvel publicado.")).not.toBeVisible();
+    await expect(
+      visitorPage.getByRole("link", { name: "Gerenciar este imóvel" }),
+    ).not.toBeVisible();
+    await visitorContext.close();
+
+    await deleteTestUserByEmail(email);
+  });
+
   test("compartilhar no WhatsApp abre uma nova aba com o link e o texto corretos", async ({
     page,
     request,
