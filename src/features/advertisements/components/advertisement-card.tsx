@@ -50,7 +50,7 @@ export function AdvertisementCard({ advertisement, propertyId }: AdvertisementCa
     <div className="flex flex-col gap-3 rounded-lg border border-zinc-200 p-4 dark:border-zinc-800">
       <div className="flex flex-wrap items-center gap-2">
         <span className="rounded bg-purple-100 px-2 py-0.5 text-xs font-medium text-purple-800 dark:bg-purple-950 dark:text-purple-300">
-          Gerado por IA
+          Assistido por IA
         </span>
         <span className="text-xs text-zinc-500">
           {ADVERTISEMENT_CHANNEL_LABELS[advertisement.channel]} ·{" "}

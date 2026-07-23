@@ -37,8 +37,7 @@
 | XSS via campos de texto livre (descrição, biografia)                | Sanitização/escape consistente na renderização; nunca `dangerouslySetInnerHTML` sem sanitização                   | RNF-030           |
 | SQL Injection                                                       | Uso exclusivo de ORM parametrizado (Prisma), nunca SQL concatenado                                                | RNF-030           |
 | CSRF em ações de estado (publicar, excluir)                         | Proteção nativa do framework de autenticação/formulários + verificação de origem                                  | RNF-030           |
-| Vazamento de segredo (chave de IA, credencial de banco) via commit  | `.gitignore` cobrindo `.env*`; `.env.example` sem valores; revisão antes de commit                                | RN-074, RNF-033   |
-| Abuso do limite de geração de IA (custo financeiro)                 | Limite por plano registrado e validado no servidor antes de cada geração                                          | RN-069, RN-070    |
+| Vazamento de segredo (credencial de banco) via commit               | `.gitignore` cobrindo `.env*`; `.env.example` sem valores; revisão antes de commit                                | RNF-033           |
 | Sessão sequestrada (cookie roubado)                                 | Cookie `HttpOnly`, `Secure`, `SameSite`; expiração adequada; possibilidade de revogação                           | RN-012, RNF-035   |
 | Conta bloqueada continuando a acessar recursos já autenticados      | Verificação de status em toda requisição autenticada, não apenas no login                                         | RN-006, RN-092    |
 | Registro de auditoria adulterado ou ausente                         | `AuditLog` append-only, sem endpoint de edição/exclusão exposto                                                   | RN-094            |

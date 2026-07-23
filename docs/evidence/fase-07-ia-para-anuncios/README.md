@@ -3,6 +3,14 @@
 Data: 2026-07-21. Ambiente: Windows 11, Node v22.22.2, npm 10.9.7,
 Docker (PostgreSQL e MinIO locais via `docker-compose.yml`).
 
+> **Nota (2026-07-22):** o fluxo descrito abaixo (`AiContentProvider`,
+> `AnthropicAiProvider`, chamada programática à API da Anthropic) foi
+> substituído por um fluxo manual (prompt copiável + link para o
+> ChatGPT) — ver "Decisão revisada" em
+> `docs/architecture/decisions/0004-abstracao-provedor-ia.md`. Este
+> documento é mantido como registro histórico do que foi verificado na
+> Fase 7 original.
+
 ## Escopo entregue
 
 Geração de anúncios de imóveis com IA a partir de canal, tom, tamanho,

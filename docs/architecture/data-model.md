@@ -173,24 +173,23 @@ uma mídia com `isCover = true` por imóvel (validado na camada de serviço).
 
 ### GeneratedAdvertisement
 
-| Campo                 | Tipo                                                                                      | Observações                           |
-| --------------------- | ----------------------------------------------------------------------------------------- | ------------------------------------- |
-| id                    | UUID (PK)                                                                                 |                                       |
-| brokerId              | UUID (FK → BrokerProfile)                                                                 | RN-061                                |
-| propertyId            | UUID (FK → Property)                                                                      |                                       |
-| channel               | enum (Instagram, Facebook, WhatsApp, Story, etc.)                                         |                                       |
-| tone                  | enum (profissional, elegante, acolhedor, objetivo, persuasivo, alto padrão, investimento) |                                       |
-| objective             | string                                                                                    |                                       |
-| title                 | string                                                                                    |                                       |
-| content               | text                                                                                      |                                       |
-| hashtags              | string[], opcional                                                                        |                                       |
-| provider              | string                                                                                    | Nome do provedor de IA usado — RN-069 |
-| model                 | string                                                                                    |                                       |
-| status                | enum (`GENERATED`, `EDITED`, `FAILED`)                                                    |                                       |
-| createdAt / updatedAt | datetime                                                                                  |                                       |
+| Campo                 | Tipo                                                                                      | Observações                                                                                              |
+| --------------------- | ----------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------- |
+| id                    | UUID (PK)                                                                                 |                                                                                                          |
+| brokerId              | UUID (FK → BrokerProfile)                                                                 | RN-061                                                                                                   |
+| propertyId            | UUID (FK → Property)                                                                      |                                                                                                          |
+| channel               | enum (Instagram, Facebook, WhatsApp, Story, etc.)                                         |                                                                                                          |
+| tone                  | enum (profissional, elegante, acolhedor, objetivo, persuasivo, alto padrão, investimento) |                                                                                                          |
+| objective             | string                                                                                    |                                                                                                          |
+| title                 | string                                                                                    |                                                                                                          |
+| content               | text                                                                                      |                                                                                                          |
+| hashtags              | string[], opcional                                                                        |                                                                                                          |
+| provider              | string                                                                                    | Valor fixo `"manual"` desde 2026-07-22 (ADR-0004) — não há mais chamada programática a um provedor de IA |
+| model                 | string                                                                                    | Valor fixo `"chatgpt-web"` desde 2026-07-22 (ADR-0004)                                                   |
+| status                | enum (`GENERATED`, `EDITED`, `FAILED`)                                                    |                                                                                                          |
+| createdAt / updatedAt | datetime                                                                                  |                                                                                                          |
 
-Índice em (`brokerId`, `createdAt`) para histórico e contagem de limite
-(RN-070).
+Índice em (`brokerId`, `createdAt`) para o histórico (RF-058).
 
 ### ArtworkTemplate
 

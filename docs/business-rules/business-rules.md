@@ -217,39 +217,53 @@ renumeradas para manter numeração única no projeto.
 
 ## Geração de anúncios com IA (RN-061 a RN-074)
 
-- **RN-061 — Fonte de dados restrita.** A geração de anúncio utiliza
-  exclusivamente dados do imóvel pertencente ao corretor autenticado.
-- **RN-062 — Proibição de invenção de dados.** A IA nunca inventa
-  características, localização, preço ou condições comerciais não
-  informadas.
-- **RN-063 — Proibição de promessas indevidas.** A IA nunca promete
-  valorização, nunca afirma aprovação de financiamento e nunca cria
-  urgência falsa (ex.: "última unidade" sem dado correspondente no
-  cadastro).
-- **RN-064 — Linguagem não discriminatória.** O conteúdo gerado nunca
-  utiliza linguagem discriminatória.
-- **RN-065 — Nenhum dado privado no texto gerado.** O texto gerado nunca
-  inclui dados privados (endereço oculto, observações internas, dados
-  pessoais de terceiros).
-- **RN-066 — Sem publicação automática.** A IA nunca publica o conteúdo
-  automaticamente; o corretor deve revisar e agir manualmente.
+> Revisado em 2026-07-22 (ver ADR-0004, seção "Decisão revisada"): o
+> sistema deixou de chamar um provedor de IA programaticamente. Ele
+> monta um prompt que o corretor copia e leva a uma ferramenta de IA
+> externa de sua escolha (ex.: ChatGPT, gratuito), colando o resultado
+> de volta. RN-061 a RN-065 agora são instruções dentro do prompt, não
+> mais garantias verificadas pelo sistema. RN-069, RN-070, RN-071,
+> RN-072 e RN-074 foram revogadas (motivo em cada uma) — os números são
+> mantidos, sem reaproveitar, para preservar a rastreabilidade do
+> histórico de decisões.
+
+- **RN-061 — Fonte de dados restrita.** O prompt montado pelo sistema
+  utiliza exclusivamente dados do imóvel pertencente ao corretor
+  autenticado.
+- **RN-062 — Proibição de invenção de dados.** O prompt instrui a
+  ferramenta de IA a nunca inventar características, localização, preço
+  ou condições comerciais não informadas — não é mais verificável pelo
+  sistema, já que o resultado é colado livremente pelo corretor.
+- **RN-063 — Proibição de promessas indevidas.** O prompt instrui a
+  ferramenta de IA a nunca prometer valorização, nunca afirmar aprovação
+  de financiamento e nunca criar urgência falsa (ex.: "última unidade"
+  sem dado correspondente no cadastro).
+- **RN-064 — Linguagem não discriminatória.** O prompt instrui a
+  ferramenta de IA a nunca usar linguagem discriminatória.
+- **RN-065 — Nenhum dado privado no prompt.** O prompt montado pelo
+  sistema nunca inclui dados privados (endereço exato, observações
+  internas, dados pessoais de terceiros).
+- **RN-066 — Sem publicação automática.** O sistema nunca publica o
+  conteúdo automaticamente; o corretor deve revisar e agir manualmente.
 - **RN-067 — Edição sempre disponível.** O corretor pode editar o
-  conteúdo gerado antes de copiar ou compartilhar.
+  conteúdo salvo antes de copiar ou compartilhar.
 - **RN-068 — Sinalização de conteúdo de IA.** A interface sinaliza
-  claramente que o texto foi gerado por inteligência artificial.
-- **RN-069 — Registro de consumo.** Cada geração é registrada (consumo,
-  provedor, modelo) para fins de limite de uso e auditoria.
-- **RN-070 — Limite por plano.** A quantidade de gerações é limitada
-  conforme o plano do corretor (limite configurável).
-- **RN-071 — Tratamento de falha do provedor.** Falhas do provedor de IA
-  são tratadas com mensagem clara ao usuário e opção de nova tentativa,
-  sem travar o restante da aplicação.
-- **RN-072 — Timeout obrigatório.** Toda chamada ao provedor de IA possui
-  timeout configurado.
+  claramente que o texto foi assistido por inteligência artificial.
+- ~~**RN-069 — Registro de consumo.**~~ Revogada — sem chamada
+  programática a um provedor, não há "consumo" a auditar; os campos
+  `provider`/`model` do histórico passam a registrar valores fixos
+  (`"manual"`/`"chatgpt-web"`), sem função de auditoria.
+- ~~**RN-070 — Limite por plano.**~~ Revogada — o limite existia só para
+  conter custo de chamadas de API, que deixaram de existir.
+- ~~**RN-071 — Tratamento de falha do provedor.**~~ Revogada — não há
+  mais chamada a um provedor de IA que possa falhar.
+- ~~**RN-072 — Timeout obrigatório.**~~ Revogada — não há mais chamada de
+  API a limitar por timeout.
 - **RN-073 — Sem geração duplicada acidental.** O sistema previne o
-  disparo de gerações duplicadas por duplo clique ou reenvio acidental.
-- **RN-074 — Segredo de IA nunca no cliente.** A chave de API do provedor
-  de IA nunca é enviada ou armazenada no navegador.
+  disparo de salvamentos duplicados por duplo clique ou reenvio
+  acidental (continua válida para o formulário de salvar o anúncio).
+- ~~**RN-074 — Segredo de IA nunca no cliente.**~~ Revogada — não há mais
+  chave de API a proteger.
 
 ## Artes para redes sociais (RN-075 a RN-081)
 

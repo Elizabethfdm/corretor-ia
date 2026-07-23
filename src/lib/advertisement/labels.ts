@@ -3,7 +3,7 @@ import {
   AdvertisementStatus,
   AdvertisementTone,
 } from "@/generated/prisma/enums";
-import type { AdvertisementSize } from "@/lib/ai/types";
+import type { AdvertisementSize } from "@/lib/advertisement/types";
 
 export const ADVERTISEMENT_CHANNEL_LABELS: Record<AdvertisementChannel, string> = {
   [AdvertisementChannel.INSTAGRAM]: "Instagram",

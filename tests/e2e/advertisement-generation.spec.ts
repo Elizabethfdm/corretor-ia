@@ -27,8 +27,8 @@ async function createMinimalProperty(page: Page): Promise<string> {
   return propertyId;
 }
 
-test.describe("Geração de anúncios com IA (RN-061 a RN-074)", () => {
-  test("corretor gera um anúncio, vê o selo de IA, e edita o resultado", async ({
+test.describe("Anúncios com IA — fluxo manual via prompt (RN-061 a RN-068)", () => {
+  test("corretor monta o prompt, copia para o ChatGPT, cola o resultado e edita", async ({
     page,
     request,
   }) => {
@@ -52,13 +52,28 @@ test.describe("Geração de anúncios com IA (RN-061 a RN-074)", () => {
     await page.getByLabel("Tom").selectOption("PROFESSIONAL");
     await page.getByLabel("Tamanho do texto").selectOption("MEDIUM");
     await page.getByLabel("Objetivo do anúncio").fill("Atrair famílias jovens");
-    await page.getByRole("button", { name: "Gerar anúncio com IA" }).click();
+    await page.getByRole("button", { name: "Montar prompt com IA" }).click();
 
-    await expect(page.getByText("Anúncio gerado.")).toBeVisible();
-    await expect(page.getByText("Gerado por IA")).toBeVisible();
+    await expect(page.getByText("Prompt pronto")).toBeVisible();
+    const promptField = page.getByLabel("Prompt para colar na ferramenta de IA");
+    await expect(promptField).toHaveValue(/Atrair famílias jovens/);
+
+    const chatGptLink = page.getByRole("link", { name: "Abrir ChatGPT" });
+    await expect(chatGptLink).toHaveAttribute("href", "https://chatgpt.com/");
+    await expect(chatGptLink).toHaveAttribute("target", "_blank");
+
+    // RF-055: o corretor cola de volta o que obteve na ferramenta de IA externa.
+    await page.getByLabel("Título").fill("Casa com piscina — Jardim Europa");
+    await page.getByLabel("Texto").fill("Casa espaçosa com piscina, ideal para famílias.");
+    await page.getByLabel("Chamada para ação").fill("Agende sua visita!");
+    await page.getByLabel("Hashtags (separadas por vírgula, opcional)").fill("imoveis, casa");
+    await page.getByRole("button", { name: "Salvar anúncio" }).click();
+
+    await expect(page.getByText("Anúncio salvo.")).toBeVisible();
+    await expect(page.getByText("Assistido por IA")).toBeVisible();
     await expect(page.getByText("Nenhum anúncio gerado ainda para este imóvel.")).not.toBeVisible();
 
-    // RF-057: editar o conteúdo gerado antes de copiar/compartilhar.
+    // RF-057: editar o conteúdo salvo antes de copiar/compartilhar.
     await page.getByLabel("Título").fill("Título editado pelo corretor");
     await page.getByRole("button", { name: "Salvar edição" }).click();
     await expect(page.getByText("Anúncio atualizado.")).toBeVisible();

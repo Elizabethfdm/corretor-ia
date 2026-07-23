@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { AdvertisementChannel, AdvertisementTone } from "@/generated/prisma/enums";
-import { ADVERTISEMENT_SIZES } from "@/lib/ai/types";
+import { ADVERTISEMENT_SIZES } from "@/lib/advertisement/types";
 
 function emptyToUndefined(value: unknown): unknown {
   if (value === null || value === undefined) return undefined;
@@ -12,8 +12,8 @@ function toArray(value: unknown): unknown {
   return Array.isArray(value) ? value : [value];
 }
 
-/** RF-054: campos que o corretor escolhe antes de gerar um anúncio. */
-export const generateAdvertisementSchema = z.object({
+/** RF-054: campos que o corretor escolhe antes de montar o prompt. */
+export const buildAdvertisementPromptSchema = z.object({
   propertyId: z.string().trim().min(1, { error: "Selecione o imóvel." }),
   channel: z.enum(AdvertisementChannel, { error: "Selecione o canal." }),
   tone: z.enum(AdvertisementTone, { error: "Selecione o tom." }),
@@ -27,26 +27,27 @@ export const generateAdvertisementSchema = z.object({
   highlightAspects: z.preprocess(toArray, z.array(z.string()).default([])),
 });
 
-export type GenerateAdvertisementInput = z.infer<typeof generateAdvertisementSchema>;
+export type BuildAdvertisementPromptInput = z.infer<typeof buildAdvertisementPromptSchema>;
 
-/** RF-057: o corretor pode editar o resultado gerado antes de salvar. */
-export const editAdvertisementSchema = z.object({
+const advertisementContentSchema = z.object({
   title: z.string().trim().min(1, { error: "Informe um título." }).max(200),
   content: z.string().trim().min(1, { error: "Informe o texto do anúncio." }),
   callToAction: z.string().trim().min(1, { error: "Informe a chamada para ação." }).max(200),
   hashtags: z.preprocess(toArray, z.array(z.string().trim().min(1)).default([])),
 });
 
-export type EditAdvertisementInput = z.infer<typeof editAdvertisementSchema>;
-
 /**
- * Formato esperado da resposta do provedor de IA — validado antes de
- * ser aceito (RN-071): uma resposta que não valida contra este schema
- * é tratada como falha do provedor, nunca aceita às cegas.
+ * RF-055: o que o corretor cola de volta depois de gerar o texto numa
+ * ferramenta de IA externa (ex.: ChatGPT), junto da seleção original
+ * (RF-058: mantida no histórico).
  */
-export const advertisementOutputSchema = z.object({
-  title: z.string().trim().min(1).max(300),
-  content: z.string().trim().min(1),
-  callToAction: z.string().trim().min(1).max(300),
-  hashtags: z.array(z.string().trim().min(1)).default([]),
+export const saveAdvertisementSchema = buildAdvertisementPromptSchema.extend({
+  ...advertisementContentSchema.shape,
 });
+
+export type SaveAdvertisementInput = z.infer<typeof saveAdvertisementSchema>;
+
+/** RF-057: o corretor pode editar o resultado salvo a qualquer momento. */
+export const editAdvertisementSchema = advertisementContentSchema;
+
+export type EditAdvertisementInput = z.infer<typeof editAdvertisementSchema>;

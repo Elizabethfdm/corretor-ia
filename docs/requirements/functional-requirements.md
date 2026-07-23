@@ -132,27 +132,28 @@ relacionada (RN-XXX), quando aplicável.
 - **RF-053** O sistema deve registrar o evento de compartilhamento sem
   armazenar conteúdo de conversa. (RN-057)
 
-## Geração de anúncios com IA (Fase 7)
+## Geração de anúncios com IA (Fase 7 — fluxo revisado em 2026-07-22, ver ADR-0004)
 
 - **RF-054** O corretor deve poder selecionar imóvel, canal, objetivo,
-  tom, tamanho, público-alvo e aspectos a destacar antes de gerar um
-  anúncio.
-- **RF-055** O sistema deve gerar título, texto, chamada para ação e
-  hashtags (quando aplicável), sinalizando quando houver informação
-  ausente relevante. (RN-062)
+  tom, tamanho, público-alvo e aspectos a destacar antes de montar o
+  prompt.
+- **RF-055** O sistema deve montar um prompt (título, texto, chamada
+  para ação e hashtags esperados na resposta) a partir dos dados
+  selecionados, com instruções sinalizando quando houver informação
+  ausente relevante. (RN-062) O corretor copia esse prompt e o leva a
+  uma ferramenta de IA externa de sua escolha (ex.: ChatGPT).
 - **RF-056** O sistema deve sinalizar visivelmente que o conteúdo foi
-  gerado por IA. (RN-068)
-- **RF-057** O corretor deve poder editar o conteúdo gerado antes de
+  assistido por IA. (RN-068)
+- **RF-057** O corretor deve poder editar o conteúdo salvo antes de
   copiar ou compartilhar. (RN-067)
-- **RF-058** O sistema deve manter histórico dos anúncios gerados por
+- **RF-058** O sistema deve manter histórico dos anúncios salvos por
   imóvel.
-- **RF-059** O sistema deve impedir novas gerações além do limite do
-  plano do corretor, exibindo mensagem clara. (RN-070)
-- **RF-060** O sistema deve tratar falhas do provedor de IA com mensagem
-  amigável e permitir nova tentativa. (RN-071)
-- **RF-061** A aplicação deve implementar a geração de anúncio através de
-  uma interface abstrata (`AiContentProvider`), independente de
-  fornecedor específico. (Ver `docs/architecture/decisions/0004-*.md`)
+- ~~**RF-059**~~ Revogado — sem chamada de API paga, não há mais limite
+  de geração a impor.
+- ~~**RF-060**~~ Revogado — não há mais chamada a um provedor de IA que
+  possa falhar.
+- ~~**RF-061**~~ Revogado — a aplicação não chama mais nenhum provedor de
+  IA programaticamente; não há mais interface de provedor a implementar.
 
 ## Artes para redes sociais (Fase 8)
 

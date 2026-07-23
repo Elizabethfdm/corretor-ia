@@ -1,11 +1,8 @@
 import { describe, expect, it } from "vitest";
-import {
-  buildAdvertisementSystemPrompt,
-  buildAdvertisementUserPrompt,
-} from "@/lib/ai/build-advertisement-prompt";
-import type { PropertyAdvertisementInput } from "@/lib/ai/types";
+import { buildAdvertisementPrompt } from "@/lib/advertisement/build-prompt";
+import type { AdvertisementPromptInput } from "@/lib/advertisement/types";
 
-const baseInput: PropertyAdvertisementInput = {
+const baseInput: AdvertisementPromptInput = {
   channel: "INSTAGRAM",
   tone: "PROFESSIONAL",
   size: "MEDIUM",
@@ -34,27 +31,25 @@ const baseInput: PropertyAdvertisementInput = {
   },
 };
 
-describe("buildAdvertisementSystemPrompt (RN-062 a RN-066)", () => {
+describe("buildAdvertisementPrompt (RN-061 a RN-066)", () => {
   it("proíbe invenção de dados, promessas indevidas e linguagem discriminatória", () => {
-    const prompt = buildAdvertisementSystemPrompt();
+    const prompt = buildAdvertisementPrompt(baseInput);
     expect(prompt).toContain("Nunca invente");
     expect(prompt).toContain("Nunca prometa valorização");
     expect(prompt).toContain("Nunca use linguagem discriminatória");
     expect(prompt).toContain("dado pessoal de terceiros");
   });
 
-  it("exige resposta em JSON com os campos esperados", () => {
-    const prompt = buildAdvertisementSystemPrompt();
-    expect(prompt).toContain('"title"');
-    expect(prompt).toContain('"content"');
-    expect(prompt).toContain('"callToAction"');
-    expect(prompt).toContain('"hashtags"');
+  it("pede a resposta em rótulos de texto simples, para um humano copiar (não JSON)", () => {
+    const prompt = buildAdvertisementPrompt(baseInput);
+    expect(prompt).toContain("TÍTULO:");
+    expect(prompt).toContain("TEXTO:");
+    expect(prompt).toContain("CHAMADA PARA AÇÃO:");
+    expect(prompt).toContain("HASHTAGS:");
   });
-});
 
-describe("buildAdvertisementUserPrompt (RN-055, RN-061)", () => {
   it("inclui os dados fornecidos do imóvel", () => {
-    const prompt = buildAdvertisementUserPrompt(baseInput);
+    const prompt = buildAdvertisementPrompt(baseInput);
     expect(prompt).toContain("Casa com piscina");
     expect(prompt).toContain("Jardim Europa, São Paulo");
     expect(prompt).toContain("Piscina, Churrasqueira");
@@ -62,7 +57,7 @@ describe("buildAdvertisementUserPrompt (RN-055, RN-061)", () => {
   });
 
   it("omite campos ausentes em vez de inventar um valor", () => {
-    const prompt = buildAdvertisementUserPrompt({
+    const prompt = buildAdvertisementPrompt({
       ...baseInput,
       property: { ...baseInput.property, suites: null, builtArea: null, highlights: null },
     });
@@ -72,7 +67,7 @@ describe("buildAdvertisementUserPrompt (RN-055, RN-061)", () => {
   });
 
   it("instrui a não mencionar valor quando showPrice é falso", () => {
-    const prompt = buildAdvertisementUserPrompt({
+    const prompt = buildAdvertisementPrompt({
       ...baseInput,
       property: { ...baseInput.property, showPrice: false },
     });
@@ -81,13 +76,13 @@ describe("buildAdvertisementUserPrompt (RN-055, RN-061)", () => {
   });
 
   it("nunca inclui endereço exato — o tipo de entrada nem permite rua/número", () => {
-    const prompt = buildAdvertisementUserPrompt(baseInput);
-    // Garantia estrutural: PropertyAdvertisementSubject não tem campos de rua/número.
+    const prompt = buildAdvertisementPrompt(baseInput);
+    // Garantia estrutural: AdvertisementPropertySubject não tem campos de rua/número.
     expect(prompt).not.toMatch(/rua|avenida|número/i);
   });
 
   it("inclui aspectos a destacar e público-alvo quando informados", () => {
-    const prompt = buildAdvertisementUserPrompt({
+    const prompt = buildAdvertisementPrompt({
       ...baseInput,
       targetAudience: "Investidores",
       highlightAspects: ["Piscina", "Área gourmet"],

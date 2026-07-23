@@ -1,11 +1,11 @@
 import { describe, expect, it } from "vitest";
 import {
-  advertisementOutputSchema,
+  buildAdvertisementPromptSchema,
   editAdvertisementSchema,
-  generateAdvertisementSchema,
+  saveAdvertisementSchema,
 } from "@/lib/validation/advertisement";
 
-describe("generateAdvertisementSchema (RF-054)", () => {
+describe("buildAdvertisementPromptSchema (RF-054)", () => {
   const validInput = {
     propertyId: "property-123",
     channel: "INSTAGRAM",
@@ -15,35 +15,38 @@ describe("generateAdvertisementSchema (RF-054)", () => {
   };
 
   it("aceita o mínimo obrigatório", () => {
-    expect(generateAdvertisementSchema.safeParse(validInput).success).toBe(true);
+    expect(buildAdvertisementPromptSchema.safeParse(validInput).success).toBe(true);
   });
 
   it("rejeita canal, tom ou tamanho fora do enum", () => {
     expect(
-      generateAdvertisementSchema.safeParse({ ...validInput, channel: "TIKTOK" }).success,
+      buildAdvertisementPromptSchema.safeParse({ ...validInput, channel: "TIKTOK" }).success,
     ).toBe(false);
     expect(
-      generateAdvertisementSchema.safeParse({ ...validInput, tone: "ENGRAÇADO" }).success,
+      buildAdvertisementPromptSchema.safeParse({ ...validInput, tone: "ENGRAÇADO" }).success,
     ).toBe(false);
-    expect(generateAdvertisementSchema.safeParse({ ...validInput, size: "GIGANTE" }).success).toBe(
-      false,
-    );
+    expect(
+      buildAdvertisementPromptSchema.safeParse({ ...validInput, size: "GIGANTE" }).success,
+    ).toBe(false);
   });
 
   it("rejeita objetivo vazio ou ausente", () => {
-    expect(generateAdvertisementSchema.safeParse({ ...validInput, objective: "" }).success).toBe(
+    expect(buildAdvertisementPromptSchema.safeParse({ ...validInput, objective: "" }).success).toBe(
       false,
     );
   });
 
   it("converte string vazia de público-alvo em undefined", () => {
-    const result = generateAdvertisementSchema.safeParse({ ...validInput, targetAudience: "" });
+    const result = buildAdvertisementPromptSchema.safeParse({
+      ...validInput,
+      targetAudience: "",
+    });
     expect(result.success).toBe(true);
     if (result.success) expect(result.data.targetAudience).toBeUndefined();
   });
 
   it("converte um único valor de highlightAspects em array", () => {
-    const single = generateAdvertisementSchema.safeParse({
+    const single = buildAdvertisementPromptSchema.safeParse({
       ...validInput,
       highlightAspects: "Piscina",
     });
@@ -52,7 +55,7 @@ describe("generateAdvertisementSchema (RF-054)", () => {
   });
 
   it("assume lista vazia de aspectos quando ausente", () => {
-    const result = generateAdvertisementSchema.safeParse(validInput);
+    const result = buildAdvertisementPromptSchema.safeParse(validInput);
     expect(result.success).toBe(true);
     if (result.success) expect(result.data.highlightAspects).toEqual([]);
   });
@@ -92,30 +95,38 @@ describe("editAdvertisementSchema (RF-057)", () => {
   });
 });
 
-describe("advertisementOutputSchema (validação da resposta da IA, RN-071)", () => {
-  it("aceita uma resposta bem formada", () => {
-    const result = advertisementOutputSchema.safeParse({
-      title: "Casa incrível",
-      content: "Texto do anúncio.",
-      callToAction: "Fale conosco!",
-      hashtags: ["imoveis", "casa"],
-    });
+describe("saveAdvertisementSchema (RF-055 — o que o corretor cola de volta)", () => {
+  const validInput = {
+    propertyId: "property-123",
+    channel: "INSTAGRAM",
+    tone: "PROFESSIONAL",
+    size: "MEDIUM",
+    objective: "Atrair famílias jovens",
+    title: "Casa incrível",
+    content: "Texto do anúncio colado do ChatGPT.",
+    callToAction: "Fale conosco!",
+  };
+
+  it("aceita a seleção original combinada com o conteúdo colado", () => {
+    const result = saveAdvertisementSchema.safeParse(validInput);
     expect(result.success).toBe(true);
+  });
+
+  it("rejeita quando falta a seleção original (propertyId/canal/tom/tamanho/objetivo)", () => {
+    const withoutPropertyId: Record<string, unknown> = { ...validInput };
+    delete withoutPropertyId["propertyId"];
+    expect(saveAdvertisementSchema.safeParse(withoutPropertyId).success).toBe(false);
+  });
+
+  it("rejeita quando falta o conteúdo colado (título/texto/chamada para ação)", () => {
+    const withoutTitle: Record<string, unknown> = { ...validInput };
+    delete withoutTitle["title"];
+    expect(saveAdvertisementSchema.safeParse(withoutTitle).success).toBe(false);
   });
 
   it("assume hashtags vazias quando o campo está ausente", () => {
-    const result = advertisementOutputSchema.safeParse({
-      title: "Casa incrível",
-      content: "Texto do anúncio.",
-      callToAction: "Fale conosco!",
-    });
+    const result = saveAdvertisementSchema.safeParse(validInput);
     expect(result.success).toBe(true);
     if (result.success) expect(result.data.hashtags).toEqual([]);
-  });
-
-  it("rejeita resposta sem os campos obrigatórios (tratada como falha do provedor)", () => {
-    expect(advertisementOutputSchema.safeParse({ title: "Só título" }).success).toBe(false);
-    expect(advertisementOutputSchema.safeParse({}).success).toBe(false);
-    expect(advertisementOutputSchema.safeParse(null).success).toBe(false);
   });
 });

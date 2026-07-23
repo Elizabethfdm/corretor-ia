@@ -33,11 +33,4 @@ export const advertisementRepository = {
       },
     });
   },
-
-  /** RN-070: contagem de gerações do corretor desde uma data (limite mensal). */
-  async countByBrokerSince(brokerId: string, since: Date): Promise<number> {
-    return prisma.generatedAdvertisement.count({
-      where: { brokerId, createdAt: { gte: since } },
-    });
-  },
 };

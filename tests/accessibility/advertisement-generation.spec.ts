@@ -3,8 +3,8 @@ import { expect, test } from "@playwright/test";
 import { createTestUser, deleteTestUserByEmail, uniqueEmail } from "../e2e/helpers/test-users";
 import { loginAs } from "../e2e/helpers/auth";
 
-test.describe("Acessibilidade — geração de anúncios com IA", () => {
-  test("aba de anúncios (vazia e com um anúncio gerado) não possui violações WCAG A/AA", async ({
+test.describe("Acessibilidade — anúncios com IA (fluxo manual via prompt)", () => {
+  test("aba de anúncios (vazia, com prompt montado, e com anúncio salvo) não possui violações WCAG A/AA", async ({
     page,
     request,
   }) => {
@@ -39,11 +39,20 @@ test.describe("Acessibilidade — geração de anúncios com IA", () => {
     await page.getByLabel("Canal").selectOption("INSTAGRAM");
     await page.getByLabel("Tom").selectOption("PROFESSIONAL");
     await page.getByLabel("Objetivo do anúncio").fill("Atrair famílias jovens");
-    await page.getByRole("button", { name: "Gerar anúncio com IA" }).click();
-    await expect(page.getByText("Anúncio gerado.")).toBeVisible();
+    await page.getByRole("button", { name: "Montar prompt com IA" }).click();
+    await expect(page.getByText("Prompt pronto")).toBeVisible();
 
-    const filledResults = await new AxeBuilder({ page }).withTags(["wcag2a", "wcag2aa"]).analyze();
-    expect(filledResults.violations).toEqual([]);
+    const promptResults = await new AxeBuilder({ page }).withTags(["wcag2a", "wcag2aa"]).analyze();
+    expect(promptResults.violations).toEqual([]);
+
+    await page.getByLabel("Título").fill("Casa para teste de acessibilidade — anúncio");
+    await page.getByLabel("Texto").fill("Texto colado da ferramenta de IA.");
+    await page.getByLabel("Chamada para ação").fill("Fale conosco!");
+    await page.getByRole("button", { name: "Salvar anúncio" }).click();
+    await expect(page.getByText("Anúncio salvo.")).toBeVisible();
+
+    const savedResults = await new AxeBuilder({ page }).withTags(["wcag2a", "wcag2aa"]).analyze();
+    expect(savedResults.violations).toEqual([]);
 
     await deleteTestUserByEmail(email);
   });

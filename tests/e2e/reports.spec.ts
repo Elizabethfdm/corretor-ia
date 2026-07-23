@@ -118,8 +118,13 @@ test.describe("Relatórios (RN-082 a RN-090)", () => {
     await page.getByLabel("Canal").selectOption("INSTAGRAM");
     await page.getByLabel("Tom").selectOption("PROFESSIONAL");
     await page.getByLabel("Objetivo do anúncio").fill("Atrair famílias jovens");
-    await page.getByRole("button", { name: "Gerar anúncio com IA" }).click();
-    await expect(page.getByText("Anúncio gerado.")).toBeVisible();
+    await page.getByRole("button", { name: "Montar prompt com IA" }).click();
+    await expect(page.getByText("Prompt pronto")).toBeVisible();
+    await page.getByLabel("Título").fill("Casa para relatório — anúncio");
+    await page.getByLabel("Texto").fill("Texto colado da ferramenta de IA.");
+    await page.getByLabel("Chamada para ação").fill("Fale conosco!");
+    await page.getByRole("button", { name: "Salvar anúncio" }).click();
+    await expect(page.getByText("Anúncio salvo.")).toBeVisible();
 
     await nav.getByRole("tab", { name: "Artes", exact: true }).click();
     await page.getByLabel("Tipo de anúncio").selectOption("NEW_PROPERTY");

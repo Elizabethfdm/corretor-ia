@@ -21,7 +21,6 @@ performance) e componentes de cliente localizados para interatividade
    Corretor  ──────►│  Rotas privadas (painel)    │──────► PostgreSQL (Prisma)
    Admin     ──────►│  Route Handlers (API)       │
                     │                             │──────► Storage compatível S3
-                    │  lib/ai (AiContentProvider) │──────► Provedor de IA (abstraído)
                     └───────────────────────────┘
 ```
 
@@ -72,21 +71,15 @@ para mídia de imóveis publicados e chaves de acesso restritas ao
 servidor (upload nunca expõe credenciais ao cliente — usar upload via
 URL assinada gerada no servidor).
 
-## 6. Camada de IA
+## 6. Anúncios com IA (fluxo manual)
 
 Decisão detalhada em
-[`decisions/0004-abstracao-provedor-ia.md`](decisions/0004-abstracao-provedor-ia.md).
-Resumo: interface `AiContentProvider` definida em `lib/ai`, com uma
-implementação concreta por provedor. Nenhuma camada de negócio depende
-diretamente do SDK de um fornecedor específico.
-
-```typescript
-interface AiContentProvider {
-  generatePropertyAdvertisement(
-    input: PropertyAdvertisementInput,
-  ): Promise<PropertyAdvertisementOutput>;
-}
-```
+[`decisions/0004-abstracao-provedor-ia.md`](decisions/0004-abstracao-provedor-ia.md)
+(seção "Decisão revisada"). Resumo: a aplicação não chama nenhum
+provedor de IA programaticamente. `lib/advertisement/build-prompt.ts`
+monta um prompt autocontido a partir dos dados do imóvel; o corretor
+copia esse prompt, leva a uma ferramenta de IA de sua escolha (ex.:
+ChatGPT) e cola o resultado de volta nos campos editáveis do anúncio.
 
 ## 7. Validação
 

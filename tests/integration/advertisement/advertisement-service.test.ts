@@ -7,15 +7,17 @@ import {
   saveLocation,
 } from "@/server/services/property-service";
 import {
-  AdvertisementLimitReachedError,
   AdvertisementNotFoundError,
+  buildAdvertisementPrompt,
   editAdvertisement,
-  generateAdvertisement,
-  getMonthlyAdvertisementLimit,
   listAdvertisementsForProperty,
+  saveAdvertisement,
 } from "@/server/services/advertisement-service";
 import { PropertyNotFoundError } from "@/server/services/property-service";
-import type { GenerateAdvertisementInput } from "@/lib/validation/advertisement";
+import type {
+  BuildAdvertisementPromptInput,
+  SaveAdvertisementInput,
+} from "@/lib/validation/advertisement";
 
 const testEmails: string[] = [];
 
@@ -60,7 +62,10 @@ async function createBrokerProfileAndProperty(label: string) {
   return { brokerId: profile.id, propertyId: property.id };
 }
 
-function buildInput(propertyId: string, overrides: Partial<GenerateAdvertisementInput> = {}) {
+function buildPromptInput(
+  propertyId: string,
+  overrides: Partial<BuildAdvertisementPromptInput> = {},
+) {
   return {
     propertyId,
     channel: "INSTAGRAM",
@@ -70,7 +75,18 @@ function buildInput(propertyId: string, overrides: Partial<GenerateAdvertisement
     targetAudience: undefined,
     highlightAspects: [],
     ...overrides,
-  } as GenerateAdvertisementInput;
+  } as BuildAdvertisementPromptInput;
+}
+
+function buildSaveInput(propertyId: string, overrides: Partial<SaveAdvertisementInput> = {}) {
+  return {
+    ...buildPromptInput(propertyId),
+    title: "Casa incrível em Jardim Europa",
+    content: "Texto do anúncio colado do ChatGPT.",
+    callToAction: "Fale conosco!",
+    hashtags: [],
+    ...overrides,
+  } as SaveAdvertisementInput;
 }
 
 afterEach(async () => {
@@ -88,62 +104,58 @@ afterEach(async () => {
   }
 });
 
-describe("generateAdvertisement (RN-061 a RN-074)", () => {
-  it("gera e persiste um anúncio com provedor/modelo registrados (RN-069)", async () => {
-    const { brokerId, propertyId } = await createBrokerProfileAndProperty("ad-generate");
+describe("buildAdvertisementPrompt (RN-061 a RN-065)", () => {
+  it("monta o prompt sem persistir nada", async () => {
+    const { brokerId, propertyId } = await createBrokerProfileAndProperty("ad-prompt");
 
-    const advertisement = await generateAdvertisement(brokerId, buildInput(propertyId));
+    const prompt = await buildAdvertisementPrompt(brokerId, buildPromptInput(propertyId));
 
-    expect(advertisement.status).toBe("GENERATED");
-    expect(advertisement.provider).toBe("fake");
-    expect(advertisement.model).toBeTruthy();
-    expect(advertisement.title).toBeTruthy();
-    expect(advertisement.content).toBeTruthy();
-    expect(advertisement.callToAction).toBeTruthy();
+    expect(prompt).toContain("TÍTULO:");
+    expect(prompt).toContain("Jardim Europa, São Paulo");
+
+    const history = await listAdvertisementsForProperty(propertyId, brokerId);
+    expect(history).toHaveLength(0);
   });
 
-  it("nunca envia o título interno para a IA (RN-065) — usa título sintetizado", async () => {
+  it("nunca inclui o título interno no prompt (RN-065) — usa título sintetizado", async () => {
     const { brokerId, propertyId } = await createBrokerProfileAndProperty("ad-no-internal");
 
-    const advertisement = await generateAdvertisement(brokerId, buildInput(propertyId));
+    const prompt = await buildAdvertisementPrompt(brokerId, buildPromptInput(propertyId));
 
-    expect(advertisement.title).not.toContain("Anotação interna");
-    expect(advertisement.content).not.toContain("Anotação interna");
+    expect(prompt).not.toContain("Anotação interna");
   });
 
   it("lança PropertyNotFoundError para imóvel de outro corretor (RN-026)", async () => {
     const { propertyId } = await createBrokerProfileAndProperty("ad-iso-owner");
     const { brokerId: otherBrokerId } = await createBrokerProfileAndProperty("ad-iso-other");
 
-    await expect(generateAdvertisement(otherBrokerId, buildInput(propertyId))).rejects.toThrow(
+    await expect(
+      buildAdvertisementPrompt(otherBrokerId, buildPromptInput(propertyId)),
+    ).rejects.toThrow(PropertyNotFoundError);
+  });
+});
+
+describe("saveAdvertisement (RF-055, RF-058)", () => {
+  it("persiste o anúncio colado com provider/model fixos do fluxo manual", async () => {
+    const { brokerId, propertyId } = await createBrokerProfileAndProperty("ad-save");
+
+    const advertisement = await saveAdvertisement(brokerId, buildSaveInput(propertyId));
+
+    expect(advertisement.status).toBe("GENERATED");
+    expect(advertisement.provider).toBe("manual");
+    expect(advertisement.model).toBe("chatgpt-web");
+    expect(advertisement.title).toBe("Casa incrível em Jardim Europa");
+    expect(advertisement.content).toBeTruthy();
+    expect(advertisement.callToAction).toBeTruthy();
+  });
+
+  it("lança PropertyNotFoundError para imóvel de outro corretor (RN-026)", async () => {
+    const { propertyId } = await createBrokerProfileAndProperty("ad-save-iso-owner");
+    const { brokerId: otherBrokerId } = await createBrokerProfileAndProperty("ad-save-iso-other");
+
+    await expect(saveAdvertisement(otherBrokerId, buildSaveInput(propertyId))).rejects.toThrow(
       PropertyNotFoundError,
     );
-  });
-
-  it("bloqueia novas gerações ao atingir o limite mensal (RN-070)", async () => {
-    const { brokerId, propertyId } = await createBrokerProfileAndProperty("ad-limit");
-    const limit = getMonthlyAdvertisementLimit();
-
-    for (let i = 0; i < limit; i += 1) {
-      await generateAdvertisement(brokerId, buildInput(propertyId, { objective: `Objetivo ${i}` }));
-    }
-
-    await expect(generateAdvertisement(brokerId, buildInput(propertyId))).rejects.toThrow(
-      AdvertisementLimitReachedError,
-    );
-  });
-
-  it("não conta gerações de outro corretor no limite (RN-026, RN-070)", async () => {
-    const { brokerId, propertyId } = await createBrokerProfileAndProperty("ad-limit-iso-a");
-    const { brokerId: otherBrokerId, propertyId: otherPropertyId } =
-      await createBrokerProfileAndProperty("ad-limit-iso-b");
-
-    await generateAdvertisement(brokerId, buildInput(propertyId));
-
-    // O outro corretor deve conseguir gerar normalmente, sem ser afetado.
-    await expect(
-      generateAdvertisement(otherBrokerId, buildInput(otherPropertyId)),
-    ).resolves.toBeTruthy();
   });
 });
 
@@ -152,8 +164,8 @@ describe("listAdvertisementsForProperty (RF-058, RN-026)", () => {
     const { brokerId, propertyId } = await createBrokerProfileAndProperty("ad-history");
     const { brokerId: otherBrokerId } = await createBrokerProfileAndProperty("ad-history-other");
 
-    await generateAdvertisement(brokerId, buildInput(propertyId, { objective: "Primeiro" }));
-    await generateAdvertisement(brokerId, buildInput(propertyId, { objective: "Segundo" }));
+    await saveAdvertisement(brokerId, buildSaveInput(propertyId, { objective: "Primeiro" }));
+    await saveAdvertisement(brokerId, buildSaveInput(propertyId, { objective: "Segundo" }));
 
     const history = await listAdvertisementsForProperty(propertyId, brokerId);
     expect(history).toHaveLength(2);
@@ -169,7 +181,7 @@ describe("listAdvertisementsForProperty (RF-058, RN-026)", () => {
 describe("editAdvertisement (RF-057)", () => {
   it("atualiza o conteúdo e marca como editado", async () => {
     const { brokerId, propertyId } = await createBrokerProfileAndProperty("ad-edit");
-    const advertisement = await generateAdvertisement(brokerId, buildInput(propertyId));
+    const advertisement = await saveAdvertisement(brokerId, buildSaveInput(propertyId));
 
     const edited = await editAdvertisement(advertisement.id, brokerId, {
       title: "Título editado pelo corretor",
@@ -186,7 +198,7 @@ describe("editAdvertisement (RF-057)", () => {
   it("lança AdvertisementNotFoundError para anúncio de outro corretor", async () => {
     const { brokerId, propertyId } = await createBrokerProfileAndProperty("ad-edit-iso-a");
     const { brokerId: otherBrokerId } = await createBrokerProfileAndProperty("ad-edit-iso-b");
-    const advertisement = await generateAdvertisement(brokerId, buildInput(propertyId));
+    const advertisement = await saveAdvertisement(brokerId, buildSaveInput(propertyId));
 
     await expect(
       editAdvertisement(advertisement.id, otherBrokerId, {

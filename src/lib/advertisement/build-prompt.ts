@@ -1,4 +1,4 @@
-import type { PropertyAdvertisementInput } from "@/lib/ai/types";
+import type { AdvertisementPromptInput } from "@/lib/advertisement/types";
 
 const CHANNEL_LABELS: Record<string, string> = {
   INSTAGRAM: "Instagram (post no feed)",
@@ -24,26 +24,6 @@ const SIZE_LABELS: Record<string, string> = {
   LONG: "longo (dois a três parágrafos, mais detalhado)",
 };
 
-/**
- * RN-062 a RN-065: instruções explícitas contra invenção de dados,
- * promessas indevidas, linguagem discriminatória e vazamento de dados
- * privados. RN-066: nunca instrui a IA a "publicar" nada, apenas gerar
- * texto para revisão do corretor.
- */
-export function buildAdvertisementSystemPrompt(): string {
-  return [
-    "Você é um redator publicitário especializado em anúncios imobiliários no Brasil, escrevendo em português do Brasil.",
-    "Use exclusivamente as informações fornecidas sobre o imóvel. Nunca invente características, localização, valor, condições comerciais ou qualquer outro dado não informado.",
-    'Nunca prometa valorização futura do imóvel, nunca afirme que um financiamento será aprovado, e nunca crie senso de urgência falso (ex.: "última unidade", "oferta por tempo limitado") a menos que isso conste explicitamente nas informações fornecidas.',
-    "Nunca use linguagem discriminatória (de qualquer natureza: racial, religiosa, de gênero, orientação sexual, deficiência, origem, entre outras).",
-    "Nunca inclua endereço exato, observações internas do corretor ou qualquer dado pessoal de terceiros — essas informações nunca estarão nos dados fornecidos, mas reforce isso na sua resposta.",
-    "Quando um dado relevante para o anúncio não for informado, não invente um valor — simplesmente não mencione esse aspecto.",
-    "Responda EXCLUSIVAMENTE em JSON válido, sem nenhum texto antes ou depois, no seguinte formato:",
-    '{"title": string, "content": string, "callToAction": string, "hashtags": string[]}',
-    '"title" é um título curto e chamativo. "content" é o corpo do anúncio. "callToAction" é uma frase curta convidando o leitor a entrar em contato. "hashtags" é uma lista de 3 a 8 hashtags relevantes (sem o caractere #), ou uma lista vazia se o canal não usar hashtags.',
-  ].join("\n");
-}
-
 function formatLine(label: string, value: string | number | null | undefined): string | null {
   if (value === null || value === undefined || value === "") {
     return null;
@@ -51,13 +31,38 @@ function formatLine(label: string, value: string | number | null | undefined): s
   return `${label}: ${value}`;
 }
 
-/** RN-061: monta a descrição do imóvel só com os dados já validados/serializados pelo service — nunca o objeto Property bruto. */
-export function buildAdvertisementUserPrompt(input: PropertyAdvertisementInput): string {
+/**
+ * RN-061 a RN-065: monta um prompt único, autocontido, pronto para o
+ * corretor copiar e colar diretamente numa ferramenta de IA de sua
+ * escolha (ex.: ChatGPT) — instruções explícitas contra invenção de
+ * dados, promessas indevidas, linguagem discriminatória e vazamento de
+ * dados privados, seguidas dos dados do imóvel (allowlist restrita,
+ * nunca o objeto `Property` bruto). RN-066: nunca instrui a IA a
+ * "publicar" nada, apenas gerar texto para revisão do corretor. Pede
+ * a resposta em rótulos de texto simples (não JSON) porque quem lê a
+ * resposta é uma pessoa copiando trechos manualmente, não código.
+ */
+export function buildAdvertisementPrompt(input: AdvertisementPromptInput): string {
   const { property } = input;
-
   const location = [property.neighborhood, property.city].filter(Boolean).join(", ");
 
-  const lines = [
+  const instructions = [
+    "Você é um redator publicitário especializado em anúncios imobiliários no Brasil. Escreva em português do Brasil.",
+    "Use exclusivamente as informações fornecidas abaixo sobre o imóvel. Nunca invente características, localização, valor, condições comerciais ou qualquer outro dado não informado.",
+    'Nunca prometa valorização futura do imóvel, nunca afirme que um financiamento será aprovado, e nunca crie senso de urgência falso (ex.: "última unidade", "oferta por tempo limitado") a menos que isso conste explicitamente nas informações abaixo.',
+    "Nunca use linguagem discriminatória (de qualquer natureza: racial, religiosa, de gênero, orientação sexual, deficiência, origem, entre outras).",
+    "Nunca inclua endereço exato, observações internas do corretor ou qualquer dado pessoal de terceiros — essas informações não estão nos dados abaixo, mas reforce isso na sua resposta.",
+    "Quando um dado relevante para o anúncio não for informado abaixo, não invente um valor — simplesmente não mencione esse aspecto.",
+    "",
+    "Responda exatamente neste formato, com estes rótulos, sem markdown e sem nenhum texto antes ou depois:",
+    "",
+    "TÍTULO: (um título curto e chamativo)",
+    "TEXTO: (o corpo do anúncio)",
+    "CHAMADA PARA AÇÃO: (uma frase curta convidando o leitor a entrar em contato)",
+    "HASHTAGS: (3 a 8 hashtags relevantes separadas por vírgula, sem o caractere #; deixe em branco se o canal não usar hashtags)",
+  ].join("\n");
+
+  const requestLines = [
     `Canal de publicação: ${CHANNEL_LABELS[input.channel] ?? input.channel}`,
     `Tom desejado: ${TONE_LABELS[input.tone] ?? input.tone}`,
     `Tamanho desejado do texto: ${SIZE_LABELS[input.size] ?? input.size}`,
@@ -88,5 +93,5 @@ export function buildAdvertisementUserPrompt(input: PropertyAdvertisementInput):
     formatLine("Diferenciais cadastrados pelo corretor", property.highlights),
   ].filter((line): line is string => line !== null);
 
-  return lines.join("\n");
+  return [instructions, "", requestLines.join("\n")].join("\n");
 }
