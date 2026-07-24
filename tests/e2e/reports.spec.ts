@@ -132,8 +132,12 @@ test.describe("Relatórios (RN-082 a RN-090)", () => {
     await expect(page.getByText("Arte gerada.")).toBeVisible();
 
     // Relatório: todos os indicadores refletem as interações acima.
+    // RF-067/RNF: o painel repete cada rótulo no cartão de indicador
+    // (primeiro no DOM) e no gráfico de barras "Visão geral do período"
+    // abaixo — `.first()` sempre resolve para o cartão, cuja estrutura
+    // (contagem no <p> irmão anterior ao rótulo) o xpath abaixo assume.
     await page.goto("/painel/relatorios");
-    await expect(page.getByText("Visualizações do catálogo")).toBeVisible();
+    await expect(page.getByText("Visualizações do catálogo").first()).toBeVisible();
 
     const counters: Record<string, number> = {};
     for (const label of [
@@ -147,6 +151,7 @@ test.describe("Relatórios (RN-082 a RN-090)", () => {
     ]) {
       const value = await page
         .getByText(label)
+        .first()
         .locator("xpath=preceding-sibling::p[1]")
         .textContent();
       counters[label] = Number(value);
@@ -166,7 +171,7 @@ test.describe("Relatórios (RN-082 a RN-090)", () => {
     // RF-068: filtro por período continua mostrando os dados de hoje.
     await page.getByLabel("Período").selectOption("today");
     await page.getByRole("button", { name: "Aplicar" }).click();
-    await expect(page.getByText("Anúncios gerados")).toBeVisible();
+    await expect(page.getByText("Anúncios gerados").first()).toBeVisible();
     await expect(page.getByText("Nenhum dado registrado")).not.toBeVisible();
 
     await deleteTestUserByEmail(email);

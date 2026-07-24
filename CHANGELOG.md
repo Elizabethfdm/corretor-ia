@@ -8,6 +8,30 @@ partir da primeira versão publicada.
 
 ## [Não lançado]
 
+### Adicionado — Refatoração de UX/UI, Fase 7 (Relatórios e painel administrativo)
+
+- `ReportPeriodForm` reestilizado com `Button`/`Input`/`Select` de
+  `components/ui/`; mesmo formulário GET nativo de sempre (`period`/
+  `from`/`to`, filtro compartilhável via URL — RF-068).
+- `ReportSummaryCards`: cartões de indicador sobre `Card`, e nova
+  visualização gráfica simples — barras horizontais em CSS puro
+  (`width` proporcional ao maior valor, sem dependência nova) para o
+  "Visão geral do período", com `role="img"`/`aria-label` por barra.
+- `PlatformIndicators`, `BrokerList` e `AuditLogList` (painel
+  administrativo) reestilizados sobre `Card`/`Badge`/`Button`, mesma
+  estrutura de formulários/ações de bloquear-desbloquear corretor.
+- Nenhuma regra de negócio muda.
+
+Corrigido durante o desenvolvimento (não chegou a ser entregue): o novo
+gráfico de barras repete o rótulo de cada tipo de evento (ex.:
+"Anúncios gerados") que já aparecia no cartão de indicador acima —
+duplicação visual deliberada (RF-067/RNF), mas quebrava os localizadores
+`getByText(label)` sem escopo do teste E2E de relatórios (violação de
+"strict mode" do Playwright, 3 ocorrências). Corrigido escopando cada
+localizador com `.first()`, que sempre resolve para o cartão de
+indicador (primeiro no DOM); confirmado com reexecução isolada
+(`reports.spec.ts`, 10/10 nos 5 navegadores).
+
 ### Adicionado — Refatoração de UX/UI, Fase 6 (Página do imóvel)
 
 - Galeria com lightbox: clicar em qualquer foto abre em tela cheia,
